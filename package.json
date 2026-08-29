@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "validate": "tsx src/lib/validateGraph.ts",
+    "seed": "tsx src/lib/seed.ts",
+    "test:routing": "tsx src/lib/routingEngine.test.ts"
   },
   "dependencies": {
+    "firebase": "^11.3.1",
+    "firebase-admin": "^13.1.0",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -18,9 +23,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }

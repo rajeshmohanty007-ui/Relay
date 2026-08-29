@@ -1,0 +1,821 @@
+{
+  "demoConfig": {
+    "scenarioName": "Aluva-Periyar River Flood Relief Basin (Monsoon Crisis)",
+    "startTimestamp": 0,
+    "totalDurationSec": 1200
+  },
+  "nodes": [
+    {
+      "id": "depot_north",
+      "name": "North Ridge Logistics Depot",
+      "lat": 10.224,
+      "lng": 76.355,
+      "type": "depot"
+    },
+    {
+      "id": "depot_south",
+      "name": "South Base Logistics Hub",
+      "lat": 10.078,
+      "lng": 76.312,
+      "type": "depot"
+    },
+    {
+      "id": "shelter_valley_school",
+      "name": "Valley High School Relief Shelter",
+      "lat": 10.165,
+      "lng": 76.412,
+      "type": "shelter",
+      "criticalSupplyNeed": {
+        "insulin": 120,
+        "blood": 40,
+        "water": 2500,
+        "food": 1800,
+        "hoursOfStockRemaining": 4.5
+      }
+    },
+    {
+      "id": "shelter_east_hospital",
+      "name": "St. Jude Clinic & Emergency Shelter",
+      "lat": 10.198,
+      "lng": 76.489,
+      "type": "shelter",
+      "criticalSupplyNeed": {
+        "insulin": 300,
+        "blood": 85,
+        "water": 4000,
+        "food": 3200,
+        "hoursOfStockRemaining": 2.0
+      }
+    },
+    {
+      "id": "shelter_delta_stadium",
+      "name": "Delta Sports Complex Central Shelter",
+      "lat": 10.121,
+      "lng": 76.378,
+      "type": "shelter",
+      "criticalSupplyNeed": {
+        "insulin": 180,
+        "blood": 50,
+        "water": 5500,
+        "food": 4500,
+        "hoursOfStockRemaining": 6.0
+      }
+    },
+    {
+      "id": "shelter_west_hall",
+      "name": "West Creek Civic Hall Shelter",
+      "lat": 10.142,
+      "lng": 76.275,
+      "type": "shelter",
+      "criticalSupplyNeed": {
+        "insulin": 90,
+        "blood": 25,
+        "water": 1800,
+        "food": 1400,
+        "hoursOfStockRemaining": 3.5
+      }
+    },
+    {
+      "id": "village_riverbank",
+      "name": "Riverbank North Settlement",
+      "lat": 10.205,
+      "lng": 76.392,
+      "type": "village"
+    },
+    {
+      "id": "village_paddy_plains",
+      "name": "Paddy Plains Farmland Village",
+      "lat": 10.182,
+      "lng": 76.338,
+      "type": "village"
+    },
+    {
+      "id": "village_coconut_grove",
+      "name": "Coconut Grove Settlement",
+      "lat": 10.155,
+      "lng": 76.315,
+      "type": "village"
+    },
+    {
+      "id": "village_mangrove_edge",
+      "name": "Mangrove Edge Fishery Village",
+      "lat": 10.108,
+      "lng": 76.29,
+      "type": "village"
+    },
+    {
+      "id": "village_highland_reach",
+      "name": "Highland Reach Hamlet",
+      "lat": 10.238,
+      "lng": 76.425,
+      "type": "village"
+    },
+    {
+      "id": "village_estuary_point",
+      "name": "Estuary Point Island Colony",
+      "lat": 10.092,
+      "lng": 76.265,
+      "type": "village"
+    },
+    {
+      "id": "village_tea_foothills",
+      "name": "Tea Foothills Village",
+      "lat": 10.218,
+      "lng": 76.462,
+      "type": "village"
+    },
+    {
+      "id": "village_canal_side",
+      "name": "Grand Canal Colony",
+      "lat": 10.138,
+      "lng": 76.342,
+      "type": "village"
+    },
+    {
+      "id": "village_weir_quarters",
+      "name": "Old Weir Quarters",
+      "lat": 10.174,
+      "lng": 76.448,
+      "type": "village"
+    },
+    {
+      "id": "village_bamboo_creek",
+      "name": "Bamboo Creek Village",
+      "lat": 10.115,
+      "lng": 76.425,
+      "type": "village"
+    },
+    {
+      "id": "village_marshland_bend",
+      "name": "Marshland Bend Settlement",
+      "lat": 10.089,
+      "lng": 76.368,
+      "type": "village"
+    },
+    {
+      "id": "village_causeway_haven",
+      "name": "Causeway Haven Village",
+      "lat": 10.162,
+      "lng": 76.261,
+      "type": "village"
+    },
+    {
+      "id": "junc_north_fork",
+      "name": "North Highway Fork",
+      "lat": 10.215,
+      "lng": 76.37,
+      "type": "junction"
+    },
+    {
+      "id": "junc_river_bridge_n",
+      "name": "Periyar North Causeway Junction",
+      "lat": 10.192,
+      "lng": 76.365,
+      "type": "junction"
+    },
+    {
+      "id": "junc_central_cross",
+      "name": "Central District Rotary",
+      "lat": 10.15,
+      "lng": 76.36,
+      "type": "junction"
+    },
+    {
+      "id": "junc_east_overpass",
+      "name": "East Foothills Bypass Overpass",
+      "lat": 10.185,
+      "lng": 76.42,
+      "type": "junction"
+    },
+    {
+      "id": "junc_south_express",
+      "name": "South Expressway Cloverleaf",
+      "lat": 10.098,
+      "lng": 76.335,
+      "type": "junction"
+    },
+    {
+      "id": "junc_west_culvert",
+      "name": "West Canal Culvert Junction",
+      "lat": 10.132,
+      "lng": 76.295,
+      "type": "junction"
+    },
+    {
+      "id": "junc_delta_split",
+      "name": "Delta Split Intersection",
+      "lat": 10.11,
+      "lng": 76.345,
+      "type": "junction"
+    },
+    {
+      "id": "junc_dam_road",
+      "name": "Dam Access Road Junction",
+      "lat": 10.228,
+      "lng": 76.44,
+      "type": "junction"
+    },
+    {
+      "id": "junc_canal_bridge",
+      "name": "Canal Sluice Bridge Cross",
+      "lat": 10.14,
+      "lng": 76.395,
+      "type": "junction"
+    },
+    {
+      "id": "junc_coastal_link",
+      "name": "Coastal Link Junction",
+      "lat": 10.085,
+      "lng": 76.28,
+      "type": "junction"
+    },
+    {
+      "id": "junc_valley_link",
+      "name": "Valley Link Roundabout",
+      "lat": 10.16,
+      "lng": 76.47,
+      "type": "junction"
+    },
+    {
+      "id": "junc_northwest_gate",
+      "name": "Northwest Toll Plaza Junction",
+      "lat": 10.2,
+      "lng": 76.29,
+      "type": "junction"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_dn_jnorth",
+      "fromNodeId": "depot_north",
+      "toNodeId": "junc_north_fork",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_dn_jnw",
+      "fromNodeId": "depot_north",
+      "toNodeId": "junc_northwest_gate",
+      "baseTravelTimeMin": 14,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_dn_jdam",
+      "fromNodeId": "depot_north",
+      "toNodeId": "junc_dam_road",
+      "baseTravelTimeMin": 12,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jdam_vhighland",
+      "fromNodeId": "junc_dam_road",
+      "toNodeId": "village_highland_reach",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jdam_vtea",
+      "fromNodeId": "junc_dam_road",
+      "toNodeId": "village_tea_foothills",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vtea_seast",
+      "fromNodeId": "village_tea_foothills",
+      "toNodeId": "shelter_east_hospital",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vhighland_jeast",
+      "fromNodeId": "village_highland_reach",
+      "toNodeId": "junc_east_overpass",
+      "baseTravelTimeMin": 15,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jnf_vriver",
+      "fromNodeId": "junc_north_fork",
+      "toNodeId": "village_riverbank",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jnf_jrb_n",
+      "fromNodeId": "junc_north_fork",
+      "toNodeId": "junc_river_bridge_n",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jnw_vpaddy",
+      "fromNodeId": "junc_northwest_gate",
+      "toNodeId": "village_paddy_plains",
+      "baseTravelTimeMin": 12,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jnw_vcauseway",
+      "fromNodeId": "junc_northwest_gate",
+      "toNodeId": "village_causeway_haven",
+      "baseTravelTimeMin": 11,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vriver_jeast",
+      "fromNodeId": "village_riverbank",
+      "toNodeId": "junc_east_overpass",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jrbn_vpaddy",
+      "fromNodeId": "junc_river_bridge_n",
+      "toNodeId": "village_paddy_plains",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jrbn_jcentral",
+      "fromNodeId": "junc_river_bridge_n",
+      "toNodeId": "junc_central_cross",
+      "baseTravelTimeMin": 11,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jrbn_jeast",
+      "fromNodeId": "junc_river_bridge_n",
+      "toNodeId": "junc_east_overpass",
+      "baseTravelTimeMin": 14,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jeast_svalley",
+      "fromNodeId": "junc_east_overpass",
+      "toNodeId": "shelter_valley_school",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jeast_vweir",
+      "fromNodeId": "junc_east_overpass",
+      "toNodeId": "village_weir_quarters",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": false,
+      "status": "degraded",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vweir_jvalleylink",
+      "fromNodeId": "village_weir_quarters",
+      "toNodeId": "junc_valley_link",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jvalleylink_seast",
+      "fromNodeId": "junc_valley_link",
+      "toNodeId": "shelter_east_hospital",
+      "baseTravelTimeMin": 11,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vpaddy_vcoconut",
+      "fromNodeId": "village_paddy_plains",
+      "toNodeId": "village_coconut_grove",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vpaddy_jcentral",
+      "fromNodeId": "village_paddy_plains",
+      "toNodeId": "junc_central_cross",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vcauseway_swest",
+      "fromNodeId": "village_causeway_haven",
+      "toNodeId": "shelter_west_hall",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vcoconut_jwest",
+      "fromNodeId": "village_coconut_grove",
+      "toNodeId": "junc_west_culvert",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vcoconut_jcentral",
+      "fromNodeId": "village_coconut_grove",
+      "toNodeId": "junc_central_cross",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_swest_jwest",
+      "fromNodeId": "shelter_west_hall",
+      "toNodeId": "junc_west_culvert",
+      "baseTravelTimeMin": 6,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jwest_vmangrove",
+      "fromNodeId": "junc_west_culvert",
+      "toNodeId": "village_mangrove_edge",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jwest_vcanal",
+      "fromNodeId": "junc_west_culvert",
+      "toNodeId": "village_canal_side",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcentral_vcanal",
+      "fromNodeId": "junc_central_cross",
+      "toNodeId": "village_canal_side",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcentral_svalley",
+      "fromNodeId": "junc_central_cross",
+      "toNodeId": "shelter_valley_school",
+      "baseTravelTimeMin": 12,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcentral_jcanalbridge",
+      "fromNodeId": "junc_central_cross",
+      "toNodeId": "junc_canal_bridge",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcentral_jdelta",
+      "fromNodeId": "junc_central_cross",
+      "toNodeId": "junc_delta_split",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_svalley_jcanalbridge",
+      "fromNodeId": "shelter_valley_school",
+      "toNodeId": "junc_canal_bridge",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcanalbridge_vbamboo",
+      "fromNodeId": "junc_canal_bridge",
+      "toNodeId": "village_bamboo_creek",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcanalbridge_sdelta",
+      "fromNodeId": "junc_canal_bridge",
+      "toNodeId": "shelter_delta_stadium",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vcanal_jdelta",
+      "fromNodeId": "village_canal_side",
+      "toNodeId": "junc_delta_split",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jdelta_sdelta",
+      "fromNodeId": "junc_delta_split",
+      "toNodeId": "shelter_delta_stadium",
+      "baseTravelTimeMin": 6,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jdelta_jsexpress",
+      "fromNodeId": "junc_delta_split",
+      "toNodeId": "junc_south_express",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jsexpress_dsouth",
+      "fromNodeId": "junc_south_express",
+      "toNodeId": "depot_south",
+      "baseTravelTimeMin": 6,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jsexpress_vmarshland",
+      "fromNodeId": "junc_south_express",
+      "toNodeId": "village_marshland_bend",
+      "baseTravelTimeMin": 7,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_sdelta_vmarshland",
+      "fromNodeId": "shelter_delta_stadium",
+      "toNodeId": "village_marshland_bend",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vbamboo_sdelta",
+      "fromNodeId": "village_bamboo_creek",
+      "toNodeId": "shelter_delta_stadium",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_vmangrove_jcoast",
+      "fromNodeId": "village_mangrove_edge",
+      "toNodeId": "junc_coastal_link",
+      "baseTravelTimeMin": 8,
+      "heavyVehicleSafe": false,
+      "status": "degraded",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcoast_vestuary",
+      "fromNodeId": "junc_coastal_link",
+      "toNodeId": "village_estuary_point",
+      "baseTravelTimeMin": 6,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_jcoast_dsouth",
+      "fromNodeId": "junc_coastal_link",
+      "toNodeId": "depot_south",
+      "baseTravelTimeMin": 9,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_dsouth_vestuary",
+      "fromNodeId": "depot_south",
+      "toNodeId": "village_estuary_point",
+      "baseTravelTimeMin": 12,
+      "heavyVehicleSafe": false,
+      "status": "clear",
+      "bidirectional": true
+    },
+    {
+      "id": "edge_dsouth_vmarshland",
+      "fromNodeId": "depot_south",
+      "toNodeId": "village_marshland_bend",
+      "baseTravelTimeMin": 10,
+      "heavyVehicleSafe": true,
+      "status": "clear",
+      "bidirectional": true
+    }
+  ],
+  "hazardEvents": [
+    {
+      "id": "event_1",
+      "timestampOffsetSec": 90,
+      "targetEdgeId": "edge_jrbn_jcentral",
+      "newStatus": "degraded",
+      "description": "Periyar river swelling; water logging reported on Central Causeway North approach."
+    },
+    {
+      "id": "event_2",
+      "timestampOffsetSec": 180,
+      "targetEdgeId": "edge_vcauseway_swest",
+      "newStatus": "blocked",
+      "description": "Culvert breach near West Causeway; road completely submerged under 1.5m floodwater."
+    },
+    {
+      "id": "event_3",
+      "timestampOffsetSec": 300,
+      "targetEdgeId": "edge_jdam_vtea",
+      "newStatus": "blocked",
+      "description": "Mudslide triggered by heavy hill runoff blocks Dam-Tea Foothills road."
+    },
+    {
+      "id": "event_4",
+      "timestampOffsetSec": 420,
+      "targetEdgeId": "edge_jwest_vcanal",
+      "newStatus": "degraded",
+      "description": "Canal embankment seepage making road surface slippery and unstable."
+    },
+    {
+      "id": "event_5",
+      "timestampOffsetSec": 540,
+      "targetEdgeId": "edge_jrbn_jcentral",
+      "newStatus": "blocked",
+      "description": "Full bridge closure at Periyar North Causeway due to tree debris accumulation."
+    },
+    {
+      "id": "event_6",
+      "timestampOffsetSec": 680,
+      "targetEdgeId": "edge_jeast_svalley",
+      "newStatus": "degraded",
+      "description": "Torrential rain causing flash flooding on East Overpass descending ramp."
+    },
+    {
+      "id": "event_7",
+      "timestampOffsetSec": 800,
+      "targetEdgeId": "edge_vcauseway_swest",
+      "newStatus": "clear",
+      "description": "Emergency high-capacity pumps operational; West Causeway drained and reopened."
+    },
+    {
+      "id": "event_8",
+      "timestampOffsetSec": 920,
+      "targetEdgeId": "edge_jcanalbridge_sdelta",
+      "newStatus": "blocked",
+      "description": "Canal sluice gate overflow blocking Delta Stadium north access."
+    },
+    {
+      "id": "event_9",
+      "timestampOffsetSec": 1040,
+      "targetEdgeId": "edge_jrbn_jcentral",
+      "newStatus": "degraded",
+      "description": "Debris cleared by Army Engineers; single lane opened with convoy speed restrictions."
+    },
+    {
+      "id": "event_10",
+      "timestampOffsetSec": 1140,
+      "targetEdgeId": "edge_jdam_vtea",
+      "newStatus": "clear",
+      "description": "Earth movers have cleared mudslide debris; Dam-Tea Foothills road reopened."
+    }
+  ],
+  "convoys": [
+    {
+      "id": "convoy_alpha",
+      "cargoType": "insulin",
+      "originNodeId": "depot_north",
+      "destNodeId": "shelter_east_hospital",
+      "departTimestampOffsetSec": 60,
+      "status": "pending",
+      "currentRoute": [
+        "depot_north",
+        "junc_dam_road",
+        "village_tea_foothills",
+        "shelter_east_hospital"
+      ],
+      "currentEdgeId": null,
+      "positionProgress": 0
+    },
+    {
+      "id": "convoy_bravo",
+      "cargoType": "blood",
+      "originNodeId": "depot_south",
+      "destNodeId": "shelter_west_hall",
+      "departTimestampOffsetSec": 120,
+      "status": "pending",
+      "currentRoute": [
+        "depot_south",
+        "junc_south_express",
+        "junc_delta_split",
+        "village_canal_side",
+        "junc_west_culvert",
+        "shelter_west_hall"
+      ],
+      "currentEdgeId": null,
+      "positionProgress": 0
+    },
+    {
+      "id": "convoy_charlie",
+      "cargoType": "water",
+      "originNodeId": "depot_north",
+      "destNodeId": "shelter_valley_school",
+      "departTimestampOffsetSec": 240,
+      "status": "pending",
+      "currentRoute": [
+        "depot_north",
+        "junc_north_fork",
+        "village_riverbank",
+        "junc_east_overpass",
+        "shelter_valley_school"
+      ],
+      "currentEdgeId": null,
+      "positionProgress": 0
+    },
+    {
+      "id": "convoy_delta",
+      "cargoType": "food",
+      "originNodeId": "depot_south",
+      "destNodeId": "shelter_delta_stadium",
+      "departTimestampOffsetSec": 360,
+      "status": "pending",
+      "currentRoute": [
+        "depot_south",
+        "junc_south_express",
+        "junc_delta_split",
+        "shelter_delta_stadium"
+      ],
+      "currentEdgeId": null,
+      "positionProgress": 0
+    },
+    {
+      "id": "convoy_echo",
+      "cargoType": "insulin",
+      "originNodeId": "depot_south",
+      "destNodeId": "shelter_valley_school",
+      "departTimestampOffsetSec": 500,
+      "status": "pending",
+      "currentRoute": [
+        "depot_south",
+        "junc_south_express",
+        "junc_delta_split",
+        "junc_central_cross",
+        "shelter_valley_school"
+      ],
+      "currentEdgeId": null,
+      "positionProgress": 0
+    }
+  ]
+}
