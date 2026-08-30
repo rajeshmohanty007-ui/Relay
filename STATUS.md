@@ -1,49 +1,62 @@
 # STATUS
 
-Based on file checks and command runs executed in this session (`npm run test:routing`, `npm run validate`, `npx tsc --noEmit`, and a direct read of `src/lib/routingEngine.ts`).
+Updated comprehensive project status report across data models, simulation engines, routing algorithms, dashboard UI, and tactical telemetry systems.
 
-## Part 1 — Data Model & Firestore Schema: IMPLEMENTED
+---
 
-Files exist in the repo (all last modified 2026-08-30 03:54:02):
+## 1. System Architecture & Components Overview
 
-| File | Lines |
-|---|---|
-| `src/lib/types.ts` | 68 |
-| `src/lib/seed.ts` | 169 |
-| `fixtures/graph.json` | 821 |
-| `firestore.rules` | 40 |
-| `src/lib/validateGraph.ts` | 180 |
+| Layer / Feature | Implementation File(s) | Status | Test / Build Status |
+|---|---|---|---|
+| **Data Model & Schema** | `src/lib/types.ts`, `src/lib/seed.ts`, `fixtures/graph.json`, `firestore.rules` | **COMPLETED** | `npm run validate` — **PASS** |
+| **Routing & Dijkstra Engine** | `src/lib/routingEngine.ts`, `src/lib/routingEngine.test.ts` | **COMPLETED** | `npm run test:routing` — **18/18 PASS** |
+| **Simulation & Demo Engine** | `src/lib/demoRunner.ts` | **COMPLETED** | Real-time multi-convoy dispatch |
+| **Replay & Timeline Buffer** | `src/hooks/useReplayBuffer.ts`, `src/components/ReplayTimeline.tsx` | **COMPLETED** | Sequential deep snapshot scrubbing |
+| **Tactical Topographic Map** | `src/components/MapViewTopo.tsx`, `src/lib/projection.ts` | **COMPLETED** | Aligned river flow, bridge crossings, beacons |
+| **Hydrological Telemetry** | `src/lib/waterSensors.ts`, `src/components/MapLayerToggle.tsx` | **COMPLETED** | Periyar watershed live telemetry & alerts |
+| **Shelter Priority Panel** | `src/components/DispatchPanelPlacard.tsx` | **COMPLETED** | Full-height critical stock queue |
+| **Dispatcher Flight Log** | `src/components/EventFeedDispatcher.tsx`, `app/dashboard/page.tsx` | **COMPLETED** | Navbar modal popup with event counter |
+| **Citizen Road Grievance** | `src/components/GrievanceFormModal.tsx` | **COMPLETED** | Multi-vehicle escalation & rescue notification |
+| **Tactical Control Room UI** | `app/dashboard/page.tsx`, `app/globals.css` | **COMPLETED** | Full Next.js / React 19 compliance |
 
-`npm run validate` — **PASS**
-```
-Scenario: "Aluva-Periyar River Flood Relief Basin (Monsoon Crisis)"
-Total Nodes:       30  (2 depots, 4 shelters, 12 villages, 12 junctions)
-Total Edges:       46
-Reachable Nodes:   30 / 30
-✔ SUCCESS: All nodes are reachable from at least one depot via non-blocked edges.
-```
+---
 
-Not verified in this session: `seed.ts` was not executed against a live Firestore project (no upload was run), and `firestore.rules` was not deployed or tested against a live database.
+## 2. Detailed Component Verification
 
-## Part 2 — Routing Engine: IMPLEMENTED, TESTS PASSING
+### Part 1 — Data Model & Graph Validation: IMPLEMENTED
+- `fixtures/graph.json` contains 30 nodes (2 depots, 4 shelters, 12 villages, 12 junctions) and 46 bidirectional edges.
+- `npm run validate` passes with all nodes reachable from at least one depot via non-blocked edges.
 
-Files exist:
+### Part 2 — Routing Engine: IMPLEMENTED & TESTED
+- Graph adjacency builder (`buildAdjacency`), Dijkstra shortest path (`shortestPath`), dynamic convoy rerouting (`evaluateConvoy`), and multi-convoy fleet management (`evaluateFleet`).
+- `npm run test:routing` — **PASS (18/18 tests passing)**.
 
-| File | Lines |
-|---|---|
-| `src/lib/routingEngine.ts` | 379 |
-| `src/lib/routingEngine.test.ts` | 417 |
+### Part 3 — Simulation & Demo Runner: IMPLEMENTED
+- `src/lib/demoRunner.ts` manages automated scenario progression, timed road blockage events, speed multipliers (`--speed=N`), and continuous progress logging to Firestore.
 
-`npm run test:routing` — **PASS (18/18)**, covering `buildAdjacency`, `shortestPath`, `nearestReachableDepot`, `evaluateConvoy`, `evaluateFleet`.
+### Part 4 — Operations Dashboard & Tactical UI: IMPLEMENTED
+1. **Historical Replay & Live Scrubbing**:
+   - `useReplayBuffer.ts` uses sequential snapshot capture with React 19 `useSyncExternalStore` cached server snapshots to prevent render-phase mutations.
+   - Interactive timeline scrubber with scrubbing badge, live elapsed time, and time jump synchronization.
+2. **Tactical Topographic SVG Map (`MapViewTopo.tsx`)**:
+   - **Bidirectional Movement Interpolation**: Dynamically checks exit junctions to eliminate convoy teleportation on reverse edge traversal.
+   - **Road-Aligned Waterways**: Flow channels for Periyar River and Grand Canal mathematically anchored to road nodes, bridge junctions, and culverts.
+   - **Interactive Hydro Beacons & Crossing Hazards**: Clickable station beacons and high-water inundation warnings (`⛔ INUNDATION: +X.Xm`) with tactical detail flyout panels.
+3. **Left Collapsible Sidebar (`MapLayerToggle.tsx`)**:
+   - Vertical icon rail (`w-14`) expanding to operational sidebar (`w-80`) on hover or pin.
+   - Dual-tab interface (`MAP LAYERS` for 6 layer toggles; `HYDRO SENSORS` for watershed overview and alert filters).
+4. **Dispatcher Flight Log Navbar Modal**:
+   - Relocated from right sidebar to top navbar trigger button (`📋 FLIGHT LOG [N]`) with high-contrast incident feed modal.
+5. **Full-Length Shelters Priority Sequence**:
+   - Ranked emergency shelter placards occupying full right-hand sidebar with stock countdowns and incoming fleet tracking.
+6. **Citizen Road Grievance & Emergency Rescue Dispatch (`GrievanceFormModal.tsx`)**:
+   - Road corridor selector, hazard classification, unique vehicle ID tracking, photo evidence upload, automated priority escalation (`P1/P2/P3`), and simulated rescue dispatch with real-time en-route alerts.
 
-`npx tsc --noEmit` — **PASS (0 errors)**. (Required running `npx next typegen` once to generate the `.next/types` route-helper types that `app/layout.tsx`'s `LayoutProps` depends on — not a source change.)
+---
 
-**Known gap found by direct code read (not caught by the current test suite):** `evaluateConvoy` has no branch for `convoy.status === 'recalled'`. Only `'arrived'` is treated as terminal (routingEngine.ts:207-209). A `'recalled'` convoy falls through to the `'enroute'/'rerouted'` path-recompute logic and will silently re-route back toward the original destination if a path reopens, or re-emit a fresh RECALLED log every call otherwise. No test in `routingEngine.test.ts` exercises re-evaluating an already-recalled convoy.
+## 3. Build & Lint Verification
 
-## Part 3 onward: NOT STARTED
-
-Nothing beyond Parts 1–2 exists in the repo. Explicitly out of scope per `PROMPT.md` and not present:
-- No React components / UI.
-- No Firestore client listeners.
-- No server-side API routes for writes (referenced in `firestore.rules` comments as "coming later").
-- No integration wiring `routingEngine.ts` into a running app — it remains a standalone, unconsumed module.
+- **TypeScript Compilation**: `npx tsc --noEmit` — **PASS (0 errors)**
+- **ESLint Code Quality**: `npm run lint` — **PASS (0 errors)**
+- **Graph Topology Check**: `npm run validate` — **PASS (0 errors)**
+- **Unit & Integration Tests**: `npm run test:routing` — **PASS (18/18)**

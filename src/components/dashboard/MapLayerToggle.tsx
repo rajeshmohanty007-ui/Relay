@@ -109,24 +109,24 @@ const LAYERS: LayerOption[] = [
 
 const STATUS_COLOR_MAP: Record<WaterLevelStatus, { badge: string; text: string; bar: string }> = {
   normal: {
-    badge: 'bg-emerald-950 text-emerald-400 border-emerald-800/60',
-    text: 'text-emerald-400',
-    bar: 'bg-emerald-500',
+    badge: 'bg-[#203024] text-status-ok border-[#4B7B4E]/60',
+    text: 'text-status-ok',
+    bar: 'bg-status-ok',
   },
   advisory: {
-    badge: 'bg-yellow-950 text-yellow-400 border-yellow-800/60',
-    text: 'text-yellow-400',
-    bar: 'bg-yellow-500',
+    badge: 'bg-[#2C2A1E] text-status-warn border-[#B8863B]/60',
+    text: 'text-status-warn',
+    bar: 'bg-status-warn',
   },
   warning: {
-    badge: 'bg-orange-950 text-orange-400 border-orange-800/60',
-    text: 'text-orange-400',
-    bar: 'bg-orange-500',
+    badge: 'bg-[#352718] text-status-warn border-[#B8863B]/60',
+    text: 'text-status-warn',
+    bar: 'bg-status-warn',
   },
   critical: {
-    badge: 'bg-red-950 text-red-400 border-red-800/60 animate-pulse',
-    text: 'text-red-400',
-    bar: 'bg-red-500',
+    badge: 'bg-[#351C1A] text-status-danger border-[#A6403A]/60 animate-pulse',
+    text: 'text-status-danger',
+    bar: 'bg-status-danger',
   },
 };
 
@@ -194,17 +194,17 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
     <aside
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative z-20 flex shrink-0 flex-col justify-between border-r border-struct-line bg-[#080C10] select-none transition-all duration-200 ease-in-out ${
+      className={`relative z-20 flex shrink-0 flex-col justify-between border-r border-[#35332C] bg-[#1C1B17] select-none transition-all duration-200 ease-in-out ${
         expanded ? 'w-80 shadow-2xl' : 'w-14'
       }`}
     >
       {/* Top Section */}
       <div className="flex flex-col min-h-0 flex-1 overflow-hidden p-2 gap-2">
         {/* Header Strip */}
-        <div className="flex items-center justify-between border-b border-struct-line/40 pb-2 px-1">
+        <div className="flex items-center justify-between border-b border-[#35332C] pb-2 px-1">
           <div className="flex items-center gap-2 overflow-hidden">
             {/* Tactical Icon */}
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-struct-line bg-[#0E151E] text-signal-accent">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#35332C] bg-[#24221D] text-signal-accent">
               {activeTab === 'layers' ? (
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -217,10 +217,10 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
             </div>
             {expanded && (
               <div className="flex flex-col overflow-hidden whitespace-nowrap">
-                <span className="font-display text-[10px] font-black tracking-widest text-signal-accent uppercase leading-none">
+                <span className="font-display text-[10px] font-black tracking-widest text-[#FAF9F6] uppercase leading-none">
                   {activeTab === 'layers' ? 'MAP LAYERS' : 'HYDRO SENSORS'}
                 </span>
-                <span className="font-mono text-[8px] text-zinc-500 mt-0.5">
+                <span className="font-mono text-[8px] text-[#E4E1D8]/60 mt-0.5">
                   {activeTab === 'layers'
                     ? `${visibleLayers.size}/${LAYERS.length} VISIBLE`
                     : `${activeAlertCount} ACTIVE ALERTS`}
@@ -237,8 +237,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
               title={isPinned ? 'Unpin sidebar (auto-collapse)' : 'Pin sidebar expanded'}
               className={`flex h-6 w-6 shrink-0 items-center justify-center border text-[9px] transition-colors ${
                 isPinned
-                  ? 'border-signal-accent/60 bg-signal-accent/20 text-signal-accent'
-                  : 'border-struct-line bg-[#0E151E] text-zinc-500 hover:text-zinc-300'
+                  ? 'border-signal-accent bg-signal-accent/30 text-[#FAF9F6]'
+                  : 'border-[#35332C] bg-[#24221D] text-[#E4E1D8]/70 hover:text-[#FAF9F6]'
               }`}
             >
               {isPinned ? '📌' : '🔒'}
@@ -249,14 +249,14 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
         {/* Tab Switcher: Responsive for Collapsed vs Expanded */}
         {expanded ? (
           /* Expanded Full Width Tab Strip */
-          <div className="flex border border-struct-line bg-[#0E151E] p-0.5 shrink-0">
+          <div className="flex border border-[#35332C] bg-[#24221D] p-0.5 shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('layers')}
               className={`flex-1 flex items-center justify-center py-1 text-[8px] font-display font-black tracking-wider uppercase transition-colors ${
                 activeTab === 'layers'
-                  ? 'bg-signal-accent text-black shadow-[0_0_6px_rgba(79,179,191,0.4)]'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-signal-accent text-white font-bold'
+                  : 'text-[#E4E1D8]/70 hover:text-white'
               }`}
               title="Map Layer Controls"
             >
@@ -267,15 +267,15 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
               onClick={() => setActiveTab('sensors')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1 text-[8px] font-display font-black tracking-wider uppercase transition-colors ${
                 activeTab === 'sensors'
-                  ? 'bg-signal-accent text-black shadow-[0_0_6px_rgba(79,179,191,0.4)]'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-signal-accent text-white font-bold'
+                  : 'text-[#E4E1D8]/70 hover:text-white'
               }`}
               title="Water Level Telemetry Sensors"
             >
               <span>WATER SENSORS</span>
               {activeAlertCount > 0 && (
                 <span className={`px-1 py-0.2 rounded-full text-[7px] font-mono font-bold ${
-                  activeTab === 'sensors' ? 'bg-black text-signal-accent' : 'bg-status-danger text-white animate-pulse'
+                  activeTab === 'sensors' ? 'bg-black text-white' : 'bg-status-danger text-white animate-pulse'
                 }`}>
                   {activeAlertCount}
                 </span>
@@ -290,8 +290,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
               onClick={() => setActiveTab('layers')}
               className={`flex h-8 w-full items-center justify-center border transition-colors ${
                 activeTab === 'layers'
-                  ? 'border-signal-accent bg-signal-accent/20 text-signal-accent'
-                  : 'border-struct-line/30 bg-[#0E151E]/60 text-zinc-500 hover:text-zinc-300'
+                  ? 'border-signal-accent bg-signal-accent/30 text-[#FAF9F6]'
+                  : 'border-[#35332C] bg-[#24221D] text-[#E4E1D8]/70 hover:text-white'
               }`}
               title="Switch to Map Layers"
             >
@@ -306,14 +306,14 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
               onClick={() => setActiveTab('sensors')}
               className={`relative flex h-8 w-full items-center justify-center border transition-colors ${
                 activeTab === 'sensors'
-                  ? 'border-signal-accent bg-signal-accent/20 text-signal-accent'
-                  : 'border-struct-line/30 bg-[#0E151E]/60 text-zinc-500 hover:text-zinc-300'
+                  ? 'border-signal-accent bg-signal-accent/30 text-[#FAF9F6]'
+                  : 'border-[#35332C] bg-[#24221D] text-[#E4E1D8]/70 hover:text-white'
               }`}
               title="Switch to Water Level Sensors"
             >
               <span className="text-xs">🌊</span>
               {activeAlertCount > 0 && (
-                <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-status-danger animate-pulse shadow-[0_0_4px_#C6423B]" />
+                <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-status-danger animate-pulse" />
               )}
             </button>
           </div>
@@ -331,8 +331,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                   onClick={() => toggleLayer(layer.id)}
                   className={`group flex items-center gap-2.5 p-2 transition-all duration-150 border ${
                     isVisible
-                      ? 'border-signal-accent/50 bg-[#0E1B26] text-signal-accent shadow-[0_0_8px_rgba(79,179,191,0.15)] font-bold'
-                      : 'border-struct-line/30 bg-[#0A0E14]/70 text-zinc-500 hover:text-zinc-300 hover:border-struct-line opacity-60 hover:opacity-100'
+                      ? 'border-signal-accent bg-[#24221D] text-[#FAF9F6] font-bold'
+                      : 'border-[#35332C] bg-[#1C1B17] text-[#E4E1D8]/60 hover:text-white opacity-70 hover:opacity-100'
                   }`}
                   title={`Toggle ${layer.label} (${isVisible ? 'Active' : 'Hidden'})`}
                 >
@@ -348,7 +348,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         <span className="font-display text-[9px] font-bold tracking-wider leading-none truncate">
                           {layer.label}
                         </span>
-                        <span className="font-mono text-[7px] text-zinc-500 mt-0.5 truncate">
+                        <span className="font-mono text-[7px] text-[#E4E1D8]/60 mt-0.5 truncate">
                           {layer.sublabel}
                         </span>
                       </div>
@@ -358,8 +358,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         <span
                           className={`h-1.5 w-1.5 rounded-full ${
                             isVisible
-                              ? 'bg-signal-accent shadow-[0_0_5px_#4FB3BF]'
-                              : 'bg-zinc-700'
+                              ? 'bg-status-ok'
+                              : 'bg-[#35332C]'
                           }`}
                         />
                       </div>
@@ -376,12 +376,12 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
           <div className="flex flex-col min-h-0 flex-1 gap-2 overflow-hidden">
             {/* Header: Basin Hydrological Overview */}
             {expanded && (
-              <div className="flex flex-col gap-1.5 border border-struct-line bg-[#0E151E] p-2 shrink-0">
+              <div className="flex flex-col gap-1.5 border border-[#35332C] bg-[#24221D] p-2 shrink-0">
                 <div className="flex items-center justify-between text-[8px] font-mono">
                   <span className="text-signal-accent font-bold uppercase tracking-wider">
                     PERIYAR BASIN TELEMETRY
                   </span>
-                  <span className="text-zinc-400 font-bold">
+                  <span className="text-[#E4E1D8] font-bold">
                     {submergedCount > 0 ? (
                       <span className="text-status-danger">⛔ {submergedCount} ROADS SUBMERGED</span>
                     ) : (
@@ -392,18 +392,18 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
 
                 {/* Key Summary Strip */}
                 <div className="grid grid-cols-3 gap-1 text-center font-mono text-[8px] pt-0.5">
-                  <div className="border border-struct-line/40 bg-[#080C10] py-1 px-1">
-                    <span className="text-zinc-500 block text-[7px] uppercase">MAX STAGE</span>
+                  <div className="border border-[#35332C] bg-[#1C1B17] py-1 px-1">
+                    <span className="text-[#E4E1D8]/60 block text-[7px] uppercase">MAX STAGE</span>
                     <span className="font-bold text-white text-[9px]">{summary.maxWaterLevelM.toFixed(1)}m</span>
                   </div>
-                  <div className="border border-struct-line/40 bg-[#080C10] py-1 px-1">
-                    <span className="text-zinc-500 block text-[7px] uppercase">ACTIVE ALERTS</span>
+                  <div className="border border-[#35332C] bg-[#1C1B17] py-1 px-1">
+                    <span className="text-[#E4E1D8]/60 block text-[7px] uppercase">ACTIVE ALERTS</span>
                     <span className={`font-bold text-[9px] ${activeAlertCount > 0 ? 'text-status-danger' : 'text-status-ok'}`}>
                       {activeAlertCount} / {sensors.length}
                     </span>
                   </div>
-                  <div className="border border-struct-line/40 bg-[#080C10] py-1 px-1">
-                    <span className="text-zinc-500 block text-[7px] uppercase">AVG RISE</span>
+                  <div className="border border-[#35332C] bg-[#1C1B17] py-1 px-1">
+                    <span className="text-[#E4E1D8]/60 block text-[7px] uppercase">AVG RISE</span>
                     <span className="font-bold text-status-warn text-[9px]">
                       +{summary.averageRiseRateMps.toFixed(2)}m/h
                     </span>
@@ -423,8 +423,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                       onClick={() => setStatusFilter(f.id)}
                       className={`flex-1 py-1 text-[7px] font-mono uppercase tracking-wider border transition-colors ${
                         statusFilter === f.id
-                          ? 'border-signal-accent bg-signal-accent/20 text-signal-accent font-bold'
-                          : 'border-struct-line/40 bg-[#080C10] text-zinc-400 hover:text-zinc-200'
+                          ? 'border-signal-accent bg-signal-accent/30 text-white font-bold'
+                          : 'border-[#35332C] bg-[#1C1B17] text-[#E4E1D8]/70 hover:text-white'
                       }`}
                     >
                       {f.label}
@@ -443,12 +443,12 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                 return (
                   <div
                     key={sensor.id}
-                    className={`border p-2 bg-[#090D13] flex flex-col gap-1.5 transition-all ${
+                    className={`border p-2 bg-[#24221D] flex flex-col gap-1.5 transition-all ${
                       sensor.status === 'critical'
-                        ? 'border-red-600/70 shadow-[0_0_6px_rgba(198,66,59,0.25)]'
+                        ? 'border-[#A6403A]'
                         : sensor.status === 'warning'
-                        ? 'border-orange-500/50'
-                        : 'border-struct-line/40'
+                        ? 'border-[#B8863B]'
+                        : 'border-[#35332C]'
                     }`}
                   >
                     {/* Collapsed Icon-Only View */}
@@ -458,7 +458,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         title={`${sensor.name} (${sensor.code}): ${sensor.currentLevelM.toFixed(1)}m — ${sensor.status.toUpperCase()}`}
                       >
                         <span className={`h-2 w-2 rounded-full ${styles.bar}`} />
-                        <span className="font-mono text-[7px] text-zinc-400 font-bold">{sensor.currentLevelM.toFixed(1)}m</span>
+                        <span className="font-mono text-[7px] text-[#E4E1D8] font-bold">{sensor.currentLevelM.toFixed(1)}m</span>
                       </div>
                     ) : (
                       /* Expanded Realistic Station Card */
@@ -469,7 +469,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                             <span className="font-mono text-[8px] font-bold text-signal-accent shrink-0">
                               {sensor.code}
                             </span>
-                            <span className="font-display text-[9px] font-bold text-zinc-200 truncate">
+                            <span className="font-display text-[9px] font-bold text-[#FAF9F6] truncate">
                               {sensor.name}
                             </span>
                           </div>
@@ -485,19 +485,19 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                               <span className={`text-[11px] font-black ${styles.text}`}>
                                 {sensor.currentLevelM.toFixed(2)}m
                               </span>
-                              <span className="text-[7px] text-zinc-500">
+                              <span className="text-[7px] text-[#E4E1D8]/60">
                                 / {sensor.criticalLevelM.toFixed(1)}m CREST
                               </span>
                             </div>
-                            <div className="flex items-center gap-1 text-[7px] text-zinc-400">
-                              <span className={sensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn font-bold' : 'text-zinc-400'}>
+                            <div className="flex items-center gap-1 text-[7px] text-[#E4E1D8]/80">
+                              <span className={sensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn font-bold' : 'text-[#E4E1D8]/80'}>
                                 {sensor.rateOfRiseMPerHour > 0 ? `▲ +${sensor.rateOfRiseMPerHour.toFixed(2)}m/h` : `▼ ${sensor.rateOfRiseMPerHour.toFixed(2)}m/h`}
                               </span>
                             </div>
                           </div>
 
                           {/* Mini Multi-Segment Progress Gauge */}
-                          <div className="h-1.5 w-full bg-zinc-900 border border-struct-line/30 flex overflow-hidden">
+                          <div className="h-1.5 w-full bg-[#1C1B17] border border-[#35332C] flex overflow-hidden">
                             <div
                               className={`h-full transition-all duration-300 ${styles.bar}`}
                               style={{ width: `${pct}%` }}
@@ -507,12 +507,12 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
 
                         {/* Operational Road Impact Tag */}
                         {sensor.roadSubmersionDepthM > 0 ? (
-                          <div className="border border-red-500/40 bg-red-950/30 px-1.5 py-0.5 text-[7px] font-mono text-red-300 flex items-center justify-between">
+                          <div className="border border-[#A6403A]/60 bg-[#351C1A] px-1.5 py-0.5 text-[7px] font-mono text-[#FAF9F6] flex items-center justify-between">
                             <span>⛔ ROAD INUNDATION: +{sensor.roadSubmersionDepthM.toFixed(2)}m DEPTH</span>
-                            <span className="text-zinc-500 uppercase truncate max-w-[90px]">{sensor.basinSection}</span>
+                            <span className="text-[#E4E1D8]/70 uppercase truncate max-w-[90px]">{sensor.basinSection}</span>
                           </div>
                         ) : (
-                          <div className="flex justify-between items-center font-mono text-[7px] text-zinc-500 pt-0.5">
+                          <div className="flex justify-between items-center font-mono text-[7px] text-[#E4E1D8]/70 pt-0.5">
                             <span className="truncate">{sensor.basinSection}</span>
                             <span>FLOW: {sensor.flowVelocityMps.toFixed(1)} m/s</span>
                           </div>
@@ -528,11 +528,11 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
       </div>
 
       {/* Bottom Footer / Expansion Prompt */}
-      <div className="border-t border-struct-line/40 p-2 shrink-0">
+      <div className="border-t border-[#35332C] p-2 shrink-0">
         <button
           type="button"
           onClick={() => setIsPinned(!isPinned)}
-          className="flex w-full items-center justify-center gap-1.5 border border-struct-line bg-[#0E151E] py-1.5 text-[8px] font-mono text-zinc-400 hover:text-signal-accent hover:border-signal-accent/50 transition-colors"
+          className="flex w-full items-center justify-center gap-1.5 border border-[#35332C] bg-[#24221D] py-1.5 text-[8px] font-mono text-[#E4E1D8]/80 hover:text-white hover:border-signal-accent transition-colors"
           title={expanded ? 'Click to collapse sidebar' : 'Click to expand sidebar'}
         >
           <span>{expanded ? '◀ COLLAPSE' : '▶'}</span>

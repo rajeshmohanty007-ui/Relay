@@ -5,17 +5,22 @@
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  --color-brand-bg: #0B0F14;
-  --color-struct-line: #3A4552;
-  --color-status-ok: #4CAF6D;
-  --color-status-warn: #E8A33D;
-  --color-status-danger: #C6423B;
-  --color-signal-accent: #4FB3BF;
+  --color-brand-bg: #1C1B17;
+  --color-struct-line: #35332C;
+  --color-status-ok: #4B7B4E;
+  --color-status-warn: #B8863B;
+  --color-status-danger: #A6403A;
+  --color-signal-accent: #2C4A3E;
+
+  --color-base-cream: #FAF9F6;
+  --color-base-sand: #E4E1D8;
+  --color-base-dark: #1C1B17;
+  --color-base-white: #FFFFFF;
 }
 
 :root {
-  --background: #0B0F14;
-  --foreground: #F4F4F5;
+  --background: #1C1B17;
+  --foreground: #FAF9F6;
 }
 
 body {
@@ -24,21 +29,21 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
-/* Custom scrollbars for the high-tech tactical control room feel */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0F14;
+  background: #1C1B17;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3A4552;
+  background: #35332C;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4FB3BF;
+  background: #2C4A3E;
 }

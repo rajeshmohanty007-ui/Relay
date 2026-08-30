@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${spaceGrotesk.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0B0F14] text-zinc-50">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#1C1B17] text-[#FAF9F6]">{children}</body>
     </html>
   );
 }

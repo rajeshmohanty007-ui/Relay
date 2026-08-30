@@ -20,24 +20,24 @@ const VIEW_HEIGHT = 640;
 
 // Returns status color for a shelter node based on remaining stock hours
 function getShelterStatusColor(node: Node): string {
-  if (!node.criticalSupplyNeed) return '#4CAF6D'; // Green
+  if (!node.criticalSupplyNeed) return '#4B7B4E'; // Green: Stable
   const hoursLeft = node.criticalSupplyNeed.hoursOfStockRemaining;
-  if (hoursLeft <= 3.0) return '#C6423B'; // Red: Critical
-  if (hoursLeft <= 5.0) return '#E8A33D'; // Amber: Degraded
-  return '#4CAF6D'; // Green: Stable
+  if (hoursLeft <= 3.0) return '#A6403A'; // Rust Red: Critical
+  if (hoursLeft <= 5.0) return '#B8863B'; // Amber Ochre: Degraded
+  return '#4B7B4E'; // Green: Stable
 }
 
 // Tactical style configuration matching NDMA alerts
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
-  clear: { stroke: '#3A4552', strokeWidth: 1.5 }, // Structural line color, inactive
-  degraded: { stroke: '#E8A33D', strokeWidth: 2, dashArray: '4 4' }, // Amber warning dash
-  blocked: { stroke: '#C6423B', strokeWidth: 3 }, // Thick Red placard alert
+  clear: { stroke: '#4A4840', strokeWidth: 1.5 }, // Muted warm structural line
+  degraded: { stroke: '#B8863B', strokeWidth: 2, dashArray: '4 4' }, // Amber warning dash
+  blocked: { stroke: '#A6403A', strokeWidth: 3 }, // Rust Red placard alert
 };
 
 const CONVOY_COLOR: Record<Exclude<Convoy['status'], 'pending' | 'arrived'>, string> = {
-  enroute: '#4CAF6D',   // Active, operating green
-  rerouted: '#E8A33D',  // Rerouted watch amber
-  recalled: '#C6423B',  // Recalled/retracting red
+  enroute: '#4B7B4E',   // Active enroute green
+  rerouted: '#B8863B',  // Rerouted amber ochre
+  recalled: '#A6403A',  // Recalled rust red
 };
 
 export default function MapViewTopo({
@@ -219,12 +219,12 @@ export default function MapViewTopo({
 
         {/* 1. Tactical Grid Lines/Dots */}
         {visibleLayers.has('grid') && (
-          <g opacity="0.15">
+          <g opacity="0.12">
             {gridPoints.map((p, i) => (
               <path
                 key={i}
                 d={`M ${p.x - 2} ${p.y} L ${p.x + 2} ${p.y} M ${p.x} ${p.y - 2} L ${p.x} ${p.y + 2}`}
-                stroke="#4FB3BF"
+                stroke="#E4E1D8"
                 strokeWidth={1}
               />
             ))}
@@ -233,7 +233,7 @@ export default function MapViewTopo({
 
         {/* 2. Topographic Contour Line Texture (Under the graph) */}
         {visibleLayers.has('contours') && (
-          <g opacity="0.08" stroke="#3A4552" strokeWidth="0.75" fill="none">
+          <g opacity="0.08" stroke="#E4E1D8" strokeWidth="0.75" fill="none">
             {/* Ridge Hills North */}
             <path d="M 100,50 C 200,40 300,90 350,150 C 380,200 280,280 180,260 C 100,240 50,150 100,50 Z" />
             <path d="M 120,70 C 200,60 280,100 320,150 C 350,190 260,260 170,240 C 100,220 70,150 120,70 Z" />
@@ -255,7 +255,7 @@ export default function MapViewTopo({
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#0A2540"
+                  stroke="#24221D"
                   strokeWidth="14"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -263,16 +263,16 @@ export default function MapViewTopo({
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#0284C7"
+                  stroke="#2C4A3E"
                   strokeWidth="6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  opacity="0.65"
+                  opacity="0.75"
                 />
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#38BDF8"
+                  stroke="#4B7B4E"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeDasharray="14 18"
@@ -287,7 +287,7 @@ export default function MapViewTopo({
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#0A2540"
+                  stroke="#24221D"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -295,16 +295,16 @@ export default function MapViewTopo({
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#0284C7"
+                  stroke="#2C4A3E"
                   strokeWidth="4.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  opacity="0.55"
+                  opacity="0.65"
                 />
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#38BDF8"
+                  stroke="#4B7B4E"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeDasharray="10 14"
@@ -321,14 +321,14 @@ export default function MapViewTopo({
                   y="-3"
                   width="16"
                   height="6"
-                  fill="#1E293B"
-                  stroke="#64748B"
+                  fill="#24221D"
+                  stroke="#E4E1D8"
                   strokeWidth="1"
                   transform="rotate(45)"
                 />
                 {/* Mini Bridge Rail Icon */}
-                <line x1="-6" y1="-4" x2="6" y2="-4" stroke="#94A3B8" strokeWidth="1" />
-                <line x1="-6" y1="4" x2="6" y2="4" stroke="#94A3B8" strokeWidth="1" />
+                <line x1="-6" y1="-4" x2="6" y2="-4" stroke="#E4E1D8" strokeWidth="1" />
+                <line x1="-6" y1="4" x2="6" y2="4" stroke="#E4E1D8" strokeWidth="1" />
               </g>
             ))}
           </g>
@@ -383,17 +383,14 @@ export default function MapViewTopo({
               const isElevated = isCritical || isWarning || isSubmerged;
               const isSelected = selectedSensorId === sensor.id;
 
-              let beaconColor = '#10B981'; // Green
-              let glowColor = 'rgba(16,185,129,0.4)';
+              let beaconColor = '#4B7B4E'; // Green
+              let glowColor = 'rgba(75,123,78,0.4)';
               if (isCritical) {
-                beaconColor = '#EF4444'; // Red
-                glowColor = 'rgba(239,68,68,0.7)';
-              } else if (isWarning) {
-                beaconColor = '#F59E0B'; // Amber
-                glowColor = 'rgba(245,158,11,0.6)';
-              } else if (sensor.status === 'advisory') {
-                beaconColor = '#38BDF8'; // Cyan
-                glowColor = 'rgba(56,189,248,0.5)';
+                beaconColor = '#A6403A'; // Rust Red
+                glowColor = 'rgba(166,64,58,0.7)';
+              } else if (isWarning || sensor.status === 'advisory') {
+                beaconColor = '#B8863B'; // Amber Ochre
+                glowColor = 'rgba(184,134,59,0.6)';
               }
 
               return (
@@ -409,7 +406,7 @@ export default function MapViewTopo({
                       cy={sensor.y}
                       r={18}
                       fill="none"
-                      stroke="#4FB3BF"
+                      stroke="#2C4A3E"
                       strokeWidth={2}
                       strokeDasharray="4 2"
                       className="animate-spin"
@@ -446,16 +443,16 @@ export default function MapViewTopo({
                           y="-10"
                           width="104"
                           height="15"
-                          fill="#120404"
+                          fill="#1C1B17"
                           stroke={beaconColor}
-                          strokeWidth={1.2}
-                          className="filter drop-shadow-[0_0_6px_rgba(239,68,68,0.5)] group-hover:stroke-signal-accent"
+                          strokeWidth="1.2"
+                          className="filter drop-shadow-[0_0_6px_rgba(166,64,58,0.5)] group-hover:stroke-signal-accent"
                         />
                         <text
                           x="0"
                           y="1"
                           textAnchor="middle"
-                          fill={isCritical ? '#FCA5A5' : '#FDE68A'}
+                          fill={isCritical ? '#FAF9F6' : '#FAF9F6'}
                           fontSize="7"
                           fontFamily="monospace"
                           fontWeight="bold"
@@ -475,7 +472,7 @@ export default function MapViewTopo({
                     cy={sensor.y}
                     r={isSelected ? 6.5 : 5}
                     fill={beaconColor}
-                    stroke="#080C10"
+                    stroke="#1C1B17"
                     strokeWidth={1.5}
                     className="filter drop-shadow-[0_0_4px_rgba(0,0,0,0.9)] transition-all group-hover:scale-125"
                     style={{ filter: `drop-shadow(0 0 5px ${glowColor})` }}
@@ -490,8 +487,8 @@ export default function MapViewTopo({
                       y="-6"
                       width="64"
                       height="11"
-                      fill="#080C10"
-                      stroke={isSelected ? '#4FB3BF' : '#1E293B'}
+                      fill="#1C1B17"
+                      stroke={isSelected ? '#2C4A3E' : '#35332C'}
                       strokeWidth={isSelected ? 1.2 : 0.75}
                       opacity="0.9"
                       className="group-hover:stroke-signal-accent"
@@ -500,7 +497,7 @@ export default function MapViewTopo({
                       x="0"
                       y="2"
                       textAnchor="middle"
-                      fill="#94A3B8"
+                      fill="#E4E1D8"
                       fontSize="6"
                       fontFamily="monospace"
                       fontWeight="bold"
@@ -522,11 +519,11 @@ export default function MapViewTopo({
               if (!pos) return null;
 
               let nodeElement = null;
-              let labelColor = 'text-zinc-400';
+              let labelColor = 'text-[#E4E1D8]';
 
               if (node.type === 'depot') {
                 // Signal Accent Solid Square
-                labelColor = 'text-signal-accent';
+                labelColor = 'text-[#FAF9F6]';
                 nodeElement = (
                   <rect
                     x={pos.x - 7}
@@ -534,9 +531,9 @@ export default function MapViewTopo({
                     width={14}
                     height={14}
                     fill="none"
-                    stroke="#4FB3BF"
-                    strokeWidth={2}
-                    className="filter drop-shadow-[0_0_3px_rgba(79,179,191,0.5)]"
+                    stroke="#2C4A3E"
+                    strokeWidth={2.5}
+                    className="filter drop-shadow-[0_0_4px_rgba(44,74,62,0.6)]"
                   />
                 );
               } else if (node.type === 'shelter') {
@@ -549,7 +546,7 @@ export default function MapViewTopo({
                     width={14}
                     height={14}
                     fill={alertColor}
-                    stroke="#0B0F14"
+                    stroke="#1C1B17"
                     strokeWidth={1.5}
                     transform={`rotate(45 ${pos.x} ${pos.y})`}
                     className="filter drop-shadow-[0_0_4px_rgba(0,0,0,0.6)]"
@@ -562,8 +559,8 @@ export default function MapViewTopo({
                     cx={pos.x}
                     cy={pos.y}
                     r={4}
-                    fill="#161E29"
-                    stroke="#3A4552"
+                    fill="#24221D"
+                    stroke="#E4E1D8"
                     strokeWidth={1.5}
                   />
                 );
@@ -574,7 +571,7 @@ export default function MapViewTopo({
                     cx={pos.x}
                     cy={pos.y}
                     r={2.5}
-                    fill="#3A4552"
+                    fill="#E4E1D8"
                   />
                 );
               }
@@ -639,7 +636,7 @@ export default function MapViewTopo({
                 const t = Math.min(Math.max(convoy.positionProgress, 0), 1);
                 const x = start.x + (end.x - start.x) * t;
                 const y = start.y + (end.y - start.y) * t;
-                const color = CONVOY_COLOR[convoy.status as keyof typeof CONVOY_COLOR] ?? '#4FB3BF';
+                const color = CONVOY_COLOR[convoy.status as keyof typeof CONVOY_COLOR] ?? '#2C4A3E';
 
                 return (
                   <g key={convoy.id} className="cursor-pointer">
@@ -661,7 +658,7 @@ export default function MapViewTopo({
                       cy={y} 
                       r={5} 
                       fill={color} 
-                      stroke="#0B0F14" 
+                      stroke="#1C1B17" 
                       strokeWidth={1.5}
                       className="filter drop-shadow-[0_0_3px_rgba(0,0,0,0.8)]"
                     >
@@ -673,7 +670,7 @@ export default function MapViewTopo({
                       x={x}
                       y={y + 11}
                       textAnchor="middle"
-                      className="font-mono text-[7px] font-bold text-zinc-100 bg-[#0B0F14]/80 px-0.5 rounded-sm"
+                      className="font-mono text-[7px] font-bold text-[#FAF9F6] bg-[#1C1B17]/90 px-0.5 rounded-sm"
                       fill="currentColor"
                     >
                       {convoy.id}
@@ -687,27 +684,27 @@ export default function MapViewTopo({
 
       {/* Floating Tactical Inspection Panel when a sensor / crossing is clicked */}
       {activeSensor && (
-        <div className="absolute bottom-3 right-3 z-30 flex w-80 flex-col border border-struct-line bg-[#080C10]/95 backdrop-blur-md shadow-2xl p-3 animate-in fade-in zoom-in-95 duration-150 text-xs">
+        <div className="absolute bottom-3 right-3 z-30 flex w-80 flex-col border border-[#35332C] bg-[#1C1B17]/95 backdrop-blur-md shadow-2xl p-3 animate-in fade-in zoom-in-95 duration-150 text-xs">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-struct-line/50 pb-2 mb-2">
+          <div className="flex items-center justify-between border-b border-[#35332C]/50 pb-2 mb-2">
             <div className="flex items-center gap-2">
               <span className="text-xs">🌊</span>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-mono text-[9px] font-bold text-signal-accent">{activeSensor.code}</span>
+                  <span className="font-mono text-[9px] font-bold text-[#FAF9F6]">{activeSensor.code}</span>
                   <span
                     className={`px-1.5 py-0.2 border text-[7px] font-mono font-bold uppercase ${
                       activeSensor.status === 'critical'
-                        ? 'bg-red-950 text-red-400 border-red-800'
-                        : activeSensor.status === 'warning'
-                        ? 'bg-orange-950 text-orange-400 border-orange-800'
-                        : 'bg-emerald-950 text-emerald-400 border-emerald-800'
+                        ? 'bg-[#351C1A] text-[#A6403A] border-[#A6403A]/60'
+                        : activeSensor.status === 'warning' || activeSensor.status === 'advisory'
+                        ? 'bg-[#352718] text-[#B8863B] border-[#B8863B]/60'
+                        : 'bg-[#203024] text-[#4B7B4E] border-[#4B7B4E]/60'
                     }`}
                   >
                     {activeSensor.status}
                   </span>
                 </div>
-                <span className="font-display text-[10px] font-bold text-white block truncate max-w-[190px]">
+                <span className="font-display text-[10px] font-bold text-[#FAF9F6] block truncate max-w-[190px]">
                   {activeSensor.name}
                 </span>
               </div>
@@ -715,7 +712,7 @@ export default function MapViewTopo({
             <button
               type="button"
               onClick={() => setSelectedSensorId(null)}
-              className="font-mono text-[9px] text-zinc-400 hover:text-white border border-struct-line px-1.5 py-0.5"
+              className="font-mono text-[9px] text-[#E4E1D8]/70 hover:text-white border border-[#35332C] px-1.5 py-0.5"
             >
               ✕
             </button>
@@ -723,18 +720,18 @@ export default function MapViewTopo({
 
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 gap-1.5 font-mono text-[8px] mb-2">
-            <div className="border border-struct-line/40 bg-[#0E151E] p-1.5">
-              <span className="text-zinc-500 block text-[7px]">STAGE / CREST LIMIT</span>
+            <div className="border border-[#35332C] bg-[#24221D] p-1.5">
+              <span className="text-[#E4E1D8]/60 block text-[7px]">STAGE / CREST LIMIT</span>
               <span className="font-bold text-[11px] text-white">
                 {activeSensor.currentLevelM.toFixed(2)}m{' '}
-                <span className="text-[7px] text-zinc-500">/ {activeSensor.criticalLevelM.toFixed(1)}m</span>
+                <span className="text-[7px] text-[#E4E1D8]/60">/ {activeSensor.criticalLevelM.toFixed(1)}m</span>
               </span>
             </div>
-            <div className="border border-struct-line/40 bg-[#0E151E] p-1.5">
-              <span className="text-zinc-500 block text-[7px]">RATE OF RISE</span>
+            <div className="border border-[#35332C] bg-[#24221D] p-1.5">
+              <span className="text-[#E4E1D8]/60 block text-[7px]">RATE OF RISE</span>
               <span
                 className={`font-bold text-[10px] ${
-                  activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-zinc-300'
+                  activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-[#E4E1D8]'
                 }`}
               >
                 {activeSensor.rateOfRiseMPerHour > 0
@@ -745,25 +742,25 @@ export default function MapViewTopo({
           </div>
 
           {/* Submersion Status */}
-          <div className="border border-struct-line/40 bg-[#0E151E] p-1.5 font-mono text-[8px] mb-2">
+          <div className="border border-[#35332C] bg-[#24221D] p-1.5 font-mono text-[8px] mb-2">
             <div className="flex justify-between items-center">
-              <span className="text-zinc-500">ROAD INUNDATION:</span>
+              <span className="text-[#E4E1D8]/60">ROAD INUNDATION:</span>
               <span className={`font-bold ${activeSensor.roadSubmersionDepthM > 0 ? 'text-status-danger' : 'text-status-ok'}`}>
                 {activeSensor.roadSubmersionDepthM > 0
                   ? `⛔ +${activeSensor.roadSubmersionDepthM.toFixed(2)}m SUBMERGED`
                   : 'CLEAR (PASSABLE)'}
               </span>
             </div>
-            <div className="flex justify-between items-center text-zinc-400 mt-1">
+            <div className="flex justify-between items-center text-[#E4E1D8]/70 mt-1">
               <span>FLOW VELOCITY:</span>
               <span className="text-white font-bold">{activeSensor.flowVelocityMps.toFixed(1)} m/s</span>
             </div>
           </div>
 
           {/* Correlated Corridors */}
-          <div className="font-mono text-[7px] text-zinc-500">
-            <span className="text-zinc-400 font-bold">CROSSING ROADS: </span>
-            <span className="text-zinc-300">{activeSensor.correlatedEdgeIds?.join(', ') || 'Corridor'}</span>
+          <div className="font-mono text-[7px] text-[#E4E1D8]/60">
+            <span className="text-[#FAF9F6] font-bold">CROSSING ROADS: </span>
+            <span className="text-[#E4E1D8]">{activeSensor.correlatedEdgeIds?.join(', ') || 'Corridor'}</span>
           </div>
         </div>
       )}
