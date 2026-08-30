@@ -284,7 +284,7 @@ async function main() {
       if (convoy.status !== 'enroute' && convoy.status !== 'rerouted') continue;
       if (!convoy.currentEdgeId) continue;
 
-      let working: Convoy = { ...convoy };
+      const working: Convoy = { ...convoy };
       let remainingSimSec = speed;
 
       while (remainingSimSec > 0 && working.currentEdgeId) {
