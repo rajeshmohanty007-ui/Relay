@@ -43,9 +43,9 @@ const NODE_STYLE: Record<Node['type'], { color: string; radius: number }> = {
 };
 
 const EDGE_STYLE: Record<Edge['status'], { color: string; weight: number; dashArray?: string }> = {
-    clear: { color: '#206E6B', weight: 3.5 },
-    degraded: { color: '#6AADAB', weight: 4.5, dashArray: '8 6' },
-    blocked: { color: '#997460', weight: 4.5 },
+    clear: { color: '#059669', weight: 3.5 },
+    degraded: { color: '#D97706', weight: 4.5, dashArray: '8 6' },
+    blocked: { color: '#DC2626', weight: 4.5 },
 };
 
 const CONVOY_COLOR: Partial<Record<Convoy['status'], string>> = {

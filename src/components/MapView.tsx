@@ -21,9 +21,9 @@ const NODE_TYPE_STYLE: Record<Node['type'], { fill: string; shape: 'circle' | 's
 };
 
 const EDGE_STATUS_STYLE: Record<Edge['status'], { stroke: string; dashArray?: string }> = {
-  clear: { stroke: '#9ca3af' },
-  degraded: { stroke: '#f59e0b', dashArray: '6 4' },
-  blocked: { stroke: '#ef4444' },
+  clear: { stroke: '#059669' },
+  degraded: { stroke: '#D97706', dashArray: '6 4' },
+  blocked: { stroke: '#DC2626' },
 };
 
 const CONVOY_STATUS_COLOR: Partial<Record<Convoy['status'], string>> = {

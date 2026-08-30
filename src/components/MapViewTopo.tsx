@@ -33,9 +33,9 @@ function getShelterStatusColor(node: Node): string {
 
 
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
-  clear: { stroke: '#206E6B', strokeWidth: 2 }, 
-  degraded: { stroke: '#6AADAB', strokeWidth: 2.5, dashArray: '4 4' }, 
-  blocked: { stroke: '#997460', strokeWidth: 3.5 }, 
+  clear: { stroke: '#059669', strokeWidth: 2 },
+  degraded: { stroke: '#D97706', strokeWidth: 2.5, dashArray: '4 4' },
+  blocked: { stroke: '#DC2626', strokeWidth: 3.5 },
 };
 
 export default function MapViewTopo({
