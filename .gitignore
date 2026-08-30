@@ -47,3 +47,6 @@ firebaseKey/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/rules.md
+/prompt.md
