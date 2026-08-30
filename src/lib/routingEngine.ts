@@ -80,6 +80,50 @@ export function buildAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
   return adj;
 }
 
+// ─── buildCitizenAdjacency ──────────────────────────────────────────────────
+
+/**
+ * Builds an adjacency list for ordinary travelers (car/bike/on foot), as
+ * opposed to `buildAdjacency` which is convoy-specific.
+ *
+ * Differs from `buildAdjacency` in one way: it does NOT exclude edges with
+ * heavyVehicleSafe === false — a road unsafe for a loaded relief truck may
+ * still be perfectly fine for a private car or two-wheeler. Blocked edges
+ * are still excluded, and the same clear/degraded weighting applies.
+ */
+export function buildCitizenAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
+  const adj: AdjacencyList = new Map();
+
+  for (const node of nodes) {
+    adj.set(node.id, []);
+  }
+
+  for (const edge of edges) {
+    if (edge.status === 'blocked') continue;
+
+    const weight =
+      edge.status === 'degraded'
+        ? edge.baseTravelTimeMin * 2
+        : edge.baseTravelTimeMin;
+
+    adj.get(edge.fromNodeId)?.push({
+      edgeId: edge.id,
+      toNodeId: edge.toNodeId,
+      weight,
+    });
+
+    if (edge.bidirectional) {
+      adj.get(edge.toNodeId)?.push({
+        edgeId: edge.id,
+        toNodeId: edge.fromNodeId,
+        weight,
+      });
+    }
+  }
+
+  return adj;
+}
+
 // ─── shortestPath (Dijkstra) ────────────────────────────────────────────────
 
 /**

@@ -16,12 +16,13 @@ const MapViewGeo = dynamic(() => import('../../src/components/MapViewGeo'), {
     </div>
   ),
 });
-
 import DispatchPanelPlacard from '../../src/components/DispatchPanelPlacard';
 import EventFeedDispatcher from '../../src/components/EventFeedDispatcher';
 import ReplayTimeline from '../../src/components/ReplayTimeline';
 import MapLayerToggle from '../../src/components/MapLayerToggle';
 import GrievanceFormModal from '../../src/components/GrievanceFormModal';
+import RoutePlannerModal from '../../src/components/RoutePlannerModal';
+import { loadSavedCitizenRoute } from '../../src/lib/CitizenRouteStorage';
 import { initializeSensors, stepSensorSimulation, type WaterSensor } from '../../src/lib/waterSensors';
 
 const STRATEGIC_SENSOR_IDS = new Set([
@@ -33,11 +34,7 @@ const STRATEGIC_SENSOR_IDS = new Set([
   'ws_delta_stadium_17',
 ]);
 
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-}
+
 
 export default function DashboardPage() {
   const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
@@ -46,6 +43,22 @@ export default function DashboardPage() {
   const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
   const [isFlightLogOpen, setIsFlightLogOpen] = useState<boolean>(false);
   const [isGrievanceOpen, setIsGrievanceOpen] = useState<boolean>(false);
+  const [isRoutePlannerOpen, setIsRoutePlannerOpen] = useState<boolean>(false);
+  const [highlightedRouteEdgeIds, setHighlightedRouteEdgeIds] = useState<Set<string> | undefined>(undefined);
+  const [highlightedRouteNodeSeq, setHighlightedRouteNodeSeq] = useState<string[] | undefined>(undefined);
+  const [routeOriginId, setRouteOriginId] = useState<string>('');
+  const [routeDestId, setRouteDestId] = useState<string>('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const saved = loadSavedCitizenRoute();
+      if (saved) {
+        setRouteOriginId(saved.originId);
+        setRouteDestId(saved.destId);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Live water level telemetry simulation for the tactical map feed
   const [sensors, setSensors] = useState<WaterSensor[]>(() =>
@@ -70,7 +83,7 @@ export default function DashboardPage() {
   const scenarioName = activeConfig?.scenarioName || "Aluva-Periyar River Flood Relief Basin (Monsoon Crisis)";
 
   // Compute live elapsed simulation time
-  const liveElapsedSeconds = demoLog.length > 0 
+  const liveElapsedSeconds = demoLog.length > 0
     ? Math.max(...demoLog.map(l => l.simTimeSec))
     : 0;
 
@@ -93,7 +106,7 @@ export default function DashboardPage() {
   const displayDemoLog = mode === 'REPLAY'
     ? demoLog.filter((entry) => entry.simTimeSec <= scrubbedTime)
     : demoLog;
-  const displayClockSeconds = mode === 'REPLAY' ? scrubbedTime : liveElapsedSeconds;
+
 
   // Calculate stats for the tactical header based on current displayed state
   const activeConvoys = displayConvoys.filter(c => c.status === 'enroute' || c.status === 'rerouted').length;
@@ -115,25 +128,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Tactical Counters */}
-        <div className="hidden md:flex items-center gap-4 bg-[#1C1B17] border border-[#35332C] rounded-2xl px-5 py-1.5 shadow-inner">
-          <div className="font-mono text-[10px] leading-tight pr-4 border-r border-[#35332C]/60">
-            <span className="text-[#E4E1D8]/60 block text-[9px]">ACTIVE OPERATIONS</span>
-            <span className="font-bold text-signal-accent tracking-wider font-mono text-xs">{activeConvoys} CONVOYS</span>
-          </div>
-          <div className="font-mono text-[10px] leading-tight pr-4 border-r border-[#35332C]/60">
-            <span className="text-[#E4E1D8]/60 block text-[9px]">HAZARD INTERRUPTS</span>
-            <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-[#E4E1D8]/60'}`}>
-              {blockedRoads} BLOCKED
-            </span>
-          </div>
-          <div className="font-mono text-[10px] leading-tight">
-            <span className="text-[#E4E1D8]/60 block text-[9px]">ALERT LEVEL SHELTERS</span>
-            <span className={`font-bold tracking-wider font-mono text-xs ${criticalShelters > 0 ? 'text-status-danger animate-pulse' : 'text-status-ok'}`}>
-              {criticalShelters} CRITICAL
-            </span>
-          </div>
-        </div>
 
         {/* Mode Toggle, Flight Log, Grievance Trigger & Mission Clock */}
         <div className="flex items-center gap-2.5">
@@ -145,6 +139,16 @@ export default function DashboardPage() {
             title="Report Blocked Road & Request Priority Rescue Dispatch"
           >
             <span>🚨 REPORT BLOCKAGE</span>
+          </button>
+
+          {/* Citizen Route Planner Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsRoutePlannerOpen(true)}
+            className="flex items-center gap-1.5 border border-signal-accent bg-signal-accent/15 px-3 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider uppercase text-[#FAF9F6] hover:bg-signal-accent/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            title="Plan a safe route between any two points"
+          >
+            <span>🧭 PLAN A ROUTE</span>
           </button>
 
           {/* Flight Log Navbar Modal Trigger Button */}
@@ -165,24 +169,22 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setMapStyle('TACTICAL')}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
-                mapStyle === 'TACTICAL'
-                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
-              }`}
-              title="Tactical styled vector map"
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mapStyle === 'TACTICAL'
+                ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
+                }`}
+              title="Stylized tactical map (no internet required)"
             >
               TACTICAL
             </button>
             <button
               type="button"
               onClick={() => setMapStyle('REALISTIC')}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
-                mapStyle === 'REALISTIC'
-                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
-              }`}
-              title="Real-road snapped geography map (needs internet)"
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mapStyle === 'REALISTIC'
+                ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
+                }`}
+              title="Real satellite/street map with road-snapped routes (needs internet)"
             >
               REALISTIC
             </button>
@@ -198,11 +200,10 @@ export default function DashboardPage() {
                   setSelectedTimeIndex(bufferSize - 1);
                 }
               }}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
-                mode === 'LIVE'
-                  ? 'bg-status-ok text-white font-black shadow-[0_0_8px_rgba(75,123,78,0.5)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
-              }`}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mode === 'LIVE'
+                ? 'bg-status-ok text-white font-black shadow-[0_0_8px_rgba(75,123,78,0.5)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
+                }`}
             >
               LIVE
             </button>
@@ -214,33 +215,13 @@ export default function DashboardPage() {
                   setSelectedTimeIndex(bufferSize - 1);
                 }
               }}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
-                mode === 'REPLAY'
-                  ? 'bg-status-warn text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.5)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
-              }`}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mode === 'REPLAY'
+                ? 'bg-status-warn text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.5)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
+                }`}
             >
               REPLAY
             </button>
-          </div>
-
-          {/* Mission Clock Display */}
-          <div className="flex items-center gap-2.5 bg-[#1C1B17] border border-[#35332C] px-3.5 py-1.5 rounded-xl shadow-inner">
-            <span className="font-display text-[9px] font-bold text-[#E4E1D8]/70 tracking-wider">
-              {mode === 'LIVE' ? 'MISSION' : 'SCRUB'}
-            </span>
-            <span
-              className={`font-mono text-sm font-black tracking-widest tabular-nums filter ${
-                mode === 'LIVE'
-                  ? 'text-status-ok drop-shadow-[0_0_3px_rgba(75,123,78,0.4)]'
-                  : 'text-status-warn drop-shadow-[0_0_3px_rgba(184,134,59,0.4)]'
-              }`}
-            >
-              {formatTime(displayClockSeconds)}
-            </span>
-            <span className="font-mono text-[9px] text-[#E4E1D8]/50">
-              / {formatTime(activeConfig?.totalDurationSec || 1200)}
-            </span>
           </div>
         </div>
       </header>
@@ -273,6 +254,9 @@ export default function DashboardPage() {
                   convoys={displayConvoys}
                   sensors={sensors}
                   visibleLayers={visibleLayers}
+                  highlightedEdgeIds={highlightedRouteEdgeIds}
+                  routeOriginId={routeOriginId}
+                  routeDestId={routeDestId}
                 />
               ) : (
                 <MapViewGeo
@@ -281,6 +265,9 @@ export default function DashboardPage() {
                   convoys={displayConvoys}
                   sensors={sensors}
                   visibleLayers={visibleLayers}
+                  highlightedNodeSequence={highlightedRouteNodeSeq}
+                  routeOriginId={routeOriginId}
+                  routeDestId={routeDestId}
                 />
               )
             ) : (
@@ -307,7 +294,33 @@ export default function DashboardPage() {
         </main>
 
         {/* Right Info Sidebar Panels */}
-        <aside className="flex w-88 shrink-0 flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17] p-3 overflow-hidden shadow-lg">
+        <aside className="flex w-88 shrink-0 flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17] p-3 overflow-hidden shadow-lg gap-3">
+          {/* Tactical Counters Summary Card */}
+          <div className="flex flex-col gap-2 bg-[#141310] border border-[#35332C]/60 rounded-2xl p-3 shrink-0 shadow-inner">
+            <div className="flex items-center justify-between border-b border-[#35332C]/30 pb-1.5">
+              <span className="font-display text-[9px] font-black tracking-widest text-[#E4E1D8]/60 uppercase">SYSTEM TELEMETRY SUMMARY</span>
+            </div>
+
+            <div className="flex items-center justify-between font-mono text-[10px] py-1 border-b border-[#35332C]/10">
+              <span className="text-[#E4E1D8]/60">ACTIVE OPERATIONS</span>
+              <span className="font-bold text-signal-accent tracking-wider font-mono text-xs">{activeConvoys} CONVOYS</span>
+            </div>
+
+            <div className="flex items-center justify-between font-mono text-[10px] py-1 border-b border-[#35332C]/10">
+              <span className="text-[#E4E1D8]/60">HAZARD INTERRUPTS</span>
+              <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-[#E4E1D8]/60'}`}>
+                {blockedRoads} BLOCKED
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between font-mono text-[10px] py-1">
+              <span className="text-[#E4E1D8]/60">ALERT LEVEL SHELTERS</span>
+              <span className={`font-bold tracking-wider font-mono text-xs ${criticalShelters > 0 ? 'text-status-danger animate-pulse' : 'text-status-ok'}`}>
+                {criticalShelters} CRITICAL
+              </span>
+            </div>
+          </div>
+
           {/* Dispatch Panel (Full Height) */}
           <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
             {mapReady ? (
@@ -357,6 +370,23 @@ export default function DashboardPage() {
         onClose={() => setIsGrievanceOpen(false)}
         edges={displayEdges}
         nodes={displayNodes}
+      />
+
+      {/* Citizen Point-to-Point Route Planner Modal */}
+      <RoutePlannerModal
+        isOpen={isRoutePlannerOpen}
+        onClose={() => setIsRoutePlannerOpen(false)}
+        onOpen={() => setIsRoutePlannerOpen(true)}
+        nodes={displayNodes}
+        edges={displayEdges}
+        originId={routeOriginId}
+        destId={routeDestId}
+        onChangeOrigin={setRouteOriginId}
+        onChangeDest={setRouteDestId}
+        onHighlightRoute={(edgeIds, nodeSeq) => {
+          setHighlightedRouteEdgeIds(edgeIds ? new Set(edgeIds) : undefined);
+          setHighlightedRouteNodeSeq(nodeSeq ? nodeSeq : undefined);
+        }}
       />
     </div>
   );

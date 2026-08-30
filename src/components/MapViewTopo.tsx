@@ -3,9 +3,9 @@ import type { Node, Edge, Convoy } from '../lib/types';
 import { projectNodes, type ProjectedNode } from '../lib/projection';
 import type { WaterSensor } from '../lib/waterSensors';
 
-export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors';
+export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors' | 'labels';
 
-export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors']);
+export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors', 'labels']);
 
 export interface MapViewProps {
   nodes: Node[];
@@ -13,6 +13,10 @@ export interface MapViewProps {
   convoys: Convoy[];
   sensors?: WaterSensor[];
   visibleLayers?: Set<MapLayer>;
+  /** Edge IDs of a citizen-planned route to draw as a highlighted overlay on top of the road network. */
+  highlightedEdgeIds?: Set<string>;
+  routeOriginId?: string;
+  routeDestId?: string;
 }
 
 const VIEW_WIDTH = 900;
@@ -46,6 +50,9 @@ export default function MapViewTopo({
   convoys,
   sensors = [],
   visibleLayers = ALL_MAP_LAYERS,
+  highlightedEdgeIds,
+  routeOriginId,
+  routeDestId,
 }: MapViewProps) {
   const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
 
@@ -371,6 +378,45 @@ export default function MapViewTopo({
           </g>
         )}
 
+        {/* 4b. Citizen route planner highlight overlay */}
+        {highlightedEdgeIds && highlightedEdgeIds.size > 0 && (
+          <g>
+            {edges
+              .filter((edge) => highlightedEdgeIds.has(edge.id))
+              .map((edge) => {
+                const from = positionsById.get(edge.fromNodeId);
+                const to = positionsById.get(edge.toNodeId);
+                if (!from || !to) return null;
+                return (
+                  <g key={`hl-${edge.id}`}>
+                    <line
+                      x1={from.x}
+                      y1={from.y}
+                      x2={to.x}
+                      y2={to.y}
+                      stroke="#EC4899"
+                      strokeWidth={7}
+                      strokeLinecap="round"
+                      opacity="0.25"
+                    />
+                    <line
+                      x1={from.x}
+                      y1={from.y}
+                      x2={to.x}
+                      y2={to.y}
+                      stroke="#EC4899"
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                      strokeDasharray="10 8"
+                    >
+                      <animate attributeName="stroke-dashoffset" from="18" to="0" dur="0.6s" repeatCount="indefinite" />
+                    </line>
+                  </g>
+                );
+              })}
+          </g>
+        )}
+
         {/* 5. Hydrological Water Level Sensors & High Water Level Crossing Alerts */}
         {visibleLayers.has('sensors') && (
           <g>
@@ -582,20 +628,53 @@ export default function MapViewTopo({
                   {nodeElement}
 
                   {/* Node label text */}
-                  <text
-                    x={pos.x}
-                    y={pos.y - 10}
-                    textAnchor="middle"
-                    className={`font-display text-[8px] font-bold tracking-wider uppercase ${labelColor}`}
-                    fill="currentColor"
-                  >
-                    {node.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '')}
-                  </text>
+                  {visibleLayers?.has('labels') && (
+                    <text
+                      x={pos.x}
+                      y={pos.y - 10}
+                      textAnchor="middle"
+                      className={`font-display text-[8px] font-bold tracking-wider uppercase ${labelColor}`}
+                      fill="currentColor"
+                    >
+                      {node.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '')}
+                    </text>
+                  )}
                 </g>
               );
             })}
           </g>
         )}
+
+        {/* 6b. Route Highlight Pins for Topo Map */}
+        {routeOriginId && positionsById.has(routeOriginId) && (() => {
+          const pos = positionsById.get(routeOriginId)!;
+          return (
+            <g key="topo-origin-pin" className="pointer-events-none select-none">
+              <circle cx={pos.x} cy={pos.y} r={18} fill="#EC4899" opacity={0.15}>
+                <animate attributeName="r" values="8;20;8" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={pos.x} cy={pos.y} r={12} fill="#EC4899" opacity={0.35} />
+              <circle cx={pos.x} cy={pos.y} r={8} fill="#EC4899" stroke="#FFFFFF" strokeWidth={1.5} />
+              <text x={pos.x} y={pos.y + 3} textAnchor="middle" className="font-mono text-[9px] font-black text-white fill-white select-none pointer-events-none">A</text>
+            </g>
+          );
+        })()}
+
+        {routeDestId && positionsById.has(routeDestId) && (() => {
+          const pos = positionsById.get(routeDestId)!;
+          return (
+            <g key="topo-dest-pin" className="pointer-events-none select-none">
+              <circle cx={pos.x} cy={pos.y} r={18} fill="#EC4899" opacity={0.15}>
+                <animate attributeName="r" values="8;20;8" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={pos.x} cy={pos.y} r={12} fill="#EC4899" opacity={0.35} />
+              <circle cx={pos.x} cy={pos.y} r={8} fill="#EC4899" stroke="#FFFFFF" strokeWidth={1.5} />
+              <text x={pos.x} y={pos.y + 3} textAnchor="middle" className="font-mono text-[9px] font-black text-white fill-white select-none pointer-events-none">B</text>
+            </g>
+          );
+        })()}
 
         {/* 7. Convoys (Active Operations) */}
         {visibleLayers.has('convoys') && (

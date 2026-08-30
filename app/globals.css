@@ -186,3 +186,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #2C4A3E;
 }
+
+/* Leaflet divIcon overrides to keep styling clean and transparent */
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}

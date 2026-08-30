@@ -226,7 +226,7 @@ export default function GrievanceFormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
       <div className="flex h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-[#35332C] bg-[#1C1B17] shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-6 py-3.5 shrink-0">
