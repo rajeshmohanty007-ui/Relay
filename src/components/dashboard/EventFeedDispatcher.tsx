@@ -1,6 +1,6 @@
 'use client';
 
-import type { DemoLogEntry } from '../lib/types';
+import type { DemoLogEntry } from '../../lib/types';
 
 export interface EventFeedProps {
   entries: DemoLogEntry[];

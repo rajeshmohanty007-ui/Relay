@@ -1,6 +1,6 @@
 'use client';
 
-import type { NetworkNode } from '../lib/networkConnectivity';
+import type { NetworkNode } from '../../lib/networkConnectivity';
 
 interface NetworkAlertBannerProps {
   nodes: NetworkNode[];

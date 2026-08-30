@@ -10,11 +10,11 @@ import {
   stepNetworkSimulation,
   computeNetworkSummary,
 } from '../../src/lib/networkConnectivity';
-import NetworkMapView from '../../src/components/NetworkMapView';
-import NetworkStatsOverview from '../../src/components/NetworkStatsOverview';
-import NetworkAlertBanner from '../../src/components/NetworkAlertBanner';
-import NetworkNodeCard from '../../src/components/NetworkNodeCard';
-import NetworkDataTable from '../../src/components/NetworkDataTable';
+import NetworkMapView from '../../src/components/network/NetworkMapView';
+import NetworkStatsOverview from '../../src/components/network/NetworkStatsOverview';
+import NetworkAlertBanner from '../../src/components/network/NetworkAlertBanner';
+import NetworkNodeCard from '../../src/components/network/NetworkNodeCard';
+import NetworkDataTable from '../../src/components/network/NetworkDataTable';
 
 export default function NetworkDataPage() {
   const [nodes, setNodes] = useState<NetworkNode[]>(() => initializeNetworkNodes());

@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useFirestoreCollection } from '../../src/hooks/useFirestoreCollection';
 import { useReplayBuffer } from '../../src/hooks/useReplayBuffer';
 import type { Node, Edge, Convoy, DemoLogEntry, DemoConfig } from '../../src/lib/types';
-import MapViewTopo, { ALL_MAP_LAYERS, type MapLayer } from '../../src/components/MapViewTopo';
-import DispatchPanelPlacard from '../../src/components/DispatchPanelPlacard';
-import EventFeedDispatcher from '../../src/components/EventFeedDispatcher';
-import ReplayTimeline from '../../src/components/ReplayTimeline';
-import MapLayerToggle from '../../src/components/MapLayerToggle';
-import GrievanceFormModal from '../../src/components/GrievanceFormModal';
+import MapViewTopo, { ALL_MAP_LAYERS, type MapLayer } from '../../src/components/dashboard/MapViewTopo';
+import DispatchPanelPlacard from '../../src/components/dashboard/DispatchPanelPlacard';
+import EventFeedDispatcher from '../../src/components/dashboard/EventFeedDispatcher';
+import ReplayTimeline from '../../src/components/dashboard/ReplayTimeline';
+import MapLayerToggle from '../../src/components/dashboard/MapLayerToggle';
+import GrievanceFormModal from '../../src/components/dashboard/GrievanceFormModal';
 import { initializeSensors, stepSensorSimulation, type WaterSensor } from '../../src/lib/waterSensors';
 
 const STRATEGIC_SENSOR_IDS = new Set([

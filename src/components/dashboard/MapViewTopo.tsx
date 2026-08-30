@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import type { Node, Edge, Convoy } from '../lib/types';
-import { projectNodes, type ProjectedNode } from '../lib/projection';
-import type { WaterSensor } from '../lib/waterSensors';
+import type { Node, Edge, Convoy } from '../../lib/types';
+import { projectNodes, type ProjectedNode } from '../../lib/projection';
+import type { WaterSensor } from '../../lib/waterSensors';
 
 export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors';
 

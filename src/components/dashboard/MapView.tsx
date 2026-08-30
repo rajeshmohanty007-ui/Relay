@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { Node, Edge, Convoy } from '../lib/types';
-import { projectNodes, type ProjectedNode } from '../lib/projection';
+import type { Node, Edge, Convoy } from '../../lib/types';
+import { projectNodes, type ProjectedNode } from '../../lib/projection';
 
 export interface MapViewProps {
   nodes: Node[];

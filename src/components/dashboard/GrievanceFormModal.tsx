@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import type { Edge, Node } from '../lib/types';
+import type { Edge, Node } from '../../lib/types';
 
 export interface GrievanceReport {
   id: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import type { NetworkNode } from '../lib/networkConnectivity';
+import type { NetworkNode } from '../../lib/networkConnectivity';
 
 interface NetworkNodeCardProps {
   node: NetworkNode;

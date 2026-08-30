@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { WaterSensor } from '../lib/waterSensors';
+import type { WaterSensor } from '../../lib/waterSensors';
 
 interface SensorMapViewProps {
   sensors: WaterSensor[];

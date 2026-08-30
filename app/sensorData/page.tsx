@@ -10,11 +10,11 @@ import {
   stepSensorSimulation,
   computeSensorSummary,
 } from '../../src/lib/waterSensors';
-import SensorMapView from '../../src/components/SensorMapView';
-import SensorStatsOverview from '../../src/components/SensorStatsOverview';
-import SensorAlertBanner from '../../src/components/SensorAlertBanner';
-import SensorTelemetryCard from '../../src/components/SensorTelemetryCard';
-import SensorDataTable from '../../src/components/SensorDataTable';
+import SensorMapView from '../../src/components/sensors/SensorMapView';
+import SensorStatsOverview from '../../src/components/sensors/SensorStatsOverview';
+import SensorAlertBanner from '../../src/components/sensors/SensorAlertBanner';
+import SensorTelemetryCard from '../../src/components/sensors/SensorTelemetryCard';
+import SensorDataTable from '../../src/components/sensors/SensorDataTable';
 
 export default function SensorDataPage() {
   const [sensors, setSensors] = useState<WaterSensor[]>(() => initializeSensors());
