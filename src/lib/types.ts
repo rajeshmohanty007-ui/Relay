@@ -59,6 +59,13 @@ export interface DemoConfig {
   totalDurationSec: number;
 }
 
+export interface DemoLogEntry {
+  id: string;
+  simTimeSec: number;
+  message: string;
+  convoyId?: string;
+}
+
 export interface GraphFixtureData {
   nodes: Node[];
   edges: Edge[];

@@ -44,6 +44,39 @@ function initFirebaseAdmin(): admin.firestore.Firestore {
 }
 
 /**
+ * Deletes every document in /demoLog. The simulation in demoRunner.ts is
+ * deterministic, so re-running it against a re-seeded graph reproduces the
+ * exact same (simTimeSec, message) entries — without clearing old log
+ * history first, every re-run doubles up the event feed with duplicates.
+ */
+async function clearDemoLog(db: admin.firestore.Firestore): Promise<number> {
+  const snapshot = await db.collection('demoLog').get();
+  if (snapshot.empty) return 0;
+
+  const BATCH_LIMIT = 450;
+  let batch = db.batch();
+  let opCount = 0;
+  let deleted = 0;
+
+  for (const doc of snapshot.docs) {
+    batch.delete(doc.ref);
+    opCount++;
+    deleted++;
+    if (opCount >= BATCH_LIMIT) {
+      await batch.commit();
+      batch = db.batch();
+      opCount = 0;
+    }
+  }
+
+  if (opCount > 0) {
+    await batch.commit();
+  }
+
+  return deleted;
+}
+
+/**
  * Executes Firestore seed operation with batching
  */
 export async function seedFirestore(
@@ -86,6 +119,10 @@ export async function seedFirestore(
 
   console.log('\n[Seed Script] Connecting to Firestore via Firebase Admin SDK...');
   const db = initFirebaseAdmin();
+
+  console.log('[Seed Script] Clearing existing /demoLog entries...');
+  const clearedLogCount = await clearDemoLog(db);
+  console.log(`[Seed Script] Cleared ${clearedLogCount} existing /demoLog document(s).`);
 
   // Firestore batch limit is 500 ops per commit
   const BATCH_LIMIT = 450;

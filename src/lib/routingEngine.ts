@@ -274,7 +274,29 @@ export function evaluateConvoy(
     };
   }
 
-  // ── Branch B: convoy is 'enroute' or 'rerouted' — reroute check ──
+  // ── Branch B: convoy is 'recalled' — check whether it can resume ──
+  if (convoy.status === 'recalled') {
+    if (pathToDest) {
+      return {
+        updatedConvoy: {
+          ...convoy,
+          status: 'enroute',
+          currentRoute: pathToDest.path,
+          currentEdgeId: pathToDest.path[0] ?? null,
+          positionProgress: 0,
+        },
+        logMessage: `Convoy ${convoy.id} redeployed — road cleared, resuming to destination, ETA ${pathToDest.totalTimeMin} min`,
+      };
+    }
+
+    // Still stranded — remain recalled, no repeated log spam
+    return {
+      updatedConvoy: { ...convoy },
+      logMessage: '',
+    };
+  }
+
+  // ── Branch C: convoy is 'enroute' or 'rerouted' — reroute check ──
   if (pathToDest) {
     // Check whether the new path differs from the planned remaining route
     const routesDiffer = !arraysEqual(pathToDest.path, convoy.currentRoute);

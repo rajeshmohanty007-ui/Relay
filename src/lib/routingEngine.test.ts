@@ -362,6 +362,56 @@ test('Enroute convoy stranded when no depot is reachable either', () => {
   assert.ok(logMessage.includes('stranded'), 'Log should mention stranded');
 });
 
+test('Recalled convoy with destination still unreachable stays recalled and does not re-log', () => {
+  // village_highland_reach is isolated for heavy vehicles under the default
+  // fixture edges, so its destination stays unreachable across calls.
+  const recalledConvoy: Convoy = {
+    id: 'test_recalled_stranded',
+    cargoType: 'blood',
+    originNodeId: 'village_highland_reach',
+    destNodeId: 'shelter_valley_school',
+    departTimestampOffsetSec: 0,
+    status: 'recalled',
+    currentRoute: [],
+    currentEdgeId: null,
+    positionProgress: 0,
+  };
+
+  const first = evaluateConvoy(recalledConvoy, nodes, edges, depotIds);
+  assert.equal(first.updatedConvoy.status, 'recalled', 'Should remain recalled');
+  assert.equal(first.logMessage, '', 'Should not emit a log while still stranded');
+
+  const second = evaluateConvoy(first.updatedConvoy, nodes, edges, depotIds);
+  assert.equal(second.updatedConvoy.status, 'recalled', 'Should still be recalled on second call');
+  assert.equal(second.logMessage, '', 'Should not re-emit a log on the second call either');
+});
+
+test('Recalled convoy resumes to destination when blocking edge reverts to clear', () => {
+  const recalledConvoy: Convoy = {
+    id: 'test_recalled_resume',
+    cargoType: 'insulin',
+    originNodeId: 'depot_north',
+    destNodeId: 'shelter_east_hospital',
+    departTimestampOffsetSec: 0,
+    status: 'recalled',
+    currentRoute: [],
+    currentEdgeId: null,
+    positionProgress: 0,
+  };
+
+  // Unmodified fixture edges — the road that previously forced the recall
+  // is clear again.
+  const { updatedConvoy, logMessage } = evaluateConvoy(
+    recalledConvoy, nodes, edges, depotIds,
+  );
+
+  assert.equal(updatedConvoy.status, 'enroute', 'Should resume as enroute, not rerouted');
+  assert.ok(updatedConvoy.currentRoute.length > 0, 'Should have a computed route');
+  assert.ok(logMessage.includes('redeployed'), 'Log should say redeployed');
+  assert.ok(logMessage.includes('ETA'), 'Log should include ETA');
+  assert.ok(!logMessage.includes('rerouted'), 'Log should NOT say rerouted for a resume');
+});
+
 // ═══════════════════════════════════════════════════════════════════════════
 console.log('\n--- evaluateFleet ---');
 // ═══════════════════════════════════════════════════════════════════════════

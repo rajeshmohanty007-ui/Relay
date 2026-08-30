@@ -8,8 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "validate": "tsx src/lib/validateGraph.ts",
-    "seed": "tsx src/lib/seed.ts",
-    "test:routing": "tsx src/lib/routingEngine.test.ts"
+    "seed": "cross-env FIRESTORE_EMULATOR_HOST=localhost:8080 tsx src/lib/seed.ts",
+    "seed:live": "tsx src/lib/seed.ts",
+    "test:routing": "tsx src/lib/routingEngine.test.ts",
+    "demo": "cross-env FIRESTORE_EMULATOR_HOST=localhost:8080 tsx src/lib/demoRunner.ts",
+    "demo:live": "tsx src/lib/demoRunner.ts"
   },
   "dependencies": {
     "firebase": "^11.3.1",
@@ -23,6 +26,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
