@@ -42,28 +42,28 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
           DISPATCHER FLIGHT LOG
         </h2>
         {loading && (
-          <span className="font-mono text-[9px] text-[#E4E1D8]/60 animate-pulse">
+          <span className="font-mono text-[9px] text-[#E4E1D8]/60 animate-pulse bg-[#24221D] px-2 py-0.5 rounded-full border border-[#35332C]">
             SYNCING LIVE...
           </span>
         )}
       </div>
 
-      <div className="flex-1 min-h-0 border border-[#35332C] bg-[#1C1B17] p-2">
+      <div className="flex-1 min-h-0 border border-[#35332C] bg-[#1C1B17] p-3 rounded-2xl shadow-inner">
         {!loading && newestFirst.length === 0 ? (
           <p className="font-mono text-[10px] text-[#E4E1D8]/50 italic p-2">
             NO LOG ENTRIES RECORDED
           </p>
         ) : (
-          <ul className="h-full space-y-1.5 overflow-y-auto pr-1">
+          <ul className="h-full space-y-2 overflow-y-auto pr-1">
             {newestFirst.map((entry) => {
               const dotColor = getEventColor(entry.message);
               return (
                 <li 
                   key={entry.id} 
-                  className="flex items-start gap-2 border-b border-[#35332C]/40 pb-1.5 font-mono text-[10px] text-[#E4E1D8]"
+                  className="flex items-start gap-2.5 bg-[#24221D]/60 border border-[#35332C]/60 p-2.5 rounded-xl font-mono text-[10px] text-[#E4E1D8] transition-all hover:bg-[#24221D]"
                 >
                   {/* Timestamp */}
-                  <span className="shrink-0 font-bold text-[#E4E1D8]/60 tracking-tight select-none">
+                  <span className="shrink-0 font-bold text-white bg-[#1C1B17] px-2 py-0.5 rounded-lg border border-[#35332C] tracking-tight select-none text-[9px]">
                     t={entry.simTimeSec.toString().padStart(4, '0')}s
                   </span>
                   
@@ -73,7 +73,7 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
                       className="h-2 w-2 rounded-full" 
                       style={{ 
                         backgroundColor: dotColor, 
-                        boxShadow: `0 0 4px ${dotColor}aa` 
+                        boxShadow: `0 0 6px ${dotColor}aa` 
                       }} 
                     />
                   </span>

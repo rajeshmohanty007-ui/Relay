@@ -1,10 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useFirestoreCollection } from '../../src/hooks/useFirestoreCollection';
 import { useReplayBuffer } from '../../src/hooks/useReplayBuffer';
 import type { Node, Edge, Convoy, DemoLogEntry, DemoConfig } from '../../src/lib/types';
 import MapViewTopo, { ALL_MAP_LAYERS, type MapLayer } from '../../src/components/MapViewTopo';
+
+// Leaflet touches `window` on import, so the realistic map must never render on the server.
+const MapViewGeo = dynamic(() => import('../../src/components/MapViewGeo'), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#E4E1D8]/50">
+      LOADING REALISTIC MAP…
+    </div>
+  ),
+});
+
 import DispatchPanelPlacard from '../../src/components/DispatchPanelPlacard';
 import EventFeedDispatcher from '../../src/components/EventFeedDispatcher';
 import ReplayTimeline from '../../src/components/ReplayTimeline';
@@ -29,6 +41,7 @@ function formatTime(seconds: number): string {
 
 export default function DashboardPage() {
   const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
+  const [mapStyle, setMapStyle] = useState<'TACTICAL' | 'REALISTIC'>('TACTICAL');
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
   const [isFlightLogOpen, setIsFlightLogOpen] = useState<boolean>(false);
@@ -90,7 +103,7 @@ export default function DashboardPage() {
   return (
     <div className="flex h-screen w-screen flex-col bg-[#1C1B17] text-[#FAF9F6] font-sans overflow-hidden">
       {/* Tactical Header Strip */}
-      <header className="border-b border-[#35332C] bg-[#24221D] px-4 py-2.5 flex items-center justify-between">
+      <header className="border-b border-[#35332C] bg-[#24221D]/90 backdrop-blur-md px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div>
             <h1 className="font-display text-xs font-black tracking-widest text-[#FAF9F6] uppercase">
@@ -103,19 +116,19 @@ export default function DashboardPage() {
         </div>
 
         {/* Tactical Counters */}
-        <div className="hidden md:flex items-center gap-6 border-l border-r border-[#35332C]/60 px-6 py-0.5">
-          <div className="font-mono text-[10px] leading-tight">
-            <span className="text-[#E4E1D8]/60 block">ACTIVE OPERATIONS</span>
+        <div className="hidden md:flex items-center gap-4 bg-[#1C1B17] border border-[#35332C] rounded-2xl px-5 py-1.5 shadow-inner">
+          <div className="font-mono text-[10px] leading-tight pr-4 border-r border-[#35332C]/60">
+            <span className="text-[#E4E1D8]/60 block text-[9px]">ACTIVE OPERATIONS</span>
             <span className="font-bold text-signal-accent tracking-wider font-mono text-xs">{activeConvoys} CONVOYS</span>
           </div>
-          <div className="font-mono text-[10px] leading-tight">
-            <span className="text-[#E4E1D8]/60 block">HAZARD INTERRUPTS</span>
+          <div className="font-mono text-[10px] leading-tight pr-4 border-r border-[#35332C]/60">
+            <span className="text-[#E4E1D8]/60 block text-[9px]">HAZARD INTERRUPTS</span>
             <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-[#E4E1D8]/60'}`}>
-              {blockedRoads} BLOCKED SECTIONS
+              {blockedRoads} BLOCKED
             </span>
           </div>
           <div className="font-mono text-[10px] leading-tight">
-            <span className="text-[#E4E1D8]/60 block">ALERT LEVEL SHELTERS</span>
+            <span className="text-[#E4E1D8]/60 block text-[9px]">ALERT LEVEL SHELTERS</span>
             <span className={`font-bold tracking-wider font-mono text-xs ${criticalShelters > 0 ? 'text-status-danger animate-pulse' : 'text-status-ok'}`}>
               {criticalShelters} CRITICAL
             </span>
@@ -123,12 +136,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Mode Toggle, Flight Log, Grievance Trigger & Mission Clock */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {/* Grievance / Emergency Road Blockage Report Button */}
           <button
             type="button"
             onClick={() => setIsGrievanceOpen(true)}
-            className="flex items-center gap-1.5 border border-[#A6403A] bg-[#A6403A]/15 px-2.5 py-1 text-[10px] font-display font-black tracking-wider uppercase text-[#A6403A] hover:bg-[#A6403A]/30 hover:text-white transition-all shadow-[0_0_8px_rgba(166,64,58,0.25)]"
+            className="flex items-center gap-1.5 border border-[#A6403A] bg-[#A6403A]/15 px-3 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider uppercase text-[#FAF9F6] hover:bg-[#A6403A]/30 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_10px_rgba(166,64,58,0.25)]"
             title="Report Blocked Road & Request Priority Rescue Dispatch"
           >
             <span>🚨 REPORT BLOCKAGE</span>
@@ -138,17 +151,45 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setIsFlightLogOpen(true)}
-            className="flex items-center gap-2 border border-[#35332C] bg-[#1C1B17] px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase text-[#E4E1D8] hover:text-white hover:border-signal-accent transition-colors"
+            className="flex items-center gap-2 border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 rounded-xl text-[10px] font-display font-bold tracking-wider uppercase text-[#E4E1D8] hover:text-white hover:border-signal-accent hover:bg-[#24221D] transition-all"
             title="Open Dispatcher Flight Log"
           >
             <span>📋 FLIGHT LOG</span>
-            <span className="bg-[#24221D] border border-[#35332C] text-signal-accent px-1.5 py-0.2 text-[8px] font-mono font-bold">
+            <span className="bg-[#24221D] border border-[#35332C] text-signal-accent px-1.5 py-0.5 rounded-full text-[8px] font-mono font-bold">
               {displayDemoLog.length}
             </span>
           </button>
 
+          {/* Map Style Switch */}
+          <div className="flex border border-[#35332C] bg-[#1C1B17] p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setMapStyle('TACTICAL')}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
+                mapStyle === 'TACTICAL'
+                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
+              }`}
+              title="Tactical styled vector map"
+            >
+              TACTICAL
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapStyle('REALISTIC')}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
+                mapStyle === 'REALISTIC'
+                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
+              }`}
+              title="Real-road snapped geography map (needs internet)"
+            >
+              REALISTIC
+            </button>
+          </div>
+
           {/* Mode Switch */}
-          <div className="flex border border-[#35332C] bg-[#1C1B17] p-0.5">
+          <div className="flex border border-[#35332C] bg-[#1C1B17] p-1 rounded-xl">
             <button
               type="button"
               onClick={() => {
@@ -157,9 +198,9 @@ export default function DashboardPage() {
                   setSelectedTimeIndex(bufferSize - 1);
                 }
               }}
-              className={`px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase transition-colors ${
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
                 mode === 'LIVE'
-                  ? 'bg-status-ok text-white font-black shadow-[0_0_6px_rgba(75,123,78,0.5)]'
+                  ? 'bg-status-ok text-white font-black shadow-[0_0_8px_rgba(75,123,78,0.5)]'
                   : 'text-[#E4E1D8]/60 hover:text-white'
               }`}
             >
@@ -173,9 +214,9 @@ export default function DashboardPage() {
                   setSelectedTimeIndex(bufferSize - 1);
                 }
               }}
-              className={`px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase transition-colors ${
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
                 mode === 'REPLAY'
-                  ? 'bg-status-warn text-black font-black shadow-[0_0_6px_rgba(184,134,59,0.5)]'
+                  ? 'bg-status-warn text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.5)]'
                   : 'text-[#E4E1D8]/60 hover:text-white'
               }`}
             >
@@ -184,15 +225,15 @@ export default function DashboardPage() {
           </div>
 
           {/* Mission Clock Display */}
-          <div className="flex items-center gap-3 bg-[#1C1B17] border border-[#35332C] px-3 py-1.5 rounded-none">
+          <div className="flex items-center gap-2.5 bg-[#1C1B17] border border-[#35332C] px-3.5 py-1.5 rounded-xl shadow-inner">
             <span className="font-display text-[9px] font-bold text-[#E4E1D8]/70 tracking-wider">
-              {mode === 'LIVE' ? 'MISSION CLOCK' : 'SCRUB CLOCK'}
+              {mode === 'LIVE' ? 'MISSION' : 'SCRUB'}
             </span>
             <span
               className={`font-mono text-sm font-black tracking-widest tabular-nums filter ${
                 mode === 'LIVE'
-                  ? 'text-status-ok drop-shadow-[0_0_2px_rgba(75,123,78,0.4)]'
-                  : 'text-status-warn drop-shadow-[0_0_2px_rgba(184,134,59,0.4)]'
+                  ? 'text-status-ok drop-shadow-[0_0_3px_rgba(75,123,78,0.4)]'
+                  : 'text-status-warn drop-shadow-[0_0_3px_rgba(184,134,59,0.4)]'
               }`}
             >
               {formatTime(displayClockSeconds)}
@@ -205,31 +246,43 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Workspace Layout */}
-      <div className="flex min-h-0 flex-1 bg-[#1C1B17]">
+      <div className="flex min-h-0 flex-1 bg-[#1C1B17] gap-2 p-2">
         {/* Left Collapsible Layer Sidebar */}
-        <MapLayerToggle
-          visibleLayers={visibleLayers}
-          onChange={setVisibleLayers}
-        />
+        <div className="rounded-2xl border border-[#35332C] bg-[#1C1B17] overflow-hidden flex shadow-lg">
+          <MapLayerToggle
+            visibleLayers={visibleLayers}
+            onChange={setVisibleLayers}
+          />
+        </div>
 
         {/* Central Tactical Area (Map + Scrubber) */}
-        <main className="min-w-0 flex-1 p-3 flex flex-col gap-2">
-          <div className={`flex-1 relative min-h-0 bg-[#1C1B17] border transition-colors ${mode === 'REPLAY' ? 'border-status-warn/50' : 'border-[#35332C]'}`}>
+        <main className="min-w-0 flex-1 flex flex-col gap-2">
+          <div className={`flex-1 relative min-h-0 bg-[#1C1B17] rounded-2xl border overflow-hidden shadow-lg transition-all ${mode === 'REPLAY' ? 'border-status-warn/60 ring-1 ring-status-warn/20' : 'border-[#35332C]'}`}>
             {/* Replay Mode Indicator Badge */}
             {mode === 'REPLAY' && (
-              <div className="absolute top-2 left-2 z-10 border border-status-warn bg-[#1C1B17]/95 backdrop-blur-sm px-2.5 py-1 text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_8px_rgba(184,134,59,0.3)] flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-status-warn animate-ping" />
+              <div className="absolute top-3 left-3 z-10 border border-status-warn bg-[#1C1B17]/95 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_12px_rgba(184,134,59,0.3)] flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-status-warn animate-ping" />
                 <span>HISTORICAL REPLAY — FRAME {activeIndex + 1}/{bufferSize}</span>
               </div>
             )}
             {mapReady ? (
-              <MapViewTopo
-                nodes={displayNodes}
-                edges={displayEdges}
-                convoys={displayConvoys}
-                sensors={sensors}
-                visibleLayers={visibleLayers}
-              />
+              mapStyle === 'TACTICAL' ? (
+                <MapViewTopo
+                  nodes={displayNodes}
+                  edges={displayEdges}
+                  convoys={displayConvoys}
+                  sensors={sensors}
+                  visibleLayers={visibleLayers}
+                />
+              ) : (
+                <MapViewGeo
+                  nodes={displayNodes}
+                  edges={displayEdges}
+                  convoys={displayConvoys}
+                  sensors={sensors}
+                  visibleLayers={visibleLayers}
+                />
+              )
             ) : (
               <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#E4E1D8]/50">
                 INITIALIZING TACTICAL GRAPH MAP...
@@ -238,21 +291,23 @@ export default function DashboardPage() {
           </div>
 
           {/* Timeline Scrubber Bar */}
-          <ReplayTimeline
-            availableTimes={availableTimes}
-            selectedIndex={activeIndex}
-            mode={mode}
-            onSelectIndex={(idx) => {
-              setSelectedTimeIndex(idx);
-            }}
-            onToggleMode={(newMode) => {
-              setMode(newMode);
-            }}
-          />
+          <div className="rounded-2xl overflow-hidden shadow-lg">
+            <ReplayTimeline
+              availableTimes={availableTimes}
+              selectedIndex={activeIndex}
+              mode={mode}
+              onSelectIndex={(idx) => {
+                setSelectedTimeIndex(idx);
+              }}
+              onToggleMode={(newMode) => {
+                setMode(newMode);
+              }}
+            />
+          </div>
         </main>
 
         {/* Right Info Sidebar Panels */}
-        <aside className="flex w-88 shrink-0 flex-col border-l border-[#35332C] bg-[#1C1B17] p-3 overflow-hidden">
+        <aside className="flex w-88 shrink-0 flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17] p-3 overflow-hidden shadow-lg">
           {/* Dispatch Panel (Full Height) */}
           <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
             {mapReady ? (
@@ -266,30 +321,30 @@ export default function DashboardPage() {
 
       {/* Dispatcher Flight Log Modal Dialog */}
       {isFlightLogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="flex h-[80vh] w-full max-w-2xl flex-col border border-[#35332C] bg-[#1C1B17] shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
+          <div className="flex h-[80vh] w-full max-w-2xl flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17] shadow-[0_0_40px_rgba(0,0,0,0.85)] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-4 py-2.5">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-signal-accent animate-pulse" />
+            <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-5 py-3">
+              <div className="flex items-center gap-2.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-signal-accent animate-pulse" />
                 <h2 className="font-display text-xs font-black tracking-widest text-[#FAF9F6] uppercase">
                   DISPATCHER FLIGHT LOG & INCIDENT FEED
                 </h2>
-                <span className="font-mono text-[9px] text-[#E4E1D8]/60">
-                  ({displayDemoLog.length} EVENTS RECORDED)
+                <span className="font-mono text-[9px] text-[#E4E1D8]/60 rounded-full bg-[#1C1B17] px-2 py-0.5 border border-[#35332C]">
+                  {displayDemoLog.length} EVENTS
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setIsFlightLogOpen(false)}
-                className="border border-[#35332C] bg-[#1C1B17] px-2.5 py-1 font-mono text-[10px] font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent transition-colors"
+                className="rounded-xl border border-[#35332C] bg-[#1C1B17] px-3 py-1 font-mono text-[10px] font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent transition-all"
               >
                 ✕ CLOSE
               </button>
             </div>
 
             {/* Modal Log Content */}
-            <div className="flex-1 min-h-0 p-3 overflow-hidden">
+            <div className="flex-1 min-h-0 p-4 overflow-hidden">
               <EventFeedDispatcher entries={displayDemoLog} loading={demoLogLoading} />
             </div>
           </div>
