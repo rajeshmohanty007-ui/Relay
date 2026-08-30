@@ -33,15 +33,9 @@ function getShelterStatusColor(node: Node): string {
 
 // Tactical style configuration matching NDMA alerts
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
-  clear: { stroke: '#35332C', strokeWidth: 1.5 }, // Muted warm structural line
-  degraded: { stroke: '#B8863B', strokeWidth: 2, dashArray: '4 4' }, // Amber warning dash
-  blocked: { stroke: '#A6403A', strokeWidth: 3 }, // Rust Red placard alert
-};
-
-const ROAD_TYPE_COLOR = {
-  primary: '#E4E1D8',
-  secondary: '#8C897E',
-  tertiary: '#524F47',
+  clear: { stroke: '#204c4a', strokeWidth: 1.5 }, // Pine teal line
+  degraded: { stroke: '#EDE4DF', strokeWidth: 2, dashArray: '4 4' }, // Sand warning dash
+  blocked: { stroke: '#997460', strokeWidth: 3 }, // Terracotta placard alert
 };
 
 export default function MapViewTopo({
@@ -208,7 +202,7 @@ export default function MapViewTopo({
     <div className="relative h-full w-full select-none overflow-hidden">
       <svg
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        className="h-full w-full bg-[#1C1B17] border border-struct-line"
+        className="h-full w-full bg-base-cream border border-struct-line"
       >
         <defs>
           {/* River Water Flow Glow Filter */}
@@ -218,20 +212,20 @@ export default function MapViewTopo({
           </filter>
           {/* Hazard Pulse Animation */}
           <radialGradient id="hazardGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#A6403A" stopOpacity="0.6" />
-            <stop offset="60%" stopColor="#8A3933" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#6C302B" stopOpacity="0" />
+            <stop offset="0%" stopColor="#997460" stopOpacity="0.6" />
+            <stop offset="60%" stopColor="#b05d47" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#DFEDED" stopOpacity="0" />
           </radialGradient>
         </defs>
 
         {/* 1. Tactical Grid Lines/Dots */}
         {visibleLayers.has('grid') && (
-          <g opacity="0.12">
+          <g opacity="0.15">
             {gridPoints.map((p, i) => (
               <path
                 key={i}
                 d={`M ${p.x - 2} ${p.y} L ${p.x + 2} ${p.y} M ${p.x} ${p.y - 2} L ${p.x} ${p.y + 2}`}
-                stroke="#E4E1D8"
+                stroke="#206E6B"
                 strokeWidth={1}
               />
             ))}
@@ -240,7 +234,7 @@ export default function MapViewTopo({
 
         {/* 2. Topographic Contour Line Texture (Under the graph) */}
         {visibleLayers.has('contours') && (
-          <g opacity="0.08" stroke="#E4E1D8" strokeWidth="0.75" fill="none">
+          <g opacity="0.08" stroke="#206E6B" strokeWidth="0.75" fill="none">
             {/* Ridge Hills North */}
             <path d="M 100,50 C 200,40 300,90 350,150 C 380,200 280,280 180,260 C 100,240 50,150 100,50 Z" />
             <path d="M 120,70 C 200,60 280,100 320,150 C 350,190 260,260 170,240 C 100,220 70,150 120,70 Z" />
@@ -262,7 +256,7 @@ export default function MapViewTopo({
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#24221D"
+                  stroke="#EDE4DF"
                   strokeWidth="14"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -270,16 +264,16 @@ export default function MapViewTopo({
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#2C4A3E"
+                  stroke="#6AADAB"
                   strokeWidth="6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  opacity="0.75"
+                  opacity="0.9"
                 />
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#4B7B4E"
+                  stroke="#206E6B"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeDasharray="14 18"
@@ -294,7 +288,7 @@ export default function MapViewTopo({
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#24221D"
+                  stroke="#EDE4DF"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -302,16 +296,16 @@ export default function MapViewTopo({
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#2C4A3E"
+                  stroke="#6AADAB"
                   strokeWidth="4.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  opacity="0.65"
+                  opacity="0.8"
                 />
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#4B7B4E"
+                  stroke="#206E6B"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeDasharray="10 14"
@@ -328,8 +322,8 @@ export default function MapViewTopo({
                   y="-3"
                   width="16"
                   height="6"
-                  fill="#24221D"
-                  stroke="#E4E1D8"
+                  fill="#EDE4DF"
+                  stroke="#DFEDED"
                   strokeWidth="1"
                   transform="rotate(45)"
                 />
@@ -505,8 +499,8 @@ export default function MapViewTopo({
                           letterSpacing="0.5"
                         >
                           {isSubmerged
-                            ? `⛔ INUNDATION: +${sensor.roadSubmersionDepthM.toFixed(1)}m`
-                            : `🌊 HIGH WATER: ${sensor.currentLevelM.toFixed(1)}m`}
+                            ? `INUNDATION: +${sensor.roadSubmersionDepthM.toFixed(1)}m`
+                            : `HIGH WATER: ${sensor.currentLevelM.toFixed(1)}m`}
                         </text>
                       </g>
                     </g>
@@ -732,8 +726,8 @@ export default function MapViewTopo({
                 }
 
                 return (
-                  <g 
-                    key={convoy.id} 
+                  <g
+                    key={convoy.id}
                     className="transition-transform duration-700 ease-linear"
                   >
                     {/* Pulsing ring for active rerouted / enroute operations */}
@@ -750,18 +744,18 @@ export default function MapViewTopo({
                     )}
 
                     {/* Convoy beacon */}
-                    <circle 
-                      cx={x} 
-                      cy={y} 
-                      r={5} 
-                      fill={color} 
-                      stroke="#1C1B17" 
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={5}
+                      fill={color}
+                      stroke="#1C1B17"
                       strokeWidth={1.5}
                       className="filter drop-shadow-[0_0_3px_rgba(0,0,0,0.8)]"
                     >
                       <title>{`${convoy.id} (${convoy.cargoType.toUpperCase()}) — ${convoy.status.toUpperCase()}`}</title>
                     </circle>
-                    
+
                     {/* Tactical tag */}
                     <text
                       x={x}
@@ -781,26 +775,28 @@ export default function MapViewTopo({
 
       {/* Floating Tactical Inspection Panel when a sensor / crossing is clicked */}
       {activeSensor && (
-        <div className="absolute bottom-4 right-4 z-30 flex w-84 flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17]/95 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] p-3.5 animate-in fade-in zoom-in-95 duration-150 text-xs">
+        <div className="absolute bottom-4 right-4 z-30 flex w-84 flex-col rounded-2xl border border-struct-line bg-base-cream/95 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.1)] p-3.5 animate-in fade-in zoom-in-95 duration-150 text-xs">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#35332C]/60 pb-2.5 mb-2.5">
+          <div className="flex items-center justify-between border-b border-struct-line/60 pb-2.5 mb-2.5">
             <div className="flex items-center gap-2.5">
-              <span className="text-sm">🌊</span>
+              <svg className="w-5 h-5 text-signal-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.5c-4.142 0-7.5-3.358-7.5-7.5C4.5 9.385 12 2.5 12 2.5S19.5 9.385 19.5 14c0 4.142-3.358 7.5-7.5 7.5z" />
+              </svg>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[9px] font-bold text-[#FAF9F6]">{activeSensor.code}</span>
+                  <span className="font-mono text-[9px] font-bold text-base-dark">{activeSensor.code}</span>
                   <span
                     className={`px-2 py-0.5 rounded-full border text-[7px] font-mono font-bold uppercase ${activeSensor.status === 'critical'
-                        ? 'bg-[#351C1A] text-[#A6403A] border-[#A6403A]/60'
-                        : activeSensor.status === 'warning' || activeSensor.status === 'advisory'
-                          ? 'bg-[#352718] text-[#B8863B] border-[#B8863B]/60'
-                          : 'bg-[#203024] text-[#4B7B4E] border-[#4B7B4E]/60'
+                      ? 'bg-status-danger/10 text-status-danger border-status-danger/30'
+                      : activeSensor.status === 'warning' || activeSensor.status === 'advisory'
+                        ? 'bg-status-warn/15 text-status-warn border-status-warn/30'
+                        : 'bg-status-ok/10 text-status-ok border-status-ok/30'
                       }`}
                   >
                     {activeSensor.status}
                   </span>
                 </div>
-                <span className="font-display text-[10px] font-bold text-[#FAF9F6] block truncate max-w-[190px] mt-0.5">
+                <span className="font-display text-[10px] font-bold text-base-dark block truncate max-w-[190px] mt-0.5">
                   {activeSensor.name}
                 </span>
               </div>
@@ -808,7 +804,7 @@ export default function MapViewTopo({
             <button
               type="button"
               onClick={() => setSelectedSensorId(null)}
-              className="font-mono text-[9px] text-[#E4E1D8]/70 hover:text-white border border-[#35332C] px-2 py-1 rounded-lg hover:bg-[#24221D] transition-all"
+              className="font-mono text-[9px] text-base-dark/70 hover:text-base-dark border border-struct-line px-2 py-1 rounded-lg hover:bg-base-sand transition-all cursor-pointer"
             >
               ✕
             </button>
@@ -816,17 +812,17 @@ export default function MapViewTopo({
 
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 gap-2 font-mono text-[8px] mb-2.5">
-            <div className="border border-[#35332C] bg-[#24221D] p-2 rounded-xl">
-              <span className="text-[#E4E1D8]/60 block text-[7px]">STAGE / CREST LIMIT</span>
-              <span className="font-bold text-[11px] text-white">
+            <div className="border border-struct-line bg-base-sand p-2 rounded-xl">
+              <span className="text-base-dark/60 block text-[7px]">STAGE / CREST LIMIT</span>
+              <span className="font-bold text-[11px] text-base-dark">
                 {activeSensor.currentLevelM.toFixed(2)}m{' '}
-                <span className="text-[7px] text-[#E4E1D8]/60">/ {activeSensor.criticalLevelM.toFixed(1)}m</span>
+                <span className="text-[7px] text-base-dark/60">/ {activeSensor.criticalLevelM.toFixed(1)}m</span>
               </span>
             </div>
-            <div className="border border-[#35332C] bg-[#24221D] p-2 rounded-xl">
-              <span className="text-[#E4E1D8]/60 block text-[7px]">RATE OF RISE</span>
+            <div className="border border-struct-line bg-base-sand p-2 rounded-xl">
+              <span className="text-base-dark/60 block text-[7px]">RATE OF RISE</span>
               <span
-                className={`font-bold text-[10px] ${activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-[#E4E1D8]'
+                className={`font-bold text-[10px] ${activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-base-dark'
                   }`}
               >
                 {activeSensor.rateOfRiseMPerHour > 0
@@ -837,25 +833,25 @@ export default function MapViewTopo({
           </div>
 
           {/* Submersion Status */}
-          <div className="border border-[#35332C] bg-[#24221D] p-2.5 rounded-xl font-mono text-[8px] mb-2">
+          <div className="border border-struct-line bg-base-sand p-2.5 rounded-xl font-mono text-[8px] mb-2 text-base-dark">
             <div className="flex justify-between items-center">
-              <span className="text-[#E4E1D8]/60">ROAD INUNDATION:</span>
+              <span className="text-base-dark/60">ROAD INUNDATION:</span>
               <span className={`font-bold ${activeSensor.roadSubmersionDepthM > 0 ? 'text-status-danger' : 'text-status-ok'}`}>
                 {activeSensor.roadSubmersionDepthM > 0
-                  ? `⛔ +${activeSensor.roadSubmersionDepthM.toFixed(2)}m SUBMERGED`
+                  ? `+${activeSensor.roadSubmersionDepthM.toFixed(2)}m SUBMERGED`
                   : 'CLEAR (PASSABLE)'}
               </span>
             </div>
-            <div className="flex justify-between items-center text-[#E4E1D8]/70 mt-1">
+            <div className="flex justify-between items-center text-base-dark/70 mt-1">
               <span>FLOW VELOCITY:</span>
-              <span className="text-white font-bold">{activeSensor.flowVelocityMps.toFixed(1)} m/s</span>
+              <span className="text-base-dark font-bold">{activeSensor.flowVelocityMps.toFixed(1)} m/s</span>
             </div>
           </div>
 
           {/* Correlated Corridors */}
-          <div className="font-mono text-[7px] text-[#E4E1D8]/60 px-1">
-            <span className="text-[#FAF9F6] font-bold">CROSSING ROADS: </span>
-            <span className="text-[#E4E1D8]">{activeSensor.correlatedEdgeIds?.join(', ') || 'Corridor'}</span>
+          <div className="font-mono text-[7px] text-base-dark/60 px-1">
+            <span className="text-base-dark font-bold">CROSSING ROADS: </span>
+            <span className="text-base-dark">{activeSensor.correlatedEdgeIds?.join(', ') || 'Corridor'}</span>
           </div>
         </div>
       )}

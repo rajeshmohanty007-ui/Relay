@@ -113,7 +113,12 @@ export default function NetworkDataPage() {
               href="/sensorData"
               className="inline-flex items-center gap-1.5 rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-medium text-sky-700 shadow-xs hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-300"
             >
-              🌊 Water Sensors
+              <span className="flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.5c-4.142 0-7.5-3.358-7.5-7.5C4.5 9.385 12 2.5 12 2.5S19.5 9.385 19.5 14c0 4.142-3.358 7.5-7.5 7.5z" />
+                </svg>
+                <span>Water Sensors</span>
+              </span>
             </Link>
 
             <div className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-100/80 p-1 dark:border-zinc-800 dark:bg-zinc-900">
@@ -234,13 +239,17 @@ export default function NetworkDataPage() {
             </button>
             <button
               onClick={() => setActiveTab('table')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors flex items-center gap-1.5 ${
                 activeTab === 'table'
                   ? 'bg-indigo-600 text-white shadow-xs'
                   : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
               }`}
             >
-              📋 Network Data Table & CSV
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 11h6m-6 4h6" />
+              </svg>
+              <span>Network Data Table & CSV</span>
             </button>
           </div>
 

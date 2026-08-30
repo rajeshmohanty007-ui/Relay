@@ -78,20 +78,23 @@ Updated comprehensive project status report across data models, simulation engin
 8. **Citizen Road Grievance & Emergency Rescue Dispatch (`GrievanceFormModal.tsx`)**:
    - Road corridor selector, hazard classification, unique vehicle ID tracking, photo evidence upload, automated priority escalation (`P1/P2/P3`), and simulated rescue dispatch with real-time en-route alerts.
 
-9. **Realistic Geographic Map & OSRM Routing (`MapViewGeo.tsx`)**:
+9. **Realistic Geographic Map & OSRM Routing (`MapViewGeo.tsx`, `osrmrouting.ts`)**:
    - SNAPS routes to real road network geometry using the public OSRM API with in-flight request deduplication and dual caching (memory & sessionStorage).
+   - Configured OSRM queries with `continue_straight=false` and `snapping=any` parameters to eliminate phantom U-turn spurs and enable matching residential/service ways.
+   - Hop-by-hop edge geometry stitching in `MapViewGeo.tsx` (reversing backwards edges) for seamless highlighted routes aligning perfectly with active road overlays.
    - Basemap toggle supporting street view and Esri satellite world imagery maps.
    - Brand theme status colors matching edges, node statuses, and active convoys.
    - Fixed modal overlap bug by boosting z-indices on Grievance Modal and Flight Log Trigger components to `z-[9999]` to sit cleanly on top of Leaflet interactive overlays.
    - Added permanently visible node name labels centered below all node markers (depots, shelters, villages, junctions) in both satellite and street mode basemaps, styled with transparent backgrounds and high-contrast text outlines.
    - Added a `NODE LABELS` layer toggle in the map sidebar to dynamically show or hide the node name text overlays in both TACTICAL and REALISTIC maps.
 
-10. **Citizen Point-to-Point Route Planner (`RoutePlannerModal.tsx`, `routingEngine.ts`)**:
+10. **Citizen Point-to-Point Route Planner (`RoutePlannerModal.tsx`, `routingEngine.ts`, `snapNodes.mjs`)**:
     - Dijkstra routing for general citizens (`buildCitizenAdjacency`) that ignores the heavy vehicle safety weight constraints.
     - Animated Hot Pink (`#EC4899`) overlay route highlighting on both tactical (SVG animate dashoffset) and realistic (leaflet dashed polyline) map styles.
     - Form layout featuring origin/destination selector selects, switch swapping, path nodes sequence listing, ETA indicators, and a confirmed "SHOW ROUTE ON MAP" button.
     - Simplified modal close triggers by stripping "CLOSE" text from header buttons to keep only the clean "✕" icon.
     - Added custom pulsing route highlight pins (A and B text markers) at selected origin/destination nodes on both tactical and realistic map views.
+    - Repositioned database nodes in `fixtures/graph.json` via `scripts/snapNodes.mjs` using OSRM's `/nearest` API to bake road-aligned coordinates directly into the database.
     - Uses `z-[9999]` index layers to sit on top of map panes and Leaflet overlays.
 
 ---

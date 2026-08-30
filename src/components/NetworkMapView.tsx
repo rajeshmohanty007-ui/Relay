@@ -351,15 +351,21 @@ export default function NetworkMapView({
               <div>
                 <span className="text-slate-400">Power:</span> {activeNode.powerSource}
               </div>
-              <div className="font-mono text-amber-400 font-semibold">
-                🔋 {activeNode.batteryHoursRemaining}h remaining
+              <div className="font-mono text-amber-400 font-semibold flex items-center gap-1">
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" fill="currentColor" />
+                </svg>
+                <span>{activeNode.batteryHoursRemaining}h remaining</span>
               </div>
             </div>
           </div>
 
           {activeNode.status === 'blackout' && (
-            <div className="mt-2 rounded bg-red-950/70 p-1.5 text-[11px] font-medium text-red-200 border border-red-800/50">
-              🚨 Telecommunication Blackout: Convoy transceivers cannot reach dispatch server from this node!
+            <div className="mt-2 rounded bg-red-950/70 p-1.5 text-[11px] font-medium text-red-200 border border-red-800/50 flex items-center gap-1.5">
+              <svg className="w-4 h-4 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>Telecommunication Blackout: Convoy transceivers cannot reach dispatch server from this node!</span>
             </div>
           )}
         </div>
