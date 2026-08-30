@@ -22,6 +22,7 @@ import ReplayTimeline from '../../src/components/ReplayTimeline';
 import MapLayerToggle from '../../src/components/MapLayerToggle';
 import GrievanceFormModal from '../../src/components/GrievanceFormModal';
 import RoutePlannerModal from '../../src/components/RoutePlannerModal';
+import { loadSavedCitizenRoute } from '../../src/lib/CitizenRouteStorage';
 import { initializeSensors, stepSensorSimulation, type WaterSensor } from '../../src/lib/waterSensors';
 
 const STRATEGIC_SENSOR_IDS = new Set([
@@ -44,6 +45,20 @@ export default function DashboardPage() {
   const [isGrievanceOpen, setIsGrievanceOpen] = useState<boolean>(false);
   const [isRoutePlannerOpen, setIsRoutePlannerOpen] = useState<boolean>(false);
   const [highlightedRouteEdgeIds, setHighlightedRouteEdgeIds] = useState<Set<string> | undefined>(undefined);
+  const [highlightedRouteNodeSeq, setHighlightedRouteNodeSeq] = useState<string[] | undefined>(undefined);
+  const [routeOriginId, setRouteOriginId] = useState<string>('');
+  const [routeDestId, setRouteDestId] = useState<string>('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const saved = loadSavedCitizenRoute();
+      if (saved) {
+        setRouteOriginId(saved.originId);
+        setRouteDestId(saved.destId);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Live water level telemetry simulation for the tactical map feed
   const [sensors, setSensors] = useState<WaterSensor[]>(() =>
@@ -155,8 +170,8 @@ export default function DashboardPage() {
               type="button"
               onClick={() => setMapStyle('TACTICAL')}
               className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mapStyle === 'TACTICAL'
-                  ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
+                ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
                 }`}
               title="Stylized tactical map (no internet required)"
             >
@@ -166,8 +181,8 @@ export default function DashboardPage() {
               type="button"
               onClick={() => setMapStyle('REALISTIC')}
               className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mapStyle === 'REALISTIC'
-                  ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
+                ? 'bg-signal-accent text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.4)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
                 }`}
               title="Real satellite/street map with road-snapped routes (needs internet)"
             >
@@ -186,8 +201,8 @@ export default function DashboardPage() {
                 }
               }}
               className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mode === 'LIVE'
-                  ? 'bg-status-ok text-white font-black shadow-[0_0_8px_rgba(75,123,78,0.5)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
+                ? 'bg-status-ok text-white font-black shadow-[0_0_8px_rgba(75,123,78,0.5)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
                 }`}
             >
               LIVE
@@ -201,8 +216,8 @@ export default function DashboardPage() {
                 }
               }}
               className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${mode === 'REPLAY'
-                  ? 'bg-status-warn text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.5)]'
-                  : 'text-[#E4E1D8]/60 hover:text-white'
+                ? 'bg-status-warn text-black font-black shadow-[0_0_8px_rgba(184,134,59,0.5)]'
+                : 'text-[#E4E1D8]/60 hover:text-white'
                 }`}
             >
               REPLAY
@@ -240,6 +255,8 @@ export default function DashboardPage() {
                   sensors={sensors}
                   visibleLayers={visibleLayers}
                   highlightedEdgeIds={highlightedRouteEdgeIds}
+                  routeOriginId={routeOriginId}
+                  routeDestId={routeDestId}
                 />
               ) : (
                 <MapViewGeo
@@ -248,7 +265,9 @@ export default function DashboardPage() {
                   convoys={displayConvoys}
                   sensors={sensors}
                   visibleLayers={visibleLayers}
-                  highlightedEdgeIds={highlightedRouteEdgeIds}
+                  highlightedNodeSequence={highlightedRouteNodeSeq}
+                  routeOriginId={routeOriginId}
+                  routeDestId={routeDestId}
                 />
               )
             ) : (
@@ -281,19 +300,19 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between border-b border-[#35332C]/30 pb-1.5">
               <span className="font-display text-[9px] font-black tracking-widest text-[#E4E1D8]/60 uppercase">SYSTEM TELEMETRY SUMMARY</span>
             </div>
-            
+
             <div className="flex items-center justify-between font-mono text-[10px] py-1 border-b border-[#35332C]/10">
               <span className="text-[#E4E1D8]/60">ACTIVE OPERATIONS</span>
               <span className="font-bold text-signal-accent tracking-wider font-mono text-xs">{activeConvoys} CONVOYS</span>
             </div>
-            
+
             <div className="flex items-center justify-between font-mono text-[10px] py-1 border-b border-[#35332C]/10">
               <span className="text-[#E4E1D8]/60">HAZARD INTERRUPTS</span>
               <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-[#E4E1D8]/60'}`}>
                 {blockedRoads} BLOCKED
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between font-mono text-[10px] py-1">
               <span className="text-[#E4E1D8]/60">ALERT LEVEL SHELTERS</span>
               <span className={`font-bold tracking-wider font-mono text-xs ${criticalShelters > 0 ? 'text-status-danger animate-pulse' : 'text-status-ok'}`}>
@@ -357,9 +376,17 @@ export default function DashboardPage() {
       <RoutePlannerModal
         isOpen={isRoutePlannerOpen}
         onClose={() => setIsRoutePlannerOpen(false)}
+        onOpen={() => setIsRoutePlannerOpen(true)}
         nodes={displayNodes}
         edges={displayEdges}
-        onHighlightRoute={(edgeIds) => setHighlightedRouteEdgeIds(edgeIds ? new Set(edgeIds) : undefined)}
+        originId={routeOriginId}
+        destId={routeDestId}
+        onChangeOrigin={setRouteOriginId}
+        onChangeDest={setRouteDestId}
+        onHighlightRoute={(edgeIds, nodeSeq) => {
+          setHighlightedRouteEdgeIds(edgeIds ? new Set(edgeIds) : undefined);
+          setHighlightedRouteNodeSeq(nodeSeq ? nodeSeq : undefined);
+        }}
       />
     </div>
   );

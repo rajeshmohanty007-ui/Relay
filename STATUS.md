@@ -88,8 +88,10 @@ Updated comprehensive project status report across data models, simulation engin
 
 10. **Citizen Point-to-Point Route Planner (`RoutePlannerModal.tsx`, `routingEngine.ts`)**:
     - Dijkstra routing for general citizens (`buildCitizenAdjacency`) that ignores the heavy vehicle safety weight constraints.
-    - Animated sky blue overlay route highlighting on both tactical (SVG animate dashoffset) and realistic (leaflet dashed polyline) map styles.
-    - Form layout featuring origin/destination selector selects, switch swapping, path nodes sequence listing, and ETA indicators.
+    - Animated Hot Pink (`#EC4899`) overlay route highlighting on both tactical (SVG animate dashoffset) and realistic (leaflet dashed polyline) map styles.
+    - Form layout featuring origin/destination selector selects, switch swapping, path nodes sequence listing, ETA indicators, and a confirmed "SHOW ROUTE ON MAP" button.
+    - Simplified modal close triggers by stripping "CLOSE" text from header buttons to keep only the clean "✕" icon.
+    - Added custom pulsing route highlight pins (A and B text markers) at selected origin/destination nodes on both tactical and realistic map views.
     - Uses `z-[9999]` index layers to sit on top of map panes and Leaflet overlays.
 
 ---

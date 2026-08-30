@@ -7,7 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import type { Node, Edge, Convoy } from '../lib/types';
 import type { WaterSensor } from '../lib/waterSensors';
 import type { MapLayer } from './MapViewTopo';
-import { fetchRoadRoutesForEdges, type LatLng } from '../lib/osrmrouting';
+import { fetchRoadRoutesForEdges, fetchRoadRouteForPath, type LatLng } from '../lib/osrmrouting';
 
 export interface MapViewGeoProps {
     nodes: Node[];
@@ -15,8 +15,9 @@ export interface MapViewGeoProps {
     convoys: Convoy[];
     sensors?: WaterSensor[];
     visibleLayers?: Set<MapLayer>;
-    /** Edge IDs of a citizen-planned route to draw as a highlighted overlay on top of the road network. */
-    highlightedEdgeIds?: Set<string>;
+    highlightedNodeSequence?: string[];
+    routeOriginId?: string;
+    routeDestId?: string;
 }
 
 type BasemapStyle = 'street' | 'satellite';
@@ -102,6 +103,23 @@ function convoyDivIcon(color: string): L.DivIcon {
     });
 }
 
+function routePinDivIcon(label: 'A' | 'B'): L.DivIcon {
+    return L.divIcon({
+        className: 'route-highlight-pin',
+        html: `
+          <div class="relative flex items-center justify-center select-none pointer-events-none" style="transform: translate(-50%, -50%); width: 32px; height: 32px;">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-[#EC4899]/35 animate-ping" style="animation-duration: 2.2s;"></span>
+            <span class="absolute inline-flex h-7 w-7 rounded-full bg-[#EC4899]/20"></span>
+            <div class="relative flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#FAF9F6] bg-[#EC4899] text-[#FAF9F6] font-mono text-[10px] font-black shadow-[0_0_12px_#EC4899] select-none pointer-events-none">
+              ${label}
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+    });
+}
+
 /** Total path length in the same units as the lat/lng coordinates (fine for short-distance interpolation). */
 function pathLength(path: LatLng[]): number {
     let total = 0;
@@ -152,10 +170,13 @@ export default function MapViewGeo({
     convoys,
     sensors = [],
     visibleLayers = new Set(['edges', 'nodes', 'convoys', 'sensors'] as MapLayer[]),
-    highlightedEdgeIds,
+    highlightedNodeSequence,
+    routeOriginId,
+    routeDestId,
 }: MapViewGeoProps) {
     const [basemap, setBasemap] = useState<BasemapStyle>('street');
     const [roadGeometry, setRoadGeometry] = useState<Map<string, LatLng[]>>(new Map());
+    const [highlightedPathGeometry, setHighlightedPathGeometry] = useState<LatLng[]>([]);
 
     const nodesById = useMemo(() => {
         const map = new Map<string, Node>();
@@ -168,6 +189,29 @@ export default function MapViewGeo({
         for (const e of edges) map.set(e.id, e);
         return map;
     }, [edges]);
+
+    useEffect(() => {
+        if (!highlightedNodeSequence || highlightedNodeSequence.length < 2) {
+            Promise.resolve().then(() => setHighlightedPathGeometry([]));
+            return;
+        }
+
+        let cancelled = false;
+        const points = highlightedNodeSequence
+            .map((id) => nodesById.get(id))
+            .filter((n): n is Node => !!n)
+            .map((n) => [n.lat, n.lng] as LatLng);
+
+        fetchRoadRouteForPath(points).then((coords) => {
+            if (!cancelled) {
+                setHighlightedPathGeometry(coords);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [highlightedNodeSequence, nodesById]);
 
     // Straight-line geometry available instantly; upgraded to real road geometry once OSRM resolves.
     const straightGeometry = useMemo(() => {
@@ -231,21 +275,12 @@ export default function MapViewGeo({
                         );
                     })}
 
-                {highlightedEdgeIds &&
-                    highlightedEdgeIds.size > 0 &&
-                    edges
-                        .filter((edge) => highlightedEdgeIds.has(edge.id))
-                        .map((edge) => {
-                            const geom = geometryFor(edge.id);
-                            if (geom.length < 2) return null;
-                            return (
-                                <Polyline
-                                    key={`hl-${edge.id}`}
-                                    positions={geom}
-                                    pathOptions={{ color: '#38bdf8', weight: 6, opacity: 0.9, dashArray: '2 10', lineCap: 'round' }}
-                                />
-                            );
-                        })}
+                {highlightedPathGeometry.length > 0 && (
+                    <Polyline
+                        positions={highlightedPathGeometry}
+                        pathOptions={{ color: '#ec4899', weight: 6, opacity: 0.9, dashArray: '2 10', lineCap: 'round' }}
+                    />
+                )}
 
                 {(!visibleLayers || visibleLayers.has('nodes')) && (() => {
                     const showLabels = !visibleLayers || visibleLayers.has('labels');
@@ -321,6 +356,20 @@ export default function MapViewGeo({
                             </Popup>
                         </CircleMarker>
                     ))}
+
+                {routeOriginId && nodesById.has(routeOriginId) && (() => {
+                    const node = nodesById.get(routeOriginId)!;
+                    return (
+                        <Marker key={`origin-pin-${node.id}`} position={[node.lat, node.lng]} icon={routePinDivIcon('A')} zIndexOffset={10000} />
+                    );
+                })()}
+
+                {routeDestId && nodesById.has(routeDestId) && (() => {
+                    const node = nodesById.get(routeDestId)!;
+                    return (
+                        <Marker key={`dest-pin-${node.id}`} position={[node.lat, node.lng]} icon={routePinDivIcon('B')} zIndexOffset={10000} />
+                    );
+                })()}
             </MapContainer>
 
             <div className="absolute top-3 right-3 z-[1000] flex overflow-hidden rounded-lg border border-white/20 shadow-lg">

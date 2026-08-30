@@ -15,6 +15,8 @@ export interface MapViewProps {
   visibleLayers?: Set<MapLayer>;
   /** Edge IDs of a citizen-planned route to draw as a highlighted overlay on top of the road network. */
   highlightedEdgeIds?: Set<string>;
+  routeOriginId?: string;
+  routeDestId?: string;
 }
 
 const VIEW_WIDTH = 900;
@@ -49,6 +51,8 @@ export default function MapViewTopo({
   sensors = [],
   visibleLayers = ALL_MAP_LAYERS,
   highlightedEdgeIds,
+  routeOriginId,
+  routeDestId,
 }: MapViewProps) {
   const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
 
@@ -390,7 +394,7 @@ export default function MapViewTopo({
                       y1={from.y}
                       x2={to.x}
                       y2={to.y}
-                      stroke="#38BDF8"
+                      stroke="#EC4899"
                       strokeWidth={7}
                       strokeLinecap="round"
                       opacity="0.25"
@@ -400,7 +404,7 @@ export default function MapViewTopo({
                       y1={from.y}
                       x2={to.x}
                       y2={to.y}
-                      stroke="#38BDF8"
+                      stroke="#EC4899"
                       strokeWidth={3}
                       strokeLinecap="round"
                       strokeDasharray="10 8"
@@ -640,6 +644,37 @@ export default function MapViewTopo({
             })}
           </g>
         )}
+
+        {/* 6b. Route Highlight Pins for Topo Map */}
+        {routeOriginId && positionsById.has(routeOriginId) && (() => {
+          const pos = positionsById.get(routeOriginId)!;
+          return (
+            <g key="topo-origin-pin" className="pointer-events-none select-none">
+              <circle cx={pos.x} cy={pos.y} r={18} fill="#EC4899" opacity={0.15}>
+                <animate attributeName="r" values="8;20;8" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={pos.x} cy={pos.y} r={12} fill="#EC4899" opacity={0.35} />
+              <circle cx={pos.x} cy={pos.y} r={8} fill="#EC4899" stroke="#FFFFFF" strokeWidth={1.5} />
+              <text x={pos.x} y={pos.y + 3} textAnchor="middle" className="font-mono text-[9px] font-black text-white fill-white select-none pointer-events-none">A</text>
+            </g>
+          );
+        })()}
+
+        {routeDestId && positionsById.has(routeDestId) && (() => {
+          const pos = positionsById.get(routeDestId)!;
+          return (
+            <g key="topo-dest-pin" className="pointer-events-none select-none">
+              <circle cx={pos.x} cy={pos.y} r={18} fill="#EC4899" opacity={0.15}>
+                <animate attributeName="r" values="8;20;8" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={pos.x} cy={pos.y} r={12} fill="#EC4899" opacity={0.35} />
+              <circle cx={pos.x} cy={pos.y} r={8} fill="#EC4899" stroke="#FFFFFF" strokeWidth={1.5} />
+              <text x={pos.x} y={pos.y + 3} textAnchor="middle" className="font-mono text-[9px] font-black text-white fill-white select-none pointer-events-none">B</text>
+            </g>
+          );
+        })()}
 
         {/* 7. Convoys (Active Operations) */}
         {visibleLayers.has('convoys') && (

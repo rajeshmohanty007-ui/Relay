@@ -1,16 +1,23 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import type { Node, Edge } from '../lib/types';
 import { buildCitizenAdjacency, shortestPath, type PathResult } from '../lib/routingEngine';
+import { saveCitizenRoute, clearSavedCitizenRoute } from '../lib/CitizenRouteStorage';
 
 export interface RoutePlannerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Re-opens the planner panel — used by the floating summary chip's "Edit" action. */
+  onOpen: () => void;
   nodes: Node[];
   edges: Edge[];
-  /** Called with the edge IDs of the currently-shown route (or null to clear the highlight). */
-  onHighlightRoute: (edgeIds: string[] | null) => void;
+  originId: string;
+  destId: string;
+  onChangeOrigin: (id: string) => void;
+  onChangeDest: (id: string) => void;
+  /** Called with the edge IDs and node sequence of the currently-active route. */
+  onHighlightRoute: (edgeIds: string[] | null, nodeSequence: string[] | null) => void;
 }
 
 const NODE_TYPE_LABEL: Record<Node['type'], string> = {
@@ -20,21 +27,30 @@ const NODE_TYPE_LABEL: Record<Node['type'], string> = {
   junction: 'Junction',
 };
 
+type RouteOutcome =
+  | { kind: 'unselected' }
+  | { kind: 'same' }
+  | { kind: 'unreachable' }
+  | { kind: 'found'; result: PathResult };
+
 export default function RoutePlannerModal({
   isOpen,
   onClose,
+  onOpen,
   nodes,
   edges,
+  originId,
+  destId,
+  onChangeOrigin,
+  onChangeDest,
   onHighlightRoute,
 }: RoutePlannerModalProps) {
-  const [originId, setOriginId] = useState<string>('');
-  const [destId, setDestId] = useState<string>('');
 
-  const edgesById = useMemo(() => new Map(edges.map((e) => [e.id, e])), [edges]);
   const nodesById = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
+  const edgesById = useMemo(() => new Map(edges.map((e) => [e.id, e])), [edges]);
 
   // Prefer real destinations (depot/shelter/village) over bare road junctions
-  // as sensible defaults, but junctions remain selectable for precision.
+  // in the dropdown ordering, but junctions remain selectable for precision.
   const sortedNodes = useMemo(
     () =>
       [...nodes].sort((a, b) => {
@@ -45,19 +61,12 @@ export default function RoutePlannerModal({
     [nodes],
   );
 
-  // Fall back to sensible defaults (first two sorted nodes) until the user
-  // makes an explicit choice — avoids a setState-in-effect just to seed
-  // initial selection.
-  const effectiveOriginId = originId || sortedNodes[0]?.id || '';
-  const effectiveDestId = destId || sortedNodes[1]?.id || '';
+  // Guards against a stale saved ID from an older graph — falls back to
+  // "nothing selected" rather than silently picking a different node.
+  const effectiveOriginId = nodesById.has(originId) ? originId : '';
+  const effectiveDestId = nodesById.has(destId) ? destId : '';
 
-  type RouteOutcome =
-    | { kind: 'unselected' }
-    | { kind: 'same' }
-    | { kind: 'unreachable' }
-    | { kind: 'found'; result: PathResult };
-
-  // Recomputed live whenever road conditions change, so a road closure that
+  // Recomputed live whenever road conditions change, so a closure that
   // happens after the trip was planned is reflected immediately.
   const outcome: RouteOutcome = useMemo(() => {
     if (!effectiveOriginId || !effectiveDestId) return { kind: 'unselected' };
@@ -73,27 +82,77 @@ export default function RoutePlannerModal({
     return outcome.result.path.filter((edgeId) => edgesById.get(edgeId)?.status === 'degraded').length;
   }, [outcome, edgesById]);
 
+  const hasActiveRoute = outcome.kind === 'found' && outcome.result.path.length > 0;
+
+  // The highlight is driven purely by what's currently selected — it stays
+  // lit on the map whether this panel is open or closed, and disappears
+  // only when the route is cleared or becomes genuinely invalid.
   useEffect(() => {
-    if (!isOpen) return;
-    if (outcome.kind === 'found' && outcome.result.path.length > 0) {
-      onHighlightRoute(outcome.result.path);
+    if (hasActiveRoute) {
+      const found = outcome as { kind: 'found'; result: PathResult };
+      onHighlightRoute(found.result.path, found.result.nodeSequence);
     } else {
-      onHighlightRoute(null);
+      onHighlightRoute(null, null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outcome, isOpen]);
+  }, [outcome, hasActiveRoute]);
 
-  const handleClose = () => {
-    onHighlightRoute(null);
-    onClose();
+  const pickOrigin = (id: string) => {
+    onChangeOrigin(id);
+    saveCitizenRoute(id, effectiveDestId);
+  };
+
+  const pickDest = (id: string) => {
+    onChangeDest(id);
+    saveCitizenRoute(effectiveOriginId, id);
   };
 
   const handleSwap = () => {
-    setOriginId(effectiveDestId);
-    setDestId(effectiveOriginId);
+    onChangeOrigin(effectiveDestId);
+    onChangeDest(effectiveOriginId);
+    saveCitizenRoute(effectiveDestId, effectiveOriginId);
   };
 
-  if (!isOpen) return null;
+  const handleClearRoute = () => {
+    onChangeOrigin('');
+    onChangeDest('');
+    clearSavedCitizenRoute();
+    onHighlightRoute(null, null);
+  };
+
+  // Small always-visible reminder once a route is active but the panel is
+  // closed, so the highlighted line on the map isn't the only cue — and
+  // nobody has to reopen the panel or read a turn list to know what's
+  // planned.
+  if (!isOpen) {
+    if (!hasActiveRoute) return null;
+    const originName = nodesById.get(effectiveOriginId)?.name ?? effectiveOriginId;
+    const destName = nodesById.get(effectiveDestId)?.name ?? effectiveDestId;
+    return (
+      <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-signal-accent bg-[#1C1B17]/95 px-4 py-2.5 shadow-[0_0_25px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
+        <span className="font-mono text-[11px] text-[#FAF9F6]">
+          <span className="font-bold">{originName}</span> → <span className="font-bold">{destName}</span>
+          <span className="text-[#E4E1D8]/60"> · {Math.round((outcome as { kind: 'found'; result: PathResult }).result.totalTimeMin)} min</span>
+        </span>
+        <button
+          type="button"
+          onClick={onOpen}
+          className="rounded-lg border border-[#35332C] bg-[#24221D] px-2.5 py-1 font-mono text-[9px] font-bold text-[#E4E1D8] hover:border-signal-accent hover:text-white transition-all"
+        >
+          EDIT
+        </button>
+        <button
+          type="button"
+          onClick={handleClearRoute}
+          title="Clear this route"
+          className="rounded-lg border border-[#35332C] bg-[#24221D] px-2.5 py-1 font-mono text-[9px] font-bold text-[#E4E1D8] hover:border-status-danger hover:text-status-danger transition-all"
+        >
+          ✕
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
@@ -115,10 +174,10 @@ export default function RoutePlannerModal({
           </div>
           <button
             type="button"
-            onClick={handleClose}
-            className="rounded-xl border border-[#35332C] bg-[#1C1B17] px-3.5 py-1.5 font-mono text-xs font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent hover:bg-[#24221D] transition-all"
+            onClick={onClose}
+            className="rounded-xl border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 font-mono text-xs font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent hover:bg-[#24221D] transition-all flex items-center justify-center"
           >
-            ✕ CLOSE
+            ✕
           </button>
         </div>
 
@@ -131,9 +190,12 @@ export default function RoutePlannerModal({
             <select
               id="route-origin"
               value={effectiveOriginId}
-              onChange={(e) => setOriginId(e.target.value)}
+              onChange={(e) => pickOrigin(e.target.value)}
               className="border border-[#35332C] bg-[#24221D] p-3 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
             >
+              <option value="" disabled>
+                Select a starting point…
+              </option>
               {sortedNodes.map((n) => (
                 <option key={n.id} value={n.id}>
                   {n.name} — {NODE_TYPE_LABEL[n.type]}
@@ -160,9 +222,12 @@ export default function RoutePlannerModal({
             <select
               id="route-dest"
               value={effectiveDestId}
-              onChange={(e) => setDestId(e.target.value)}
+              onChange={(e) => pickDest(e.target.value)}
               className="border border-[#35332C] bg-[#24221D] p-3 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
             >
+              <option value="" disabled>
+                Select a destination…
+              </option>
               {sortedNodes.map((n) => (
                 <option key={n.id} value={n.id}>
                   {n.name} — {NODE_TYPE_LABEL[n.type]}
@@ -199,7 +264,7 @@ export default function RoutePlannerModal({
                 <div className="flex items-center justify-between border-b border-[#35332C]/60 pb-2.5">
                   <div>
                     <span className="text-[#E4E1D8]/60 block text-[9px] font-mono">ESTIMATED TRAVEL TIME</span>
-                    <span className="font-display text-lg font-black text-status-ok">
+                    <span className="font-display text-lg font-black text-[#EC4899] drop-shadow-[0_0_8px_rgba(236,72,153,0.3)]">
                       {Math.round(outcome.result.totalTimeMin)} min
                     </span>
                   </div>
@@ -213,21 +278,31 @@ export default function RoutePlannerModal({
                   )}
                 </div>
 
-                <div>
-                  <span className="text-[#E4E1D8]/60 block text-[9px] font-mono mb-1.5">ROUTE VIA</span>
-                  <ol className="flex flex-col gap-1">
-                    {outcome.result.nodeSequence.map((nodeId, idx) => (
-                      <li key={`${nodeId}-${idx}`} className="flex items-center gap-2 font-mono text-[11px] text-[#FAF9F6]">
-                        <span className="text-[#E4E1D8]/40">{idx + 1}.</span>
-                        <span>{nodesById.get(nodeId)?.name ?? nodeId}</span>
-                      </li>
-                    ))}
-                  </ol>
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="w-full rounded-xl border border-[#EC4899] bg-[#EC4899]/15 px-4 py-2.5 font-display text-xs font-black tracking-wider uppercase text-[#FAF9F6] hover:bg-[#EC4899]/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(236,72,153,0.2)]"
+                  >
+                    <span>🧭 SHOW ROUTE ON MAP</span>
+                  </button>
+
+                  <div className="flex items-center gap-2 rounded-xl border border-[#EC4899]/40 bg-[#EC4899]/5 px-3 py-2.5">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
+                    <p className="font-mono text-[9px] text-[#E4E1D8]/70 leading-normal">
+                      Your safe road route is highlighted in <span className="font-bold text-[#EC4899] uppercase">Pink</span> on the map.
+                      It updates dynamically if road blockages occur.
+                    </p>
+                  </div>
                 </div>
 
-                <p className="font-mono text-[9px] text-[#E4E1D8]/50 pt-1 border-t border-[#35332C]/40">
-                  This route is highlighted on the map and updates automatically if road conditions change.
-                </p>
+                <button
+                  type="button"
+                  onClick={handleClearRoute}
+                  className="self-start font-mono text-[9px] text-[#E4E1D8]/50 underline decoration-dotted hover:text-status-danger transition-all mt-1"
+                >
+                  Clear this route
+                </button>
               </div>
             )}
           </div>
