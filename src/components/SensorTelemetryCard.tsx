@@ -1,6 +1,6 @@
 'use client';
 
-import type { WaterSensor } from '../../lib/waterSensors';
+import type { WaterSensor } from '../lib/waterSensors';
 
 interface SensorTelemetryCardProps {
   sensor: WaterSensor;

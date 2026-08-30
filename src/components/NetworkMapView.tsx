@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { NetworkNode } from '../../lib/networkConnectivity';
+import type { NetworkNode } from '../lib/networkConnectivity';
 
 interface NetworkMapViewProps {
   nodes: NetworkNode[];

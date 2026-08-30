@@ -1,6 +1,6 @@
 'use client';
 
-import type { Node, Convoy, DemoLogEntry } from '../../lib/types';
+import type { Node, Convoy, DemoLogEntry } from '../lib/types';
 
 export interface DispatchPanelProps {
   nodes: Node[];

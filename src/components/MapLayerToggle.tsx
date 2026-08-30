@@ -9,7 +9,7 @@ import {
   initializeSensors,
   stepSensorSimulation,
   computeSensorSummary,
-} from '../../lib/waterSensors';
+} from '../lib/waterSensors';
 
 export interface MapLayerToggleProps {
   visibleLayers: Set<MapLayer>;

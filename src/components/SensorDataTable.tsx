@@ -1,111 +1,124 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { NetworkNode, NetworkStatus } from '../../lib/networkConnectivity';
+import type { WaterSensor, WaterLevelStatus, BasinSection } from '../lib/waterSensors';
 
-interface NetworkDataTableProps {
-  nodes: NetworkNode[];
-  selectedNodeId: string | null;
-  onSelectNode: (node: NetworkNode) => void;
+interface SensorDataTableProps {
+  sensors: WaterSensor[];
+  selectedSensorId: string | null;
+  onSelectSensor: (sensor: WaterSensor) => void;
 }
 
-const STATUS_PILL: Record<NetworkStatus, { label: string; className: string }> = {
-  optimal: { label: 'Optimal', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' },
-  degraded: { label: 'Degraded', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800' },
-  critical_drop: { label: 'Packet Loss', className: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800' },
-  blackout: { label: 'Blackout', className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800' },
+const STATUS_PILL: Record<WaterLevelStatus, { label: string; className: string }> = {
+  normal: { label: 'Normal', className: 'bg-[#203024] text-status-ok border-[#4B7B4E]/60' },
+  advisory: { label: 'Advisory', className: 'bg-[#2C2A1E] text-status-warn border-[#B8863B]/60' },
+  warning: { label: 'Warning', className: 'bg-[#352718] text-status-warn border-[#B8863B]/60' },
+  critical: { label: 'Critical', className: 'bg-[#351C1A] text-status-danger border-[#A6403A]/60' },
 };
 
-export default function NetworkDataTable({
-  nodes,
-  selectedNodeId,
-  onSelectNode,
-}: NetworkDataTableProps) {
+export default function SensorDataTable({
+  sensors,
+  selectedSensorId,
+  onSelectSensor,
+}: SensorDataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [sortField, setSortField] = useState<'latency' | 'loss' | 'bandwidth' | 'code'>('latency');
+  const [basinFilter, setBasinFilter] = useState<string>('all');
+  const [sortField, setSortField] = useState<'level' | 'rise' | 'code' | 'flow'>('level');
   const [sortAsc, setSortAsc] = useState(false);
 
-  const filteredNodes = useMemo(() => {
-    return nodes
-      .filter((n) => {
+  const filteredSensors = useMemo(() => {
+    return sensors
+      .filter((s) => {
         const matchesSearch =
-          n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          n.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          n.activeChannel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          n.type.toLowerCase().includes(searchTerm.toLowerCase());
+          s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.basinSection.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          s.correlatedNodeNames.some((n) => n.toLowerCase().includes(searchTerm.toLowerCase()));
 
-        const matchesStatus = statusFilter === 'all' || n.status === statusFilter;
-        const matchesType = typeFilter === 'all' || n.type === typeFilter;
+        const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
+        const matchesBasin = basinFilter === 'all' || s.basinSection === basinFilter;
 
-        return matchesSearch && matchesStatus && matchesType;
+        return matchesSearch && matchesStatus && matchesBasin;
       })
       .sort((a, b) => {
         let diff = 0;
-        if (sortField === 'latency') diff = a.latencyMs - b.latencyMs;
-        else if (sortField === 'loss') diff = a.packetLossPct - b.packetLossPct;
-        else if (sortField === 'bandwidth') diff = a.bandwidthMbps - b.bandwidthMbps;
+        if (sortField === 'level') diff = a.currentLevelM - b.currentLevelM;
+        else if (sortField === 'rise') diff = a.rateOfRiseMPerHour - b.rateOfRiseMPerHour;
+        else if (sortField === 'flow') diff = a.flowVelocityMps - b.flowVelocityMps;
         else if (sortField === 'code') diff = a.code.localeCompare(b.code);
         return sortAsc ? diff : -diff;
       });
-  }, [nodes, searchTerm, statusFilter, typeFilter, sortField, sortAsc]);
+  }, [sensors, searchTerm, statusFilter, basinFilter, sortField, sortAsc]);
 
   // Export CSV
   const handleExportCsv = () => {
     const headers = [
-      'Station Code',
+      'Code',
       'Name',
-      'Type',
+      'Basin Section',
       'Status',
-      'Active Channel',
-      'Latency (ms)',
-      'Packet Loss (%)',
-      'Bandwidth (Mbps)',
+      'Current Level (m)',
+      'Baseline (m)',
+      'Warning Threshold (m)',
+      'Critical Threshold (m)',
+      'Rate of Rise (m/h)',
+      'Flow Velocity (m/s)',
+      'Discharge (cumecs)',
+      'Road Submersion (m)',
+      'Battery (%)',
       'Signal (dBm)',
-      'Power Source',
-      'Battery Remaining (h)',
-      'Connected Transceivers',
       'Latitude',
       'Longitude',
     ];
 
-    const rows = filteredNodes.map((n) => [
-      n.code,
-      `"${n.name}"`,
-      n.type,
-      n.status,
-      `"${n.activeChannel}"`,
-      n.latencyMs,
-      n.packetLossPct,
-      n.bandwidthMbps,
-      n.signalDbm,
-      `"${n.powerSource}"`,
-      n.batteryHoursRemaining,
-      n.connectedDevices,
-      n.lat,
-      n.lng,
+    const rows = filteredSensors.map((s) => [
+      s.code,
+      `"${s.name}"`,
+      `"${s.basinSection}"`,
+      s.status,
+      s.currentLevelM,
+      s.baselineLevelM,
+      s.warningLevelM,
+      s.criticalLevelM,
+      s.rateOfRiseMPerHour,
+      s.flowVelocityMps,
+      s.dischargeRateCumecs,
+      s.roadSubmersionDepthM,
+      s.batteryPct,
+      s.signalDbm,
+      s.lat,
+      s.lng,
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `network_telemetry_${Date.now()}.csv`);
+    link.setAttribute('download', `water_sensors_telemetry_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const basinList: BasinSection[] = [
+    'Upper Periyar Catchment',
+    'North Riverbank Basin',
+    'Grand Canal Drainage',
+    'Western Coastal & Culverts',
+    'Central Floodplain',
+    'Southern Delta & Estuary',
+  ];
+
   return (
     <div className="flex flex-col rounded-xl border border-zinc-200 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-      {/* Control Header */}
+      {/* Table Control Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 p-4 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
             <input
               type="text"
-              placeholder="Search station, channel, code..."
+              placeholder="Search station, code, location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="h-9 w-64 rounded-lg border border-zinc-300 bg-zinc-50 px-3 text-xs text-zinc-900 placeholder-zinc-400 focus:border-sky-500 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500"
@@ -126,30 +139,31 @@ export default function NetworkDataTable({
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-9 rounded-lg border border-zinc-300 bg-zinc-50 px-2.5 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
           >
-            <option value="all">All Network Statuses</option>
-            <option value="blackout">Blackouts Only</option>
-            <option value="critical_drop">Packet Loss Only</option>
-            <option value="degraded">Degraded Only</option>
-            <option value="optimal">Optimal Only</option>
+            <option value="all">All Alert Levels</option>
+            <option value="critical">Critical Flood Only</option>
+            <option value="warning">Warning Only</option>
+            <option value="advisory">Advisory Only</option>
+            <option value="normal">Normal Only</option>
           </select>
 
-          {/* Type Filter */}
+          {/* Basin Filter */}
           <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
+            value={basinFilter}
+            onChange={(e) => setBasinFilter(e.target.value)}
             className="h-9 rounded-lg border border-zinc-300 bg-zinc-50 px-2.5 text-xs text-zinc-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
           >
-            <option value="all">All Node Types</option>
-            <option value="depot">Depots (Logistics Hubs)</option>
-            <option value="shelter">Shelters & Clinics</option>
-            <option value="village">Villages & Settlements</option>
-            <option value="junction">Highway Junctions</option>
+            <option value="all">All River Basin Zones</option>
+            {basinList.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-zinc-500">
-            Showing <strong className="text-zinc-800 dark:text-zinc-200">{filteredNodes.length}</strong> of {nodes.length}
+            Showing <strong className="text-zinc-800 dark:text-zinc-200">{filteredSensors.length}</strong> of {sensors.length}
           </span>
           <button
             onClick={handleExportCsv}
@@ -160,7 +174,7 @@ export default function NetworkDataTable({
         </div>
       </div>
 
-      {/* Table Content */}
+      {/* Table Container */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/60 dark:text-zinc-400">
@@ -174,49 +188,49 @@ export default function NetworkDataTable({
               >
                 Station & ID {sortField === 'code' ? (sortAsc ? '▲' : '▼') : ''}
               </th>
-              <th className="px-4 py-3">Type</th>
+              <th className="px-4 py-3">Basin Catchment</th>
               <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Active Channel</th>
               <th
                 onClick={() => {
-                  setSortField('latency');
+                  setSortField('level');
                   setSortAsc(!sortAsc);
                 }}
                 className="cursor-pointer px-4 py-3 text-right hover:text-zinc-900 dark:hover:text-zinc-100"
               >
-                Latency {sortField === 'latency' ? (sortAsc ? '▲' : '▼') : ''}
+                Water Level {sortField === 'level' ? (sortAsc ? '▲' : '▼') : ''}
               </th>
               <th
                 onClick={() => {
-                  setSortField('loss');
+                  setSortField('rise');
                   setSortAsc(!sortAsc);
                 }}
                 className="cursor-pointer px-4 py-3 text-right hover:text-zinc-900 dark:hover:text-zinc-100"
               >
-                Packet Loss {sortField === 'loss' ? (sortAsc ? '▲' : '▼') : ''}
+                Rate of Rise {sortField === 'rise' ? (sortAsc ? '▲' : '▼') : ''}
               </th>
               <th
                 onClick={() => {
-                  setSortField('bandwidth');
+                  setSortField('flow');
                   setSortAsc(!sortAsc);
                 }}
                 className="cursor-pointer px-4 py-3 text-right hover:text-zinc-900 dark:hover:text-zinc-100"
               >
-                Throughput {sortField === 'bandwidth' ? (sortAsc ? '▲' : '▼') : ''}
+                Flow Velocity {sortField === 'flow' ? (sortAsc ? '▲' : '▼') : ''}
               </th>
-              <th className="px-4 py-3 text-right">Power & Battery</th>
-              <th className="px-4 py-3 text-right">Devices</th>
+              <th className="px-4 py-3 text-right">Discharge</th>
+              <th className="px-4 py-3 text-right">Road Submersion</th>
+              <th className="px-4 py-3 text-right">Telemetry Health</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {filteredNodes.map((node) => {
-              const isSelected = node.id === selectedNodeId;
-              const pill = STATUS_PILL[node.status];
+            {filteredSensors.map((sensor) => {
+              const isSelected = sensor.id === selectedSensorId;
+              const pill = STATUS_PILL[sensor.status];
 
               return (
                 <tr
-                  key={node.id}
-                  onClick={() => onSelectNode(node)}
+                  key={sensor.id}
+                  onClick={() => onSelectSensor(sensor)}
                   className={`cursor-pointer transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
                     isSelected ? 'bg-sky-50 dark:bg-sky-950/30' : ''
                   }`}
@@ -224,17 +238,17 @@ export default function NetworkDataTable({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
-                        {node.code}
+                        {sensor.code}
                       </span>
                       <div>
-                        <div className="font-medium text-zinc-900 dark:text-zinc-100">{node.name}</div>
+                        <div className="font-medium text-zinc-900 dark:text-zinc-100">{sensor.name}</div>
                         <div className="text-[10px] text-zinc-400">
-                          {node.lat.toFixed(3)}°N, {node.lng.toFixed(3)}°E
+                          {sensor.lat.toFixed(3)}°N, {sensor.lng.toFixed(3)}°E
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300 capitalize">{node.type}</td>
+                  <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">{sensor.basinSection}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${pill.className}`}
@@ -242,29 +256,38 @@ export default function NetworkDataTable({
                       {pill.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">
-                    {node.activeChannel}
-                  </td>
                   <td className="px-4 py-3 text-right font-mono font-bold text-zinc-900 dark:text-zinc-100">
-                    {node.latencyMs} ms
+                    {sensor.currentLevelM.toFixed(2)}m
+                    <span className="block text-[10px] font-normal text-zinc-400">
+                      Warn: {sensor.warningLevelM}m
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
                     <span
                       className={`font-semibold ${
-                        node.packetLossPct > 10 ? 'text-red-600 dark:text-red-400' : node.packetLossPct > 2 ? 'text-amber-600' : 'text-emerald-600'
+                        sensor.rateOfRiseMPerHour > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600'
                       }`}
                     >
-                      {node.packetLossPct}%
+                      {sensor.rateOfRiseMPerHour > 0 ? `+${sensor.rateOfRiseMPerHour}` : sensor.rateOfRiseMPerHour} m/h
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-zinc-700 dark:text-zinc-300">
-                    {node.bandwidthMbps} Mbps
+                    {sensor.flowVelocityMps} m/s
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono text-zinc-600 dark:text-zinc-400">
+                    {sensor.dischargeRateCumecs} m³/s
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {sensor.roadSubmersionDepthM > 0 ? (
+                      <span className="font-mono font-bold text-red-600 dark:text-red-400">
+                        +{sensor.roadSubmersionDepthM}m
+                      </span>
+                    ) : (
+                      <span className="text-zinc-400">Dry</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right text-[11px] text-zinc-500">
-                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">{node.batteryHoursRemaining}h</span> ({node.powerSource})
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono text-zinc-700 dark:text-zinc-300">
-                    {node.connectedDevices}
+                    <span>🔋 {sensor.batteryPct}%</span> • <span>📶 {sensor.signalDbm}dBm</span>
                   </td>
                 </tr>
               );
