@@ -15,21 +15,21 @@ function getEventColor(message: string): string {
 
   // Danger/Block/Recall
   if (msg.includes('block') || msg.includes('recall') || msg.includes('danger') || msg.includes('closed') || msg.includes('severed')) {
-    return '#A6403A'; // Rust Red
+    return '#997460'; // Terracotta
   }
 
   // Degraded/Reroute
   if (msg.includes('degrad') || msg.includes('rerout') || msg.includes('watch') || msg.includes('warning') || msg.includes('congested')) {
-    return '#B8863B'; // Amber Ochre
+    return '#6AADAB'; // Slate Teal
   }
 
   // Success/Arrival/Deploy
   if (msg.includes('arrive') || msg.includes('clear') || msg.includes('safe') || msg.includes('success') || msg.includes('deploy') || msg.includes('start')) {
-    return '#4B7B4E'; // Green
+    return '#206E6B'; // Pine Teal
   }
 
   // Other/System
-  return '#2C4A3E'; // Deep Slate Accent
+  return '#206E6B'; // Pine Teal
 }
 
 export default function EventFeedDispatcher({ entries, loading }: EventFeedProps) {
@@ -42,15 +42,15 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
           DISPATCHER FLIGHT LOG
         </h2>
         {loading && (
-          <span className="font-mono text-[9px] text-[#E4E1D8]/60 animate-pulse bg-[#24221D] px-2 py-0.5 rounded-full border border-[#35332C]">
+          <span className="font-mono text-[9px] text-base-dark/60 animate-pulse bg-base-sand px-2 py-0.5 rounded-full border border-struct-line">
             SYNCING LIVE...
           </span>
         )}
       </div>
 
-      <div className="flex-1 min-h-0 border border-[#35332C] bg-[#1C1B17] p-3 rounded-2xl shadow-inner">
+      <div className="flex-1 min-h-0 border border-struct-line bg-base-sand p-3 rounded-2xl shadow-inner">
         {!loading && newestFirst.length === 0 ? (
-          <p className="font-mono text-[10px] text-[#E4E1D8]/50 italic p-2">
+          <p className="font-mono text-[10px] text-base-dark/50 italic p-2">
             NO LOG ENTRIES RECORDED
           </p>
         ) : (
@@ -60,10 +60,10 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
               return (
                 <li
                   key={entry.id}
-                  className="flex items-start gap-2.5 bg-[#24221D]/60 border border-[#35332C]/60 p-2.5 rounded-xl font-mono text-[10px] text-[#E4E1D8] transition-all hover:bg-[#24221D]"
+                  className="flex items-start gap-2.5 bg-base-cream border border-struct-line/60 p-2.5 rounded-xl font-mono text-[10px] text-base-dark transition-all hover:bg-base-sand"
                 >
                   {/* Timestamp */}
-                  <span className="shrink-0 font-bold text-white bg-[#1C1B17] px-2 py-0.5 rounded-lg border border-[#35332C] tracking-tight select-none text-[9px]">
+                  <span className="shrink-0 font-bold text-base-dark bg-base-sand px-2 py-0.5 rounded-lg border border-struct-line tracking-tight select-none text-[9px]">
                     t={entry.simTimeSec.toString().padStart(4, '0')}s
                   </span>
 
@@ -79,7 +79,7 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
                   </span>
 
                   {/* Log Content */}
-                  <span className="flex-1 leading-normal tracking-wide text-[#FAF9F6]">
+                  <span className="flex-1 leading-normal tracking-wide text-base-dark">
                     {entry.message}
                   </span>
                 </li>

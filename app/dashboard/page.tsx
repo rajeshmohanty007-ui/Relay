@@ -22,7 +22,7 @@ import ReplayTimeline from '../../src/components/ReplayTimeline';
 import MapLayerToggle from '../../src/components/MapLayerToggle';
 import GrievanceFormModal from '../../src/components/GrievanceFormModal';
 import RoutePlannerModal from '../../src/components/RoutePlannerModal';
-import { loadSavedCitizenRoute } from '../../src/lib/CitizenRouteStorage';
+import { loadSavedCitizenRoute, clearSavedCitizenRoute } from '../../src/lib/CitizenRouteStorage';
 import { initializeSensors, stepSensorSimulation, type WaterSensor } from '../../src/lib/waterSensors';
 
 const STRATEGIC_SENSOR_IDS = new Set([
@@ -38,7 +38,7 @@ const STRATEGIC_SENSOR_IDS = new Set([
 
 export default function DashboardPage() {
   const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
-  const [mapStyle, setMapStyle] = useState<'TACTICAL' | 'REALISTIC'>('TACTICAL');
+  const [mapStyle, setMapStyle] = useState<'TACTICAL' | 'REALISTIC'>('REALISTIC');
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
   const [isFlightLogOpen, setIsFlightLogOpen] = useState<boolean>(false);
@@ -48,6 +48,7 @@ export default function DashboardPage() {
   const [highlightedRouteNodeSeq, setHighlightedRouteNodeSeq] = useState<string[] | undefined>(undefined);
   const [routeOriginId, setRouteOriginId] = useState<string>('');
   const [routeDestId, setRouteDestId] = useState<string>('');
+  const [isMobileLayersOpen, setIsMobileLayersOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -113,11 +114,51 @@ export default function DashboardPage() {
   const blockedRoads = displayEdges.filter(e => e.status === 'blocked').length;
   const criticalShelters = displayNodes.filter(n => n.type === 'shelter' && n.criticalSupplyNeed && n.criticalSupplyNeed.hoursOfStockRemaining <= 3.0).length;
 
+  // Citizen active planned route card to render inside replay timeline next to Tick indicator
+  const hasActiveRoute = !!(routeOriginId && routeDestId && highlightedRouteEdgeIds && highlightedRouteEdgeIds.size > 0);
+  let plannedRouteCard: React.ReactNode = null;
+
+  if (hasActiveRoute) {
+    const originNode = displayNodes.find(n => n.id === routeOriginId);
+    const destNode = displayNodes.find(n => n.id === routeDestId);
+    const originName = originNode?.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '') ?? routeOriginId;
+    const destName = destNode?.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '') ?? routeDestId;
+
+    plannedRouteCard = (
+      <div className="flex items-center gap-2 rounded-full border border-signal-accent bg-base-cream px-2.5 py-0.5 shadow-xs animate-in fade-in duration-200">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_6px_#EC4899]" />
+        <span className="font-mono text-[9px] text-base-dark tracking-wide">
+          <span className="font-black">{originName}</span> → <span className="font-black">{destName}</span>
+        </span>
+        <button
+          type="button"
+          onClick={() => setIsRoutePlannerOpen(true)}
+          className="ml-1 rounded-md border border-struct-line bg-base-sand px-1.5 py-0.5 font-mono text-[8px] font-bold text-base-dark hover:border-signal-accent transition-all cursor-pointer"
+        >
+          ADJUST
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setRouteOriginId('');
+            setRouteDestId('');
+            setHighlightedRouteEdgeIds(undefined);
+            setHighlightedRouteNodeSeq(undefined);
+            clearSavedCitizenRoute();
+          }}
+          className="rounded-md border border-status-danger bg-status-danger/10 px-1.5 py-0.5 font-mono text-[8px] font-bold text-status-danger hover:bg-status-danger/20 transition-all cursor-pointer"
+        >
+          CLEAR
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-screen w-screen flex-col bg-base-cream text-base-dark font-sans overflow-hidden">
+    <div className="flex min-h-screen xl:h-screen w-full flex-col bg-base-cream text-base-dark font-sans overflow-y-auto xl:overflow-hidden">
       {/* Tactical Header Strip */}
-      <header className="border-b border-struct-line bg-base-sand/90 backdrop-blur-md px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <header className="relative z-30 border-b border-struct-line bg-base-sand/90 backdrop-blur-md px-3 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/drawing.svg" alt="Relay Logo" className="h-8 w-auto block" />
@@ -131,7 +172,7 @@ export default function DashboardPage() {
 
 
         {/* Mode Toggle, Flight Log, Grievance Trigger & Mission Clock */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Grievance / Emergency Road Blockage Report Button */}
           <button
             type="button"
@@ -143,7 +184,7 @@ export default function DashboardPage() {
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              REPORT BLOCKAGE
+              <span className="hidden sm:inline">REPORT BLOCKAGE</span>
             </span>
           </button>
 
@@ -159,7 +200,7 @@ export default function DashboardPage() {
                 <circle cx="12" cy="12" r="10" />
                 <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
               </svg>
-              PLAN A ROUTE
+              <span className="hidden sm:inline">PLAN A ROUTE</span>
             </span>
           </button>
 
@@ -175,7 +216,7 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 11h6m-6 4h6" />
               </svg>
-              FLIGHT LOG
+              <span className="hidden sm:inline">FLIGHT LOG</span>
             </span>
             <span className="bg-base-sand border border-struct-line text-signal-accent px-1.5 py-0.5 rounded-full text-[8px] font-mono font-bold">
               {displayDemoLog.length}
@@ -245,9 +286,9 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Workspace Layout */}
-      <div className="flex min-h-0 flex-1 bg-base-cream gap-2 p-2 flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
-        {/* Left Collapsible Layer Sidebar */}
-        <div className="rounded-2xl border border-struct-line bg-brand-bg overflow-hidden flex shadow-lg shrink-0 w-full lg:w-auto">
+      <div className="flex min-h-0 flex-1 bg-base-cream gap-2 p-2 flex-col xl:flex-row overflow-y-auto xl:overflow-hidden">
+        {/* Left Collapsible Layer Sidebar — hidden on mobile, shown on xl */}
+        <div className="hidden xl:flex rounded-2xl border border-struct-line bg-brand-bg overflow-hidden shadow-lg shrink-0">
           <MapLayerToggle
             visibleLayers={visibleLayers}
             onChange={setVisibleLayers}
@@ -256,7 +297,7 @@ export default function DashboardPage() {
 
         {/* Central Tactical Area (Map + Scrubber) */}
         <main className="min-w-0 flex-1 flex flex-col gap-2">
-          <div className={`flex-1 relative min-h-0 bg-base-cream rounded-2xl border overflow-hidden shadow-lg transition-all ${mode === 'REPLAY' ? 'border-status-warn/60 ring-1 ring-status-warn/20' : 'border-struct-line'}`}>
+          <div className={`relative z-0 h-[50vh] sm:h-[55vh] md:h-[60vh] xl:flex-1 xl:h-auto bg-base-cream rounded-2xl border overflow-hidden shadow-lg transition-all ${mode === 'REPLAY' ? 'border-status-warn/60 ring-1 ring-status-warn/20' : 'border-struct-line'}`}>
             {/* Replay Mode Indicator Badge */}
             {mode === 'REPLAY' && (
               <div className="absolute top-3 left-3 z-10 border border-status-warn bg-base-cream/95 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_12px_rgba(184,134,59,0.3)] flex items-center gap-2">
@@ -296,7 +337,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Timeline Scrubber Bar */}
-          <div className="rounded-2xl overflow-hidden shadow-lg">
+          <div className="relative z-10 rounded-2xl overflow-hidden shadow-lg">
             <ReplayTimeline
               availableTimes={availableTimes}
               selectedIndex={activeIndex}
@@ -307,12 +348,13 @@ export default function DashboardPage() {
               onToggleMode={(newMode) => {
                 setMode(newMode);
               }}
+              plannedRouteCard={plannedRouteCard}
             />
           </div>
         </main>
 
         {/* Right Info Sidebar Panels */}
-        <aside className="flex w-full lg:w-88 shrink-0 flex-col rounded-2xl border border-struct-line bg-brand-bg p-3 overflow-hidden shadow-lg gap-3">
+        <aside className="flex w-full xl:w-88 shrink-0 flex-col rounded-2xl border border-struct-line bg-brand-bg p-3 shadow-lg gap-3 max-h-[50vh] xl:max-h-none xl:overflow-hidden overflow-y-auto">
           {/* Tactical Counters Summary Card */}
           <div className="flex flex-col gap-2 bg-base-cream border border-struct-line/60 rounded-2xl p-3 shrink-0 shadow-inner">
             <div className="flex items-center justify-between border-b border-struct-line/30 pb-1.5">
@@ -350,9 +392,47 @@ export default function DashboardPage() {
         </aside>
       </div>
 
+      {/* Mobile Map Layers Drawer */}
+      {isMobileLayersOpen && (
+        <div className="fixed inset-0 z-[9999] xl:hidden flex">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsMobileLayersOpen(false)}
+          />
+          <div className="relative w-80 max-w-[85vw] h-full bg-brand-bg border-r border-struct-line shadow-2xl overflow-y-auto">
+            <div className="flex items-center justify-between p-3 border-b border-struct-line bg-base-sand">
+              <span className="font-display text-[10px] font-black tracking-widest text-base-dark uppercase">MAP LAYERS</span>
+              <button
+                type="button"
+                onClick={() => setIsMobileLayersOpen(false)}
+                className="rounded-lg border border-struct-line bg-base-cream px-2.5 py-1 font-mono text-[10px] font-bold text-base-dark hover:border-signal-accent transition-all cursor-pointer"
+              >
+                CLOSE
+              </button>
+            </div>
+            <MapLayerToggle
+              visibleLayers={visibleLayers}
+              onChange={setVisibleLayers}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Layers Floating Action Button */}
+      <button
+        type="button"
+        onClick={() => setIsMobileLayersOpen(true)}
+        className="fixed bottom-20 left-4 z-40 xl:hidden flex items-center justify-center w-12 h-12 rounded-full bg-signal-accent text-white shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-white/30"
+        title="Toggle Map Layers"
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </button>
+
       {/* Dispatcher Flight Log Modal Dialog */}
       {isFlightLogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
           <div className="flex h-[80vh] w-full max-w-2xl flex-col rounded-2xl border border-struct-line bg-base-cream shadow-[0_0_40px_rgba(0,0,0,0.85)] overflow-hidden">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-5 py-3">

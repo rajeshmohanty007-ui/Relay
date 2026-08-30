@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  /* Custom spacing for right sidebar */
+  --spacing-88: 22rem;
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
@@ -148,16 +150,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1C1B17;
+  background: #EDE4DF;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #35332C;
+  background: #B0C4C3;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2C4A3E;
+  background: #206E6B;
 }
 
 /* Leaflet divIcon overrides to keep styling clean and transparent */

@@ -36,7 +36,6 @@ type RouteOutcome =
 export default function RoutePlannerModal({
   isOpen,
   onClose,
-  onOpen,
   nodes,
   edges,
   originId,
@@ -125,33 +124,7 @@ export default function RoutePlannerModal({
   // nobody has to reopen the panel or read a turn list to know what's
   // planned.
   if (!isOpen) {
-    if (!hasActiveRoute) return null;
-    const originName = nodesById.get(effectiveOriginId)?.name ?? effectiveOriginId;
-    const destName = nodesById.get(effectiveDestId)?.name ?? effectiveDestId;
-    return (
-      <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-signal-accent bg-base-cream/95 px-4 py-2.5 shadow-[0_0_25px_rgba(0,0,0,0.15)] backdrop-blur-sm">
-        <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
-        <span className="font-mono text-[11px] text-base-dark">
-          <span className="font-bold">{originName}</span> → <span className="font-bold">{destName}</span>
-          <span className="text-base-dark/60"> · {Math.round((outcome as { kind: 'found'; result: PathResult }).result.totalTimeMin)} min</span>
-        </span>
-        <button
-          type="button"
-          onClick={onOpen}
-          className="rounded-lg border border-struct-line bg-base-sand px-2.5 py-1 font-mono text-[9px] font-bold text-base-dark hover:border-signal-accent hover:text-base-dark transition-all cursor-pointer"
-        >
-          EDIT
-        </button>
-        <button
-          type="button"
-          onClick={handleClearRoute}
-          title="Clear this route"
-          className="rounded-lg border border-struct-line bg-base-sand px-2.5 py-1 font-mono text-[9px] font-bold text-base-dark hover:border-status-danger hover:text-status-danger transition-all cursor-pointer"
-        >
-          ✕
-        </button>
-      </div>
-    );
+    return null;
   }
 
   return (

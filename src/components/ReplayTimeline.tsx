@@ -8,6 +8,7 @@ export interface ReplayTimelineProps {
   mode: 'LIVE' | 'REPLAY';
   onSelectIndex: (index: number) => void;
   onToggleMode: (mode: 'LIVE' | 'REPLAY') => void;
+  plannedRouteCard?: React.ReactNode;
 }
 
 function formatTime(seconds: number): string {
@@ -22,6 +23,7 @@ export default function ReplayTimeline({
   mode,
   onSelectIndex,
   onToggleMode,
+  plannedRouteCard,
 }: ReplayTimelineProps) {
   const hasData = availableTimes.length > 0;
   const maxIndex = hasData ? availableTimes.length - 1 : 0;
@@ -58,10 +60,10 @@ export default function ReplayTimeline({
   };
 
   return (
-    <div className="w-full border border-struct-line bg-brand-bg p-3.5 rounded-2xl flex flex-col gap-2.5 shadow-md">
+    <div className="w-full border border-struct-line bg-brand-bg p-2.5 sm:p-3.5 rounded-2xl flex flex-col gap-2.5 shadow-md">
       {/* Top row: controls and state display */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           {/* Status banner */}
           <div className="flex items-center border border-struct-line px-3 py-1 rounded-full select-none bg-base-cream">
             <span 
@@ -82,6 +84,8 @@ export default function ReplayTimeline({
             TICK <span className="font-bold text-base-dark font-mono">{selectedIndex + 1}</span> /{' '}
             <span className="font-mono text-base-dark/50">{availableTimes.length}</span>
           </div>
+
+          {plannedRouteCard}
         </div>
 
         {/* Action Controls */}
