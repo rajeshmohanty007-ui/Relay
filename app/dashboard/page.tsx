@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirestoreCollection } from '../../src/hooks/useFirestoreCollection';
 import { useReplayBuffer } from '../../src/hooks/useReplayBuffer';
 import type { Node, Edge, Convoy, DemoLogEntry, DemoConfig } from '../../src/lib/types';
@@ -9,6 +9,17 @@ import DispatchPanelPlacard from '../../src/components/DispatchPanelPlacard';
 import EventFeedDispatcher from '../../src/components/EventFeedDispatcher';
 import ReplayTimeline from '../../src/components/ReplayTimeline';
 import MapLayerToggle from '../../src/components/MapLayerToggle';
+import GrievanceFormModal from '../../src/components/GrievanceFormModal';
+import { initializeSensors, stepSensorSimulation, type WaterSensor } from '../../src/lib/waterSensors';
+
+const STRATEGIC_SENSOR_IDS = new Set([
+  'ws_periyar_dam_01',
+  'ws_central_bridge_07',
+  'ws_canal_sluice_12',
+  'ws_causeway_haven_14',
+  'ws_west_culvert_15',
+  'ws_delta_stadium_17',
+]);
 
 function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -17,15 +28,29 @@ function formatTime(seconds: number): string {
 }
 
 export default function DashboardPage() {
+  const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
+  const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
+  const [isFlightLogOpen, setIsFlightLogOpen] = useState<boolean>(false);
+  const [isGrievanceOpen, setIsGrievanceOpen] = useState<boolean>(false);
+
+  // Live water level telemetry simulation for the tactical map feed
+  const [sensors, setSensors] = useState<WaterSensor[]>(() =>
+    initializeSensors().filter((s) => STRATEGIC_SENSOR_IDS.has(s.id)),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSensors((prev) => stepSensorSimulation(prev, 'heavy_monsoon', 15));
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const { data: nodes, loading: nodesLoading } = useFirestoreCollection<Node>('nodes');
   const { data: edges, loading: edgesLoading } = useFirestoreCollection<Edge>('edges');
   const { data: convoys, loading: convoysLoading } = useFirestoreCollection<Convoy>('convoys');
   const { data: demoLog, loading: demoLogLoading } = useFirestoreCollection<DemoLogEntry>('demoLog', 'simTimeSec');
   const { data: demoConfigs } = useFirestoreCollection<DemoConfig>('demoConfig');
-
-  const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
-  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
-  const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
 
   const mapReady = !nodesLoading && !edgesLoading && !convoysLoading;
   const activeConfig = demoConfigs?.[0];
@@ -97,8 +122,31 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Mode Toggle & Mission Clock */}
+        {/* Mode Toggle, Flight Log, Grievance Trigger & Mission Clock */}
         <div className="flex items-center gap-3">
+          {/* Grievance / Emergency Road Blockage Report Button */}
+          <button
+            type="button"
+            onClick={() => setIsGrievanceOpen(true)}
+            className="flex items-center gap-1.5 border border-status-danger/70 bg-status-danger/15 px-2.5 py-1 text-[10px] font-display font-black tracking-wider uppercase text-status-danger hover:bg-status-danger/30 hover:text-white transition-all shadow-[0_0_8px_rgba(198,66,59,0.25)]"
+            title="Report Blocked Road & Request Priority Rescue Dispatch"
+          >
+            <span>🚨 REPORT BLOCKAGE</span>
+          </button>
+
+          {/* Flight Log Navbar Modal Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsFlightLogOpen(true)}
+            className="flex items-center gap-2 border border-struct-line bg-[#0E151E] px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase text-zinc-300 hover:text-signal-accent hover:border-signal-accent/50 transition-colors"
+            title="Open Dispatcher Flight Log"
+          >
+            <span>📋 FLIGHT LOG</span>
+            <span className="bg-[#080C10] border border-struct-line text-signal-accent px-1.5 py-0.2 text-[8px] font-mono font-bold">
+              {displayDemoLog.length}
+            </span>
+          </button>
+
           {/* Mode Switch */}
           <div className="flex border border-struct-line bg-[#0E151E] p-0.5">
             <button
@@ -158,7 +206,13 @@ export default function DashboardPage() {
 
       {/* Main Workspace Layout */}
       <div className="flex min-h-0 flex-1 bg-[#090D12]">
-        {/* Left Area (Map + Scrubber) */}
+        {/* Left Collapsible Layer Sidebar */}
+        <MapLayerToggle
+          visibleLayers={visibleLayers}
+          onChange={setVisibleLayers}
+        />
+
+        {/* Central Tactical Area (Map + Scrubber) */}
         <main className="min-w-0 flex-1 p-3 flex flex-col gap-2">
           <div className={`flex-1 relative min-h-0 bg-[#070A0E] border transition-colors ${mode === 'REPLAY' ? 'border-status-warn/50' : 'border-struct-line'}`}>
             {/* Replay Mode Indicator Badge */}
@@ -173,6 +227,7 @@ export default function DashboardPage() {
                 nodes={displayNodes}
                 edges={displayEdges}
                 convoys={displayConvoys}
+                sensors={sensors}
                 visibleLayers={visibleLayers}
               />
             ) : (
@@ -197,34 +252,57 @@ export default function DashboardPage() {
         </main>
 
         {/* Right Info Sidebar Panels */}
-        <aside className="flex w-88 shrink-0 flex-col border-l border-struct-line bg-[#080C10] p-3 gap-3 overflow-hidden">
-          {/* Map Layer Controls in Sidebar */}
-          <MapLayerToggle
-            visibleLayers={visibleLayers}
-            onChange={setVisibleLayers}
-          />
-
-          {/* Divider */}
-          <div className="border-t border-struct-line/30 my-0.5" />
-
-          {/* Dispatch Panel */}
-          <div className="flex-1 min-h-0 overflow-y-auto">
+        <aside className="flex w-88 shrink-0 flex-col border-l border-struct-line bg-[#080C10] p-3 overflow-hidden">
+          {/* Dispatch Panel (Full Height) */}
+          <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
             {mapReady ? (
               <DispatchPanelPlacard nodes={displayNodes} convoys={displayConvoys} demoLog={displayDemoLog} />
             ) : (
               <div className="font-mono text-xs text-zinc-500">LOADING DISPATCH DATABASES...</div>
             )}
           </div>
-
-          {/* Divider */}
-          <div className="border-t border-struct-line/30 my-0.5" />
-
-          {/* Event Feed */}
-          <div className="flex-1 min-h-0">
-            <EventFeedDispatcher entries={displayDemoLog} loading={demoLogLoading} />
-          </div>
         </aside>
       </div>
+
+      {/* Dispatcher Flight Log Modal Dialog */}
+      {isFlightLogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="flex h-[80vh] w-full max-w-2xl flex-col border border-struct-line bg-[#080C10] shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-struct-line bg-[#0E151E] px-4 py-2.5">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-signal-accent animate-pulse shadow-[0_0_6px_#4FB3BF]" />
+                <h2 className="font-display text-xs font-black tracking-widest text-white uppercase">
+                  DISPATCHER FLIGHT LOG & INCIDENT FEED
+                </h2>
+                <span className="font-mono text-[9px] text-zinc-500">
+                  ({displayDemoLog.length} EVENTS RECORDED)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFlightLogOpen(false)}
+                className="border border-struct-line bg-[#080C10] px-2.5 py-1 font-mono text-[10px] font-bold text-zinc-400 hover:text-white hover:border-signal-accent transition-colors"
+              >
+                ✕ CLOSE
+              </button>
+            </div>
+
+            {/* Modal Log Content */}
+            <div className="flex-1 min-h-0 p-3 overflow-hidden">
+              <EventFeedDispatcher entries={displayDemoLog} loading={demoLogLoading} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Citizen Road Grievance & Emergency Rescue Dispatch Modal */}
+      <GrievanceFormModal
+        isOpen={isGrievanceOpen}
+        onClose={() => setIsGrievanceOpen(false)}
+        edges={displayEdges}
+        nodes={displayNodes}
+      />
     </div>
   );
 }
