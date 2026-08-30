@@ -125,15 +125,15 @@ export default function DashboardPage() {
     const destName = destNode?.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '') ?? routeDestId;
 
     plannedRouteCard = (
-      <div className="flex items-center gap-2 rounded-full border border-signal-accent bg-base-cream px-2.5 py-0.5 shadow-xs animate-in fade-in duration-200">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_6px_#EC4899]" />
-        <span className="font-mono text-[9px] text-base-dark tracking-wide">
+      <div className="flex items-center gap-2.5 sm:gap-3 rounded-full border border-signal-accent bg-base-cream px-3.5 py-1 sm:px-4 sm:py-1.5 shadow-sm animate-in fade-in duration-200">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
+        <span className="font-mono text-[11px] sm:text-[12px] font-semibold text-base-dark tracking-wide">
           <span className="font-black">{originName}</span> → <span className="font-black">{destName}</span>
         </span>
         <button
           type="button"
           onClick={() => setIsRoutePlannerOpen(true)}
-          className="ml-1 rounded-md border border-struct-line bg-base-sand px-1.5 py-0.5 font-mono text-[8px] font-bold text-base-dark hover:border-signal-accent transition-all cursor-pointer"
+          className="ml-1 rounded-lg border border-struct-line bg-base-sand px-2 py-1 font-mono text-[9px] sm:text-[10px] font-bold text-base-dark hover:border-signal-accent transition-all cursor-pointer"
         >
           ADJUST
         </button>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
             setHighlightedRouteNodeSeq(undefined);
             clearSavedCitizenRoute();
           }}
-          className="rounded-md border border-status-danger bg-status-danger/10 px-1.5 py-0.5 font-mono text-[8px] font-bold text-status-danger hover:bg-status-danger/20 transition-all cursor-pointer"
+          className="rounded-lg border border-status-danger bg-status-danger/10 px-2 py-1 font-mono text-[9px] sm:text-[10px] font-bold text-status-danger hover:bg-status-danger/20 transition-all cursor-pointer"
         >
           CLEAR
         </button>
@@ -330,8 +330,17 @@ export default function DashboardPage() {
                 />
               )
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-base-dark/50">
-                INITIALIZING TACTICAL GRAPH MAP...
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-cream gap-4 p-6 rounded-2xl border border-struct-line select-none">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/drawing.svg" alt="Relay Logo" className="h-10 w-auto animate-pulse" />
+                <div className="flex flex-col items-center gap-2 w-full max-w-[180px]">
+                  <div className="w-full h-1 bg-struct-line/30 rounded-full overflow-hidden relative">
+                    <div className="absolute inset-y-0 left-0 w-full bg-signal-accent rounded-full animate-loading-bar" />
+                  </div>
+                  <span className="font-display text-[8px] font-black tracking-widest text-base-dark/60 uppercase">
+                    INITIALIZING TACTICAL GRAPH...
+                  </span>
+                </div>
               </div>
             )}
           </div>
