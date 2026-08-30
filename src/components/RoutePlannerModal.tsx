@@ -129,16 +129,16 @@ export default function RoutePlannerModal({
     const originName = nodesById.get(effectiveOriginId)?.name ?? effectiveOriginId;
     const destName = nodesById.get(effectiveDestId)?.name ?? effectiveDestId;
     return (
-      <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-signal-accent bg-[#1C1B17]/95 px-4 py-2.5 shadow-[0_0_25px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+      <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-signal-accent bg-base-cream/95 px-4 py-2.5 shadow-[0_0_25px_rgba(0,0,0,0.15)] backdrop-blur-sm">
         <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
-        <span className="font-mono text-[11px] text-[#FAF9F6]">
+        <span className="font-mono text-[11px] text-base-dark">
           <span className="font-bold">{originName}</span> → <span className="font-bold">{destName}</span>
-          <span className="text-[#E4E1D8]/60"> · {Math.round((outcome as { kind: 'found'; result: PathResult }).result.totalTimeMin)} min</span>
+          <span className="text-base-dark/60"> · {Math.round((outcome as { kind: 'found'; result: PathResult }).result.totalTimeMin)} min</span>
         </span>
         <button
           type="button"
           onClick={onOpen}
-          className="rounded-lg border border-[#35332C] bg-[#24221D] px-2.5 py-1 font-mono text-[9px] font-bold text-[#E4E1D8] hover:border-signal-accent hover:text-white transition-all"
+          className="rounded-lg border border-struct-line bg-base-sand px-2.5 py-1 font-mono text-[9px] font-bold text-base-dark hover:border-signal-accent hover:text-base-dark transition-all cursor-pointer"
         >
           EDIT
         </button>
@@ -146,7 +146,7 @@ export default function RoutePlannerModal({
           type="button"
           onClick={handleClearRoute}
           title="Clear this route"
-          className="rounded-lg border border-[#35332C] bg-[#24221D] px-2.5 py-1 font-mono text-[9px] font-bold text-[#E4E1D8] hover:border-status-danger hover:text-status-danger transition-all"
+          className="rounded-lg border border-struct-line bg-base-sand px-2.5 py-1 font-mono text-[9px] font-bold text-base-dark hover:border-status-danger hover:text-status-danger transition-all cursor-pointer"
         >
           ✕
         </button>
@@ -156,18 +156,21 @@ export default function RoutePlannerModal({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
-      <div className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-3xl border border-[#35332C] bg-[#1C1B17] shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden">
+      <div className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-3xl border border-struct-line bg-base-cream shadow-[0_0_50px_rgba(0,0,0,0.2)] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-6 py-3.5 shrink-0">
+        <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-6 py-3.5 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-signal-accent bg-signal-accent/15 text-signal-accent shadow-sm">
-              <span className="text-base">🧭</span>
+              <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
+              </svg>
             </div>
             <div>
-              <h2 className="font-display text-sm font-black tracking-widest text-[#FAF9F6] uppercase">
+              <h2 className="font-display text-sm font-black tracking-widest text-base-dark uppercase">
                 PLAN A SAFE ROUTE
               </h2>
-              <p className="text-[9px] font-sans text-[#E4E1D8]/70">
+              <p className="text-[9px] font-sans text-base-dark/70">
                 For any traveler — get the best current road route, automatically avoiding closures
               </p>
             </div>
@@ -175,7 +178,7 @@ export default function RoutePlannerModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 font-mono text-xs font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent hover:bg-[#24221D] transition-all flex items-center justify-center"
+            className="rounded-xl border border-struct-line bg-base-cream px-3 py-1.5 font-mono text-xs font-bold text-base-dark hover:text-base-dark hover:border-signal-accent hover:bg-base-sand transition-all flex items-center justify-center cursor-pointer"
           >
             ✕
           </button>
@@ -191,7 +194,7 @@ export default function RoutePlannerModal({
               id="route-origin"
               value={effectiveOriginId}
               onChange={(e) => pickOrigin(e.target.value)}
-              className="border border-[#35332C] bg-[#24221D] p-3 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
+              className="border border-struct-line bg-base-cream p-3 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
             >
               <option value="" disabled>
                 Select a starting point…
@@ -209,7 +212,7 @@ export default function RoutePlannerModal({
               type="button"
               onClick={handleSwap}
               title="Swap origin and destination"
-              className="rounded-full border border-[#35332C] bg-[#24221D] px-3 py-1 font-mono text-[10px] text-[#E4E1D8] hover:border-signal-accent hover:text-white transition-all"
+              className="rounded-full border border-struct-line bg-base-cream px-3 py-1 font-mono text-[10px] text-base-dark hover:border-signal-accent hover:text-base-dark transition-all cursor-pointer"
             >
               ⇅ SWAP
             </button>
@@ -223,7 +226,7 @@ export default function RoutePlannerModal({
               id="route-dest"
               value={effectiveDestId}
               onChange={(e) => pickDest(e.target.value)}
-              className="border border-[#35332C] bg-[#24221D] p-3 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
+              className="border border-struct-line bg-base-cream p-3 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
             >
               <option value="" disabled>
                 Select a destination…
@@ -237,18 +240,20 @@ export default function RoutePlannerModal({
           </div>
 
           {/* Result panel */}
-          <div className="mt-1 rounded-2xl border border-[#35332C] bg-[#24221D] p-4">
+          <div className="mt-1 rounded-2xl border border-struct-line bg-base-cream p-4">
             {outcome.kind === 'unselected' && (
-              <p className="font-mono text-xs text-[#E4E1D8]/70">Select a starting point and a destination.</p>
+              <p className="font-mono text-xs text-base-dark/70">Select a starting point and a destination.</p>
             )}
 
             {outcome.kind === 'same' && (
-              <p className="font-mono text-xs text-[#E4E1D8]/70">Pick two different points to plan a route.</p>
+              <p className="font-mono text-xs text-base-dark/70">Pick two different points to plan a route.</p>
             )}
 
             {outcome.kind === 'unreachable' && (
               <div className="flex items-center gap-2 text-status-danger">
-                <span>🚫</span>
+                <svg className="w-4 h-4 text-status-danger shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
                 <p className="font-mono text-xs">
                   No safe route currently available — road closures have cut off every path between these points.
                 </p>
@@ -256,21 +261,21 @@ export default function RoutePlannerModal({
             )}
 
             {outcome.kind === 'found' && outcome.result.path.length === 0 && (
-              <p className="font-mono text-xs text-[#E4E1D8]/70">You&apos;re already there.</p>
+              <p className="font-mono text-xs text-base-dark/70">You&apos;re already there.</p>
             )}
 
             {outcome.kind === 'found' && outcome.result.path.length > 0 && (
               <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-[#35332C]/60 pb-2.5">
+                <div className="flex items-center justify-between border-b border-struct-line/60 pb-2.5">
                   <div>
-                    <span className="text-[#E4E1D8]/60 block text-[9px] font-mono">ESTIMATED TRAVEL TIME</span>
+                    <span className="text-base-dark/60 block text-[9px] font-mono">ESTIMATED TRAVEL TIME</span>
                     <span className="font-display text-lg font-black text-[#EC4899] drop-shadow-[0_0_8px_rgba(236,72,153,0.3)]">
                       {Math.round(outcome.result.totalTimeMin)} min
                     </span>
                   </div>
                   {degradedCount > 0 && (
                     <div className="text-right">
-                      <span className="text-[#E4E1D8]/60 block text-[9px] font-mono">SLOW SEGMENTS</span>
+                      <span className="text-base-dark/60 block text-[9px] font-mono">SLOW SEGMENTS</span>
                       <span className="font-mono text-xs font-bold text-status-warn">
                         {degradedCount} degraded road{degradedCount > 1 ? 's' : ''}
                       </span>
@@ -282,14 +287,20 @@ export default function RoutePlannerModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-full rounded-xl border border-[#EC4899] bg-[#EC4899]/15 px-4 py-2.5 font-display text-xs font-black tracking-wider uppercase text-[#FAF9F6] hover:bg-[#EC4899]/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(236,72,153,0.2)]"
+                    className="w-full rounded-xl border border-[#EC4899] bg-[#EC4899] px-4 py-2.5 font-display text-xs font-black tracking-wider uppercase text-white hover:bg-[#D83F87] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_12px_rgba(236,72,153,0.2)] cursor-pointer"
                   >
-                    <span>🧭 SHOW ROUTE ON MAP</span>
+                    <span className="flex items-center gap-1.5 justify-center">
+                      <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
+                      </svg>
+                      SHOW ROUTE ON MAP
+                    </span>
                   </button>
 
                   <div className="flex items-center gap-2 rounded-xl border border-[#EC4899]/40 bg-[#EC4899]/5 px-3 py-2.5">
                     <span className="h-2 w-2 shrink-0 rounded-full bg-[#EC4899] shadow-[0_0_8px_#EC4899]" />
-                    <p className="font-mono text-[9px] text-[#E4E1D8]/70 leading-normal">
+                    <p className="font-mono text-[9px] text-base-dark/70 leading-normal">
                       Your safe road route is highlighted in <span className="font-bold text-[#EC4899] uppercase">Pink</span> on the map.
                       It updates dynamically if road blockages occur.
                     </p>
@@ -299,7 +310,7 @@ export default function RoutePlannerModal({
                 <button
                   type="button"
                   onClick={handleClearRoute}
-                  className="self-start font-mono text-[9px] text-[#E4E1D8]/50 underline decoration-dotted hover:text-status-danger transition-all mt-1"
+                  className="self-start font-mono text-[9px] text-base-dark/50 underline decoration-dotted hover:text-status-danger transition-all mt-1 cursor-pointer"
                 >
                   Clear this route
                 </button>

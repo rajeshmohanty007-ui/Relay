@@ -21,6 +21,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Disaster Relief Convoy Dashboard",
   description: "Live Emergency Operations Command Board",
+  icons: {
+    icon: "/drawing.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -29,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${spaceGrotesk.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#1C1B17] text-[#FAF9F6]">{children}</body>
+      <body className="min-h-full flex flex-col bg-base-cream text-base-dark">{children}</body>
     </html>
   );
 }

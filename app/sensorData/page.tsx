@@ -84,7 +84,9 @@ export default function SensorDataPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-600 font-bold text-white shadow-md shadow-sky-600/30">
-              🌊
+              <svg className="w-6 h-6 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.5c-4.142 0-7.5-3.358-7.5-7.5C4.5 9.385 12 2.5 12 2.5S19.5 9.385 19.5 14c0 4.142-3.358 7.5-7.5 7.5z" />
+              </svg>
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -228,13 +230,17 @@ export default function SensorDataPage() {
             </button>
             <button
               onClick={() => setActiveTab('table')}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors flex items-center gap-1.5 ${
                 activeTab === 'table'
                   ? 'bg-sky-600 text-white shadow-xs'
                   : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
               }`}
             >
-              📋 Data Table & CSV
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 11h6m-6 4h6" />
+              </svg>
+              <span>Data Table & CSV</span>
             </button>
           </div>
 

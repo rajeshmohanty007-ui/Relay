@@ -15,12 +15,7 @@ export interface SavedCitizenRoute {
 export function loadSavedCitizenRoute(): SavedCitizenRoute | null {
     if (typeof window === 'undefined') return null;
     try {
-        const raw = window.localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (typeof parsed?.originId === 'string' && typeof parsed?.destId === 'string') {
-            return { originId: parsed.originId, destId: parsed.destId };
-        }
+        window.localStorage.removeItem(STORAGE_KEY);
         return null;
     } catch {
         return null;

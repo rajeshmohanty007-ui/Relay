@@ -58,41 +58,41 @@ export default function ReplayTimeline({
   };
 
   return (
-    <div className="w-full border border-[#35332C] bg-[#1C1B17] p-3.5 rounded-2xl flex flex-col gap-2.5 shadow-md">
+    <div className="w-full border border-struct-line bg-brand-bg p-3.5 rounded-2xl flex flex-col gap-2.5 shadow-md">
       {/* Top row: controls and state display */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Status banner */}
-          <div className="flex items-center border border-[#35332C] px-3 py-1 rounded-full select-none bg-[#24221D]">
+          <div className="flex items-center border border-struct-line px-3 py-1 rounded-full select-none bg-base-cream">
             <span 
-              className={`h-2 w-2 rounded-full mr-2 ${mode === 'LIVE' ? 'bg-[#4B7B4E] animate-pulse' : 'bg-[#B8863B]'}`}
+              className={`h-2 w-2 rounded-full mr-2 ${mode === 'LIVE' ? 'bg-status-ok animate-pulse' : 'bg-status-warn'}`}
               style={{
                 boxShadow: mode === 'LIVE' 
-                  ? '0 0 8px #4B7B4E' 
-                  : '0 0 8px #B8863B'
+                  ? '0 0 8px #206E6B' 
+                  : '0 0 8px #6AADAB'
               }}
             />
-            <span className="font-display text-[9px] font-black tracking-widest text-[#FAF9F6]">
+            <span className="font-display text-[9px] font-black tracking-widest text-base-dark">
               STATUS: {mode === 'LIVE' ? 'LIVE MONITORING' : 'REPLAY REVIEW'}
             </span>
           </div>
 
           {/* Time indicator */}
-          <div className="font-mono text-[10px] text-[#E4E1D8]/80 bg-[#24221D] px-2.5 py-0.5 rounded-full border border-[#35332C]">
-            TICK <span className="font-bold text-white font-mono">{selectedIndex + 1}</span> /{' '}
-            <span className="font-mono text-[#E4E1D8]/50">{availableTimes.length}</span>
+          <div className="font-mono text-[10px] text-base-dark/80 bg-base-cream px-2.5 py-0.5 rounded-full border border-struct-line">
+            TICK <span className="font-bold text-base-dark font-mono">{selectedIndex + 1}</span> /{' '}
+            <span className="font-mono text-base-dark/50">{availableTimes.length}</span>
           </div>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
           {/* Frame Step Buttons */}
-          <div className="flex border border-[#35332C] rounded-xl bg-[#24221D] overflow-hidden p-0.5 gap-0.5">
+          <div className="flex border border-struct-line rounded-xl bg-base-cream overflow-hidden p-0.5 gap-0.5">
             <button
               onClick={stepBack}
               disabled={!hasData || selectedIndex === 0}
               title="Step frame back"
-              className="px-2.5 py-1 rounded-lg font-mono text-[10px] text-[#E4E1D8] hover:bg-[#2C4A3E] hover:text-[#FAF9F6] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              className="px-2.5 py-1 rounded-lg font-mono text-[10px] text-base-dark/80 hover:bg-status-ok hover:text-white disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer"
             >
               ◀ STEP
             </button>
@@ -100,7 +100,7 @@ export default function ReplayTimeline({
               onClick={stepForward}
               disabled={!hasData || selectedIndex === maxIndex}
               title="Step frame forward"
-              className="px-2.5 py-1 rounded-lg font-mono text-[10px] text-[#E4E1D8] hover:bg-[#2C4A3E] hover:text-[#FAF9F6] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              className="px-2.5 py-1 rounded-lg font-mono text-[10px] text-base-dark/80 hover:bg-status-ok hover:text-white disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer"
             >
               STEP ▶
             </button>
@@ -110,7 +110,7 @@ export default function ReplayTimeline({
           {mode === 'REPLAY' && (
             <button
               onClick={jumpToLive}
-              className="px-3 py-1 rounded-xl border border-[#4B7B4E] bg-[#4B7B4E]/15 text-[#4B7B4E] text-[9px] font-display font-black tracking-widest hover:bg-[#4B7B4E]/30 uppercase transition-all shadow-sm"
+              className="px-3 py-1 rounded-xl border border-status-ok bg-status-ok/15 text-status-ok text-[9px] font-display font-black tracking-widest hover:bg-status-ok/30 uppercase transition-all shadow-sm cursor-pointer"
             >
               JUMP TO LIVE
             </button>
@@ -121,7 +121,7 @@ export default function ReplayTimeline({
       {/* Slider scrubbing track */}
       <div className="flex items-center gap-4 w-full">
         {/* Min mark */}
-        <span className="font-mono text-[9px] text-[#E4E1D8]/60 bg-[#24221D] px-2 py-0.5 rounded-full border border-[#35332C] select-none">
+        <span className="font-mono text-[9px] text-base-dark/70 bg-base-cream px-2 py-0.5 rounded-full border border-struct-line select-none">
           {formatTime(availableTimes[0] || 0)}
         </span>
 
@@ -134,7 +134,7 @@ export default function ReplayTimeline({
             value={selectedIndex}
             onChange={handleSliderChange}
             disabled={!hasData}
-            className="w-full accent-[#2C4A3E] bg-[#24221D] border border-[#35332C] h-3 rounded-full cursor-pointer outline-none opacity-90 hover:opacity-100 disabled:opacity-30 transition-all shadow-inner"
+            className="w-full accent-status-ok bg-base-cream border border-struct-line h-3 rounded-full cursor-pointer outline-none opacity-90 hover:opacity-100 disabled:opacity-30 transition-all shadow-inner"
             style={{
               WebkitAppearance: 'none',
             }}
@@ -142,13 +142,13 @@ export default function ReplayTimeline({
         </div>
 
         {/* Max mark */}
-        <span className="font-mono text-[9px] text-[#E4E1D8]/60 bg-[#24221D] px-2 py-0.5 rounded-full border border-[#35332C] select-none">
+        <span className="font-mono text-[9px] text-base-dark/70 bg-base-cream px-2 py-0.5 rounded-full border border-struct-line select-none">
           {formatTime(latestSimTime)}
         </span>
       </div>
 
       {/* Detailed telemetry readout */}
-      <div className="flex justify-between font-mono text-[8px] text-[#E4E1D8]/60 tracking-wider px-1">
+      <div className="flex justify-between font-mono text-[8px] text-base-dark/60 tracking-wider px-1">
         <span>SCRUBBED TIME: {currentSimTime}s ({formatTime(currentSimTime)})</span>
         <span>LATEST TICKET: {latestSimTime}s ({formatTime(latestSimTime)})</span>
       </div>

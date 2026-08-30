@@ -79,11 +79,11 @@ const INITIAL_REPORTS: GrievanceReport[] = [
 ];
 
 const BLOCKAGE_TYPES = [
-  { id: 'mudslide', label: 'Mudslide / Landslide', icon: '⛰️' },
-  { id: 'flood_inundation', label: 'Flash Flood / Deep Inundation', icon: '🌊' },
-  { id: 'debris_tree', label: 'Fallen Tree / Power Cables Debris', icon: '🌲' },
-  { id: 'bridge_damage', label: 'Bridge Structural Damage / Closure', icon: '🌉' },
-  { id: 'road_collapse', label: 'Road Embankment Collapse', icon: '🚧' },
+  { id: 'mudslide', label: 'Mudslide / Landslide' },
+  { id: 'flood_inundation', label: 'Flash Flood / Deep Inundation' },
+  { id: 'debris_tree', label: 'Fallen Tree / Power Cables Debris' },
+  { id: 'bridge_damage', label: 'Bridge Structural Damage / Closure' },
+  { id: 'road_collapse', label: 'Road Embankment Collapse' },
 ] as const;
 
 export default function GrievanceFormModal({
@@ -227,18 +227,20 @@ export default function GrievanceFormModal({
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
-      <div className="flex h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-[#35332C] bg-[#1C1B17] shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden">
+      <div className="flex h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-struct-line bg-base-cream shadow-[0_0_50px_rgba(0,0,0,0.15)] overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-6 py-3.5 shrink-0">
+        <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-6 py-3.5 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#A6403A] bg-[#A6403A]/15 text-[#A6403A] shadow-sm">
-              <span className="text-base">🚨</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-status-danger bg-status-danger/15 text-status-danger shadow-sm">
+              <svg className="w-5 h-5 text-status-danger shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
             </div>
             <div>
-              <h2 className="font-display text-sm font-black tracking-widest text-[#FAF9F6] uppercase">
+              <h2 className="font-display text-sm font-black tracking-widest text-base-dark uppercase">
                 CITIZEN ROAD GRIEVANCE & EMERGENCY RESCUE DISPATCH
               </h2>
-              <p className="text-[9px] font-sans text-[#E4E1D8]/70">
+              <p className="text-[9px] font-sans text-base-dark/70">
                 Report impassable single-access roads, stranded vehicles & request priority rescue team dispatch
               </p>
             </div>
@@ -246,7 +248,7 @@ export default function GrievanceFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-[#35332C] bg-[#1C1B17] px-3.5 py-1.5 font-mono text-xs font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent hover:bg-[#24221D] transition-all"
+            className="rounded-xl border border-struct-line bg-base-cream px-3.5 py-1.5 font-mono text-xs font-bold text-base-dark hover:text-base-dark hover:border-signal-accent hover:bg-base-sand transition-all cursor-pointer"
           >
             ✕ CLOSE
           </button>
@@ -254,15 +256,18 @@ export default function GrievanceFormModal({
 
         {/* Live Rescue Notification Banner (if any team dispatched) */}
         {latestNotification && (
-          <div className="bg-[#A6403A]/20 border-b border-[#A6403A] px-6 py-2.5 flex items-center justify-between animate-in slide-in-from-top-2 duration-200 shrink-0">
+          <div className="bg-status-danger/20 border-b border-status-danger px-6 py-2.5 flex items-center justify-between animate-in slide-in-from-top-2 duration-200 shrink-0">
             <div className="flex items-center gap-3">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#A6403A] animate-ping" />
-              <div className="font-mono text-xs text-[#FAF9F6]">
-                <span className="font-bold text-[#A6403A] uppercase tracking-wider">
-                  🚨 RESCUE UNIT EN ROUTE:
+              <span className="h-2.5 w-2.5 rounded-full bg-status-danger animate-ping" />
+              <div className="font-mono text-xs text-base-dark">
+                <span className="font-bold text-status-danger uppercase tracking-wider flex items-center gap-1 shrink-0">
+                  <svg className="w-3.5 h-3.5 inline-block align-text-bottom mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  RESCUE UNIT EN ROUTE:
                 </span>{' '}
-                <span className="text-white font-bold">{latestNotification.teamName}</span> dispatched to stranded vehicle{' '}
-                <span className="bg-black/60 px-2 py-0.5 rounded-md border border-[#A6403A]/50 text-signal-accent font-bold">
+                <span className="text-base-dark font-bold">{latestNotification.teamName}</span> dispatched to stranded vehicle{' '}
+                <span className="bg-base-sand px-2 py-0.5 rounded-md border border-status-danger/50 text-signal-accent font-bold">
                   {latestNotification.vehicleNumber}
                 </span>{' '}
                 at {latestNotification.roadName} (ETA ~{latestNotification.etaMin} mins).
@@ -271,7 +276,7 @@ export default function GrievanceFormModal({
             <button
               type="button"
               onClick={() => setLatestNotification(null)}
-              className="font-mono text-[9px] text-[#E4E1D8]/70 hover:text-white border border-[#35332C] px-2 py-0.5 rounded-lg"
+              className="font-mono text-[9px] text-base-dark/70 hover:text-base-dark border border-struct-line px-2 py-0.5 rounded-lg cursor-pointer"
             >
               DISMISS
             </button>
@@ -279,28 +284,38 @@ export default function GrievanceFormModal({
         )}
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-[#35332C] bg-[#24221D] px-6 pt-2.5 gap-2 shrink-0">
+        <div className="flex border-b border-struct-line bg-base-sand px-6 pt-2.5 gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('form')}
-            className={`flex items-center gap-2 rounded-t-xl border-t border-l border-r px-4 py-2 text-xs font-display font-black tracking-wider uppercase transition-all ${
+            className={`flex items-center gap-2 rounded-t-xl border-t border-l border-r px-4 py-2 text-xs font-display font-black tracking-wider uppercase transition-all cursor-pointer ${
               activeTab === 'form'
-                ? 'border-signal-accent bg-[#1C1B17] text-signal-accent'
-                : 'border-transparent bg-transparent text-[#E4E1D8]/60 hover:text-[#FAF9F6]'
+                ? 'border-signal-accent bg-base-cream text-signal-accent'
+                : 'border-transparent bg-transparent text-base-dark/60 hover:text-base-dark'
             }`}
           >
-            <span>📝 SUBMIT GRIEVANCE</span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              SUBMIT GRIEVANCE
+            </span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('reports')}
-            className={`flex items-center gap-2 rounded-t-xl border-t border-l border-r px-4 py-2 text-xs font-display font-black tracking-wider uppercase transition-all ${
+            className={`flex items-center gap-2 rounded-t-xl border-t border-l border-r px-4 py-2 text-xs font-display font-black tracking-wider uppercase transition-all cursor-pointer ${
               activeTab === 'reports'
-                ? 'border-signal-accent bg-[#1C1B17] text-signal-accent'
-                : 'border-transparent bg-transparent text-[#E4E1D8]/60 hover:text-[#FAF9F6]'
+                ? 'border-signal-accent bg-base-cream text-signal-accent'
+                : 'border-transparent bg-transparent text-base-dark/60 hover:text-base-dark'
             }`}
           >
-            <span>🚨 ACTIVE INCIDENT QUEUE</span>
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              ACTIVE INCIDENT QUEUE
+            </span>
             <span className="bg-signal-accent/20 border border-signal-accent/50 text-signal-accent px-2 py-0.5 rounded-full text-[9px] font-mono font-bold">
               {reports.length}
             </span>
@@ -308,13 +323,15 @@ export default function GrievanceFormModal({
         </div>
 
         {/* Tab Content Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-[#1C1B17]">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-base-cream">
           {/* TAB 1: SUBMISSION FORM */}
           {activeTab === 'form' && (
             <form onSubmit={handleSubmit} className="max-w-2xl mx-auto flex flex-col gap-4">
               {submitSuccess && (
                 <div className="border border-status-ok bg-status-ok/10 p-3.5 rounded-2xl text-status-ok font-mono text-xs flex items-center gap-2.5 animate-in fade-in shadow-sm">
-                  <span>✓</span>
+                  <svg className="w-4 h-4 shrink-0 text-status-ok" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                   <span>
                     Report received successfully! Dispatched to disaster management control. Priority escalated based on vehicle registration.
                   </span>
@@ -330,7 +347,7 @@ export default function GrievanceFormModal({
                   id="road-selection"
                   value={selectedEdgeId}
                   onChange={(e) => setSelectedEdgeId(e.target.value)}
-                  className="border border-[#35332C] bg-[#24221D] px-3.5 py-2.5 rounded-xl text-xs font-mono text-[#FAF9F6] outline-none focus:border-signal-accent transition-all"
+                  className="border border-struct-line bg-base-cream px-3.5 py-2.5 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
                 >
                   {edges.map((edge) => {
                     const from = nodesById.get(edge.fromNodeId) || edge.fromNodeId;
@@ -351,28 +368,63 @@ export default function GrievanceFormModal({
                   2. BLOCKAGE / HAZARD SEVERITY *
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {BLOCKAGE_TYPES.map((type) => (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => setBlockageType(type.id)}
-                      className={`flex items-center gap-2.5 border p-2.5 rounded-xl text-left text-xs font-mono transition-all ${
-                        blockageType === type.id
-                          ? 'border-[#A6403A] bg-[#A6403A]/20 text-[#FAF9F6] font-bold shadow-[0_0_10px_rgba(166,64,58,0.25)]'
-                          : 'border-[#35332C] bg-[#24221D] text-[#E4E1D8]/70 hover:text-white hover:bg-[#2C2A24]'
-                      }`}
-                    >
-                      <span className="text-base shrink-0">{type.icon}</span>
-                      <span className="text-[11px] leading-tight">{type.label}</span>
-                    </button>
-                  ))}
+                  {BLOCKAGE_TYPES.map((type) => {
+                    let svgIcon = null;
+                    if (type.id === 'mudslide') {
+                      svgIcon = (
+                        <svg className="w-4 h-4 text-status-warn shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <polygon points="12 2 2 22 22 22" />
+                        </svg>
+                      );
+                    } else if (type.id === 'flood_inundation') {
+                      svgIcon = (
+                        <svg className="w-4 h-4 text-signal-accent shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.5c-4.142 0-7.5-3.358-7.5-7.5C4.5 9.385 12 2.5 12 2.5S19.5 9.385 19.5 14c0 4.142-3.358 7.5-7.5 7.5z" />
+                        </svg>
+                      );
+                    } else if (type.id === 'debris_tree') {
+                      svgIcon = (
+                        <svg className="w-4 h-4 text-status-ok shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M5 12h14M8 7l4-4 4 4m-8 10l4 4 4-4" />
+                        </svg>
+                      );
+                    } else if (type.id === 'bridge_damage') {
+                      svgIcon = (
+                        <svg className="w-4 h-4 text-[#997460] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      );
+                    } else if (type.id === 'road_collapse') {
+                      svgIcon = (
+                        <svg className="w-4 h-4 text-status-danger shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => setBlockageType(type.id)}
+                        className={`flex items-center gap-2.5 border p-2.5 rounded-xl text-left text-xs font-mono transition-all cursor-pointer ${
+                          blockageType === type.id
+                            ? 'border-status-danger bg-status-danger/25 text-status-danger font-bold shadow-[0_0_10px_rgba(153,116,96,0.25)]'
+                            : 'border-struct-line bg-base-cream text-base-dark/70 hover:text-base-dark hover:bg-base-sand'
+                        }`}
+                      >
+                        <span className="shrink-0">{svgIcon}</span>
+                        <span className="text-[11px] leading-tight">{type.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Unique Identity Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border border-[#35332C] bg-[#24221D] p-3.5 rounded-2xl shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border border-struct-line bg-base-sand p-3.5 rounded-2xl shadow-sm">
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="vehicle-reg" className="font-display text-[9px] font-bold uppercase tracking-wider text-[#FAF9F6]">
+                  <label htmlFor="vehicle-reg" className="font-display text-[9px] font-bold uppercase tracking-wider text-base-dark">
                     VEHICLE REG (UNIQUE ID) *
                   </label>
                   <input
@@ -382,13 +434,13 @@ export default function GrievanceFormModal({
                     placeholder="e.g. KL-07-CD-4921"
                     value={vehicleNumber}
                     onChange={(e) => setVehicleNumber(e.target.value)}
-                    className="border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 rounded-xl text-xs font-mono text-signal-accent uppercase font-bold outline-none focus:border-signal-accent transition-all"
+                    className="border border-struct-line bg-base-cream px-3 py-1.5 rounded-xl text-xs font-mono text-signal-accent uppercase font-bold outline-none focus:border-signal-accent transition-all"
                   />
-                  <span className="text-[8px] font-mono text-[#E4E1D8]/60">Auto-escalates priority on multiple reports</span>
+                  <span className="text-[8px] font-mono text-base-dark/60">Auto-escalates priority on multiple reports</span>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="reporter-name" className="font-display text-[9px] font-bold uppercase tracking-wider text-[#FAF9F6]">
+                  <label htmlFor="reporter-name" className="font-display text-[9px] font-bold uppercase tracking-wider text-base-dark">
                     REPORTER FULL NAME *
                   </label>
                   <input
@@ -398,12 +450,12 @@ export default function GrievanceFormModal({
                     placeholder="e.g. Rajesh Mohanty"
                     value={reporterName}
                     onChange={(e) => setReporterName(e.target.value)}
-                    className="border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
+                    className="border border-struct-line bg-base-cream px-3 py-1.5 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="contact-num" className="font-display text-[9px] font-bold uppercase tracking-wider text-[#FAF9F6]">
+                  <label htmlFor="contact-num" className="font-display text-[9px] font-bold uppercase tracking-wider text-base-dark">
                     CONTACT PHONE *
                   </label>
                   <input
@@ -413,7 +465,7 @@ export default function GrievanceFormModal({
                     placeholder="+91 98470 XXXXX"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
-                    className="border border-[#35332C] bg-[#1C1B17] px-3 py-1.5 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
+                    className="border border-struct-line bg-base-cream px-3 py-1.5 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
                   />
                 </div>
               </div>
@@ -423,12 +475,12 @@ export default function GrievanceFormModal({
                 <label className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
                   3. ATTACH EVIDENCE / PHOTO OF BLOCKED ROAD (OPTIONAL)
                 </label>
-                <div className="flex items-center gap-3 border border-dashed border-[#35332C] p-3 rounded-2xl bg-[#24221D]">
+                <div className="flex items-center gap-3 border border-dashed border-struct-line p-3 rounded-2xl bg-base-sand">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handlePhotoUpload}
-                    className="text-[10px] font-mono text-[#E4E1D8] file:mr-3 file:border file:border-[#35332C] file:bg-[#1C1B17] file:px-3 file:py-1 file:rounded-xl file:text-[9px] file:font-mono file:font-bold file:text-signal-accent hover:file:border-signal-accent"
+                    className="text-[10px] font-mono text-base-dark file:mr-3 file:border file:border-struct-line file:bg-base-cream file:px-3 file:py-1 file:rounded-xl file:text-[9px] file:font-mono file:font-bold file:text-signal-accent hover:file:border-signal-accent"
                   />
                   {photoPreview && (
                     <div className="relative h-12 w-16 shrink-0 rounded-xl border border-signal-accent overflow-hidden">
@@ -437,7 +489,7 @@ export default function GrievanceFormModal({
                       <button
                         type="button"
                         onClick={() => setPhotoPreview(null)}
-                        className="absolute top-0 right-0 bg-[#A6403A] px-1 text-[7px] text-white"
+                        className="absolute top-0 right-0 bg-status-danger px-1 text-[7px] text-white cursor-pointer"
                       >
                         ✕
                       </button>
@@ -457,7 +509,7 @@ export default function GrievanceFormModal({
                   placeholder="Describe exact obstruction, stranded passengers, or medical emergency requirements..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="border border-[#35332C] bg-[#24221D] p-3 rounded-xl text-xs font-mono text-white outline-none focus:border-signal-accent transition-all"
+                  className="border border-struct-line bg-base-cream p-3 rounded-xl text-xs font-mono text-base-dark outline-none focus:border-signal-accent transition-all"
                 />
               </div>
 
@@ -465,9 +517,20 @@ export default function GrievanceFormModal({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-2 flex items-center justify-center gap-2 border border-[#A6403A] bg-[#A6403A]/20 py-3 rounded-2xl text-xs font-display font-black tracking-widest text-[#FAF9F6] hover:bg-[#A6403A]/40 uppercase transition-all shadow-[0_0_15px_rgba(166,64,58,0.3)] disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
+                className="mt-2 flex items-center justify-center gap-2 border border-status-danger bg-status-danger py-3 rounded-2xl text-xs font-display font-black tracking-widest text-white hover:bg-[#b05d47] uppercase transition-all shadow-[0_0_15px_rgba(153,116,96,0.3)] disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
               >
-                <span>{isSubmitting ? 'TRANSMITTING INCIDENT TO RESCUE COMMAND...' : '🚨 TRANSMIT GRIEVANCE & REQUEST RESCUE'}</span>
+                <span className="flex items-center gap-2">
+                  {isSubmitting ? (
+                    'TRANSMITTING INCIDENT TO RESCUE COMMAND...'
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      TRANSMIT GRIEVANCE & REQUEST RESCUE
+                    </>
+                  )}
+                </span>
               </button>
             </form>
           )}
@@ -475,16 +538,16 @@ export default function GrievanceFormModal({
           {/* TAB 2: ACTIVE INCIDENT QUEUE & RESCUE DISPATCH */}
           {activeTab === 'reports' && (
             <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-[#35332C] pb-2">
-                <div className="font-mono text-xs text-[#E4E1D8]">
+              <div className="flex items-center justify-between border-b border-struct-line pb-2">
+                <div className="font-mono text-xs text-base-dark">
                   TOTAL INCIDENT REPORTS:{' '}
                   <span className="font-bold text-signal-accent">{reports.length}</span> across{' '}
-                  <span className="font-bold text-white">{roadIncidentStats.size}</span> road corridors
+                  <span className="font-bold text-base-dark">{roadIncidentStats.size}</span> road corridors
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveTab('form')}
-                  className="border border-signal-accent bg-signal-accent/20 px-3 py-1 rounded-xl text-[9px] font-mono text-[#FAF9F6] font-bold hover:bg-signal-accent/40 transition-all"
+                  className="border border-signal-accent bg-signal-accent/20 px-3 py-1 rounded-xl text-[9px] font-mono text-signal-accent font-bold hover:bg-signal-accent/40 transition-all cursor-pointer"
                 >
                   + REPORT NEW BLOCKAGE
                 </button>
@@ -495,20 +558,20 @@ export default function GrievanceFormModal({
                 {Array.from(roadIncidentStats.entries()).map(([edgeId, data]) => {
                   const uniqueCount = data.uniqueVehicles.size;
                   let priorityBadge = 'P3 NORMAL (1 VEHICLE)';
-                  let priorityBorder = 'border-[#35332C]';
-                  let priorityBg = 'bg-[#24221D]';
-                  let badgeColor = 'bg-[#1C1B17] text-[#E4E1D8] border-[#35332C]';
+                  let priorityBorder = 'border-struct-line';
+                  let priorityBg = 'bg-base-sand';
+                  let badgeColor = 'bg-base-cream text-base-dark border-struct-line';
 
                   if (uniqueCount >= 3) {
                     priorityBadge = `P1 CRITICAL ESCALATION (${uniqueCount} STRANDED VEHICLES)`;
-                    priorityBorder = 'border-[#A6403A] shadow-[0_0_15px_rgba(166,64,58,0.25)]';
-                    priorityBg = 'bg-[#351C1A]';
-                    badgeColor = 'bg-[#A6403A] text-white border-[#A6403A] animate-pulse';
+                    priorityBorder = 'border-[#997460] shadow-[0_0_15px_rgba(153,116,96,0.25)]';
+                    priorityBg = 'bg-red-50';
+                    badgeColor = 'bg-status-danger text-white border-status-danger animate-pulse';
                   } else if (uniqueCount === 2) {
                     priorityBadge = `P2 HIGH PRIORITY (${uniqueCount} STRANDED VEHICLES)`;
-                    priorityBorder = 'border-[#B8863B] shadow-[0_0_12px_rgba(184,134,59,0.15)]';
-                    priorityBg = 'bg-[#352718]';
-                    badgeColor = 'bg-[#B8863B] text-black font-bold border-[#B8863B]';
+                    priorityBorder = 'border-[#6AADAB] shadow-[0_0_12px_rgba(106,173,171,0.15)]';
+                    priorityBg = 'bg-amber-50';
+                    badgeColor = 'bg-status-warn text-white font-bold border-status-warn';
                   }
 
                   const first = data.reports[0];
@@ -517,7 +580,7 @@ export default function GrievanceFormModal({
                   return (
                     <div key={edgeId} className={`border ${priorityBorder} ${priorityBg} p-4 rounded-2xl flex flex-col gap-3 transition-all`}>
                       {/* Corridor Header */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#35332C]/60 pb-2.5">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-struct-line/60 pb-2.5">
                         <div className="flex flex-col min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs font-bold text-signal-accent">{edgeId}</span>
@@ -525,7 +588,7 @@ export default function GrievanceFormModal({
                               {priorityBadge}
                             </span>
                           </div>
-                          <span className="font-display text-sm font-bold text-[#FAF9F6] mt-0.5">
+                          <span className="font-display text-sm font-bold text-base-dark mt-0.5">
                             {first.fromNodeName} ↔ {first.toNodeName}
                           </span>
                         </div>
@@ -533,17 +596,20 @@ export default function GrievanceFormModal({
                         {/* Dispatch Action Button */}
                         <div className="flex items-center gap-2">
                           {hasDispatched ? (
-                            <div className="border border-[#4B7B4E] bg-[#4B7B4E]/15 px-3 py-1 rounded-full text-[9px] font-mono text-[#4B7B4E] font-bold flex items-center gap-1.5">
-                              <span className="h-1.5 w-1.5 rounded-full bg-[#4B7B4E] animate-pulse" />
+                            <div className="border border-[#206E6B] bg-[#206E6B]/15 px-3 py-1 rounded-full text-[9px] font-mono text-[#206E6B] font-bold flex items-center gap-1.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#206E6B] animate-pulse" />
                               <span>RESCUE SQUAD ACTIVE ({first.dispatchedTeamName})</span>
                             </div>
                           ) : (
                             <button
                               type="button"
                               onClick={() => handleDispatchRescue(edgeId, `${first.fromNodeName} ↔ ${first.toNodeName}`)}
-                              className="border border-[#A6403A] bg-[#A6403A]/20 hover:bg-[#A6403A]/40 px-3.5 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider text-[#FAF9F6] uppercase transition-all shadow-[0_0_10px_rgba(166,64,58,0.3)]"
+                              className="border border-status-danger bg-status-danger hover:bg-[#b05d47] px-3.5 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider text-white uppercase transition-all shadow-[0_0_10px_rgba(153,116,96,0.3)] cursor-pointer flex items-center gap-1.5"
                             >
-                              🚀 DISPATCH RESCUE TEAM NOW
+                              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" fill="currentColor" />
+                              </svg>
+                              DISPATCH RESCUE TEAM NOW
                             </button>
                           )}
                         </div>
@@ -552,29 +618,29 @@ export default function GrievanceFormModal({
                       {/* Citizen Reports on this Corridor */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
                         {data.reports.map((report) => (
-                          <div key={report.id} className="border border-[#35332C] bg-[#1C1B17] p-3 rounded-xl flex flex-col gap-1.5">
+                          <div key={report.id} className="border border-struct-line bg-base-cream p-3 rounded-xl flex flex-col gap-1.5">
                             <div className="flex items-center justify-between font-mono text-[9px]">
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-white uppercase">{report.reporterName}</span>
-                                <span className="bg-[#24221D] border border-[#35332C] px-1.5 py-0.2 rounded text-signal-accent font-bold">
+                                <span className="font-bold text-base-dark uppercase">{report.reporterName}</span>
+                                <span className="bg-base-sand border border-struct-line px-1.5 py-0.2 rounded text-signal-accent font-bold">
                                   {report.vehicleNumber}
                                 </span>
                               </div>
-                              <span className="text-[#E4E1D8]/60">{report.contactNumber}</span>
+                              <span className="text-base-dark/60">{report.contactNumber}</span>
                             </div>
 
-                            <p className="text-[10px] font-mono text-[#E4E1D8] italic line-clamp-2">
+                            <p className="text-[10px] font-mono text-base-dark italic line-clamp-2">
                               &ldquo;{report.description}&rdquo;
                             </p>
 
                             {report.photoUrl && (
-                              <div className="mt-1 h-20 w-32 rounded-xl border border-[#35332C] overflow-hidden">
+                              <div className="mt-1 h-20 w-32 rounded-xl border border-struct-line overflow-hidden">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={report.photoUrl} alt="Reported blockage" className="h-full w-full object-cover" />
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between text-[8px] font-mono text-[#E4E1D8]/60 border-t border-[#35332C]/40 pt-1 mt-0.5">
+                            <div className="flex items-center justify-between text-[8px] font-mono text-base-dark/60 border-t border-struct-line/40 pt-1 mt-0.5">
                               <span>TYPE: {report.blockageType.toUpperCase()}</span>
                               <span>STATUS: {report.rescueStatus.toUpperCase()}</span>
                             </div>
