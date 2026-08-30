@@ -1,6 +1,6 @@
 # STATUS
 
-Updated comprehensive project status report across data models, simulation engines, routing algorithms, dashboard UI, and tactical telemetry systems.
+Updated comprehensive project status report across data models, simulation engines, routing algorithms, dashboard UI, color theme tokens, and tactical telemetry systems.
 
 ---
 
@@ -17,7 +17,9 @@ Updated comprehensive project status report across data models, simulation engin
 | **Shelter Priority Panel** | `src/components/DispatchPanelPlacard.tsx` | **COMPLETED** | Full-height critical stock queue |
 | **Dispatcher Flight Log** | `src/components/EventFeedDispatcher.tsx`, `app/dashboard/page.tsx` | **COMPLETED** | Navbar modal popup with event counter |
 | **Citizen Road Grievance** | `src/components/GrievanceFormModal.tsx` | **COMPLETED** | Multi-vehicle escalation & rescue notification |
-| **Tactical Control Room UI** | `app/dashboard/page.tsx`, `app/globals.css` | **COMPLETED** | Full Next.js / React 19 compliance |
+| **Color Theme & Design Tokens** | `app/globals.css`, `app/layout.tsx` | **COMPLETED** | Custom Earth/Tactical palette with zero stock blue |
+| **Anti-Boxy UI & Rounded System**| `app/dashboard/page.tsx`, `src/components/*` | **COMPLETED** | Sleek rounded cards, pills & containers |
+| **Realistic Geographic Map** | `src/components/MapViewGeo.tsx`, `src/lib/osrmrouting.ts` | **COMPLETED** | Leaflet street/satellite with OSRM snaps |
 
 ---
 
@@ -35,22 +37,49 @@ Updated comprehensive project status report across data models, simulation engin
 - `src/lib/demoRunner.ts` manages automated scenario progression, timed road blockage events, speed multipliers (`--speed=N`), and continuous progress logging to Firestore.
 
 ### Part 4 — Operations Dashboard & Tactical UI: IMPLEMENTED
-1. **Historical Replay & Live Scrubbing**:
+1. **Custom Color Palette & Theme Tokens**:
+   - **Base Palette**: `#FAF9F6`, `#E4E1D8`, `#1C1B17`, `#FFFFFF`
+   - **Accent (Used Sparingly)**: `#2C4A3E` (Deep Pine Green)
+   - **Status Colors (Edges, Convoys, Telemetry)**:
+     - Normal / En Route / Clear: `#4B7B4E` (Forest Green)
+     - Warning / Degraded / Rerouted: `#B8863B` (Amber Ochre)
+     - Critical / Blocked / Recalled: `#A6403A` (Rust Red)
+   - Completely purged generic Tailwind blue-500/indigo-600 tokens across the app.
+
+2. **Anti-Boxy UI & Rounded Design Overhaul**:
+   - Replaced all sharp 90-degree corners (`rounded-none`) with modern rounded containers (`rounded-2xl`, `rounded-3xl`) and pill badges (`rounded-full`).
+   - Tactical header metrics enclosed in a smooth `rounded-2xl` pill container with inset depth.
+   - Shelter priority placards styled as `rounded-2xl` cards with `border-l-4` color status bars and `rounded-full` status badges.
+   - Timeline scrubber bar, frame step controls, and slider track upgraded to `rounded-2xl`, `rounded-xl`, and `rounded-full` capsule elements.
+   - Map SVG warning tags and floating telemetry inspection panel styled with rounded geometry.
+   - Citizen Grievance Modal framed in a sleek `rounded-3xl` glassmorphic window with rounded input controls.
+
+3. **Historical Replay & Live Scrubbing**:
    - `useReplayBuffer.ts` uses sequential snapshot capture with React 19 `useSyncExternalStore` cached server snapshots to prevent render-phase mutations.
    - Interactive timeline scrubber with scrubbing badge, live elapsed time, and time jump synchronization.
-2. **Tactical Topographic SVG Map (`MapViewTopo.tsx`)**:
+
+4. **Tactical Topographic SVG Map (`MapViewTopo.tsx`)**:
    - **Bidirectional Movement Interpolation**: Dynamically checks exit junctions to eliminate convoy teleportation on reverse edge traversal.
    - **Road-Aligned Waterways**: Flow channels for Periyar River and Grand Canal mathematically anchored to road nodes, bridge junctions, and culverts.
    - **Interactive Hydro Beacons & Crossing Hazards**: Clickable station beacons and high-water inundation warnings (`⛔ INUNDATION: +X.Xm`) with tactical detail flyout panels.
-3. **Left Collapsible Sidebar (`MapLayerToggle.tsx`)**:
-   - Vertical icon rail (`w-14`) expanding to operational sidebar (`w-80`) on hover or pin.
+
+5. **Left Collapsible Sidebar (`MapLayerToggle.tsx`)**:
+   - Vertical icon rail (`w-16`) expanding to operational sidebar (`w-80`) on hover or pin.
    - Dual-tab interface (`MAP LAYERS` for 6 layer toggles; `HYDRO SENSORS` for watershed overview and alert filters).
-4. **Dispatcher Flight Log Navbar Modal**:
+
+6. **Dispatcher Flight Log Navbar Modal**:
    - Relocated from right sidebar to top navbar trigger button (`📋 FLIGHT LOG [N]`) with high-contrast incident feed modal.
-5. **Full-Length Shelters Priority Sequence**:
+
+7. **Full-Length Shelters Priority Sequence**:
    - Ranked emergency shelter placards occupying full right-hand sidebar with stock countdowns and incoming fleet tracking.
-6. **Citizen Road Grievance & Emergency Rescue Dispatch (`GrievanceFormModal.tsx`)**:
+
+8. **Citizen Road Grievance & Emergency Rescue Dispatch (`GrievanceFormModal.tsx`)**:
    - Road corridor selector, hazard classification, unique vehicle ID tracking, photo evidence upload, automated priority escalation (`P1/P2/P3`), and simulated rescue dispatch with real-time en-route alerts.
+
+9. **Realistic Geographic Map & OSRM Routing (`MapViewGeo.tsx`)**:
+   - SNAPS routes to real road network geometry using the public OSRM API with in-flight request deduplication and dual caching (memory & sessionStorage).
+   - Basemap toggle supporting street view and Esri satellite world imagery maps.
+   - Brand theme status colors matching edges, node statuses, and active convoys.
 
 ---
 

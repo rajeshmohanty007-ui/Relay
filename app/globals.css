@@ -5,6 +5,7 @@
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
+  /* ---- Brand tokens (use these directly in new code, e.g. bg-base-dark) ---- */
   --color-brand-bg: #1C1B17;
   --color-struct-line: #35332C;
   --color-status-ok: #4B7B4E;
@@ -16,6 +17,144 @@
   --color-base-sand: #E4E1D8;
   --color-base-dark: #1C1B17;
   --color-base-white: #FFFFFF;
+
+  /*
+   * ---- Palette re-skin ----
+   * The components in this app were written against Tailwind's default
+   * color scales (zinc, slate, red, amber, orange, emerald, sky, indigo) —
+   * e.g. `bg-zinc-800`, `text-red-400`, `border-amber-200` appear all over
+   * DispatchPanel, the Sensor/Network map + table components, etc.
+   *
+   * Tailwind v4 lets a project override any built-in scale by redeclaring
+   * it here in @theme. Every one of those existing class names keeps
+   * working exactly as written, but now resolves to a shade generated
+   * ONLY from the brand palette above, instead of Tailwind's stock colors.
+   * That means the whole app re-themes from this one file — no need to
+   * hunt down every `bg-zinc-*` / `text-red-*` usage across ~16 files.
+   *
+   * How each ramp was built (50 lightest -> 950 darkest), so it's easy to
+   * defend/adjust: every shade is a straight RGB blend between two brand
+   * colors, nothing invented.
+   *   - zinc & slate  -> the app's neutral scale. Blended between
+   *     base-white / base-cream / base-sand (light end) and
+   *     struct-line / base-dark (dark end).
+   *   - red            -> blended toward/from status-danger (#A6403A)
+   *   - amber          -> blended toward/from status-warn (#B8863B)
+   *   - orange         -> a distinct rust tone, blended 45% from
+   *     status-warn toward status-danger, so a 3rd ("high warning" vs
+   *     "advisory" vs "critical") severity step stays visible without
+   *     introducing an off-palette hue.
+   *   - emerald        -> blended toward/from status-ok (#4B7B4E)
+   *   - sky & indigo   -> blended toward/from signal-accent (#2C4A3E),
+   *     since the palette has no blue and these were used for
+   *     highlight/CTA accents (e.g. bg-indigo-600 buttons, sky-400 labels)
+   */
+
+  /* Neutral scale (zinc) — reused for slate below */
+  --color-zinc-50: #FFFFFF;
+  --color-zinc-100: #FAF9F6;
+  --color-zinc-200: #E4E1D8;
+  --color-zinc-300: #B8B6AD;
+  --color-zinc-400: #8C8A82;
+  --color-zinc-500: #615E57;
+  --color-zinc-600: #35332C;
+  --color-zinc-700: #2C2A24;
+  --color-zinc-800: #24221D;
+  --color-zinc-900: #1F1D19;
+  --color-zinc-950: #1C1B17;
+
+  --color-slate-50: var(--color-zinc-50);
+  --color-slate-100: var(--color-zinc-100);
+  --color-slate-200: var(--color-zinc-200);
+  --color-slate-300: var(--color-zinc-300);
+  --color-slate-400: var(--color-zinc-400);
+  --color-slate-500: var(--color-zinc-500);
+  --color-slate-600: var(--color-zinc-600);
+  --color-slate-700: var(--color-zinc-700);
+  --color-slate-800: var(--color-zinc-800);
+  --color-slate-900: var(--color-zinc-900);
+  --color-slate-950: var(--color-zinc-950);
+
+  /* Danger scale (red) — anchored on status-danger #A6403A */
+  --color-red-50: #F5EEEB;
+  --color-red-100: #EDDDDA;
+  --color-red-200: #DFBEBA;
+  --color-red-300: #CE9994;
+  --color-red-400: #BB6E69;
+  --color-red-500: #AD4F49;
+  --color-red-600: #A6403A;
+  --color-red-700: #8A3933;
+  --color-red-800: #6C302B;
+  --color-red-900: #4C2823;
+  --color-red-950: #31211C;
+
+  /* Warn scale (amber) — anchored on status-warn #B8863B */
+  --color-amber-50: #F6F2EB;
+  --color-amber-100: #F0E8DA;
+  --color-amber-200: #E5D4BA;
+  --color-amber-300: #D8BD95;
+  --color-amber-400: #C8A36A;
+  --color-amber-500: #BD8F4A;
+  --color-amber-600: #B8863B;
+  --color-amber-700: #997134;
+  --color-amber-800: #76592C;
+  --color-amber-900: #534024;
+  --color-amber-950: #332B1C;
+
+  /* Higher-severity warn scale (orange) — warn blended toward danger */
+  --color-orange-50: #F6F0EB;
+  --color-orange-100: #EFE3DA;
+  --color-orange-200: #E2CABA;
+  --color-orange-300: #D4AD95;
+  --color-orange-400: #C28B6A;
+  --color-orange-500: #B6724A;
+  --color-orange-600: #B0663B;
+  --color-orange-700: #925734;
+  --color-orange-800: #72462C;
+  --color-orange-900: #503524;
+  --color-orange-950: #32261C;
+
+  /* Ok scale (emerald) — anchored on status-ok #4B7B4E */
+  --color-emerald-50: #F0F1EC;
+  --color-emerald-100: #E0E6DD;
+  --color-emerald-200: #C2D1C0;
+  --color-emerald-300: #9FB79F;
+  --color-emerald-400: #779A78;
+  --color-emerald-500: #59855B;
+  --color-emerald-600: #4B7B4E;
+  --color-emerald-700: #426843;
+  --color-emerald-800: #375337;
+  --color-emerald-900: #2C3D2A;
+  --color-emerald-950: #23291F;
+
+  /* Accent scale (sky) — anchored on signal-accent #2C4A3E */
+  --color-sky-50: #EEEEEB;
+  --color-sky-100: #DBDFDA;
+  --color-sky-200: #B8C1BB;
+  --color-sky-300: #8F9E96;
+  --color-sky-400: #60766C;
+  --color-sky-500: #3C584D;
+  --color-sky-600: #2C4A3E;
+  --color-sky-700: #294136;
+  --color-sky-800: #25362E;
+  --color-sky-900: #222B25;
+  --color-sky-950: #1E221D;
+
+  /* Accent scale (indigo) — same anchor as sky, reused for CTA buttons */
+  --color-indigo-50: var(--color-sky-50);
+  --color-indigo-100: var(--color-sky-100);
+  --color-indigo-200: var(--color-sky-200);
+  --color-indigo-300: var(--color-sky-300);
+  --color-indigo-400: var(--color-sky-400);
+  --color-indigo-500: var(--color-sky-500);
+  --color-indigo-600: var(--color-sky-600);
+  --color-indigo-700: var(--color-sky-700);
+  --color-indigo-800: var(--color-sky-800);
+  --color-indigo-900: var(--color-sky-900);
+  --color-indigo-950: var(--color-sky-950);
+
+  /* cyan appears twice (a connection-line stroke) — treat as accent too */
+  --color-cyan-400: var(--color-sky-600);
 }
 
 :root {

@@ -62,12 +62,12 @@ export default function SensorTelemetryCard({
     const pathData = `M ${pts.join(' L ')}`;
     const strokeColor =
       sensor.status === 'critical'
-        ? '#ef4444'
+        ? '#A6403A'
         : sensor.status === 'warning'
-        ? '#f97316'
-        : sensor.status === 'advisory'
-        ? '#f59e0b'
-        : '#10b981';
+          ? '#B0663B'
+          : sensor.status === 'advisory'
+            ? '#B8863B'
+            : '#4B7B4E';
 
     return (
       <svg viewBox={`0 0 ${width} ${height}`} className="h-10 w-full overflow-visible">
@@ -88,11 +88,10 @@ export default function SensorTelemetryCard({
   return (
     <div
       onClick={() => onSelect?.(sensor)}
-      className={`group flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 ${
-        isSelected
+      className={`group flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 ${isSelected
           ? 'border-sky-500 bg-sky-50/40 ring-2 ring-sky-500/20 dark:border-sky-500 dark:bg-sky-950/20'
           : 'border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700'
-      } ${onSelect ? 'cursor-pointer' : ''}`}
+        } ${onSelect ? 'cursor-pointer' : ''}`}
     >
       {/* Top row: Code, Hardware, Status */}
       <div>
@@ -133,9 +132,8 @@ export default function SensorTelemetryCard({
 
           <div className="text-right">
             <div
-              className={`font-mono text-xs font-bold ${
-                sensor.rateOfRiseMPerHour > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
-              }`}
+              className={`font-mono text-xs font-bold ${sensor.rateOfRiseMPerHour > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                }`}
             >
               {sensor.rateOfRiseMPerHour > 0 ? `+${sensor.rateOfRiseMPerHour}` : sensor.rateOfRiseMPerHour} m/h
             </div>
@@ -169,15 +167,14 @@ export default function SensorTelemetryCard({
 
             {/* Current Fill */}
             <div
-              className={`h-full transition-all duration-300 rounded-full ${
-                sensor.status === 'critical'
+              className={`h-full transition-all duration-300 rounded-full ${sensor.status === 'critical'
                   ? 'bg-red-500'
                   : sensor.status === 'warning'
-                  ? 'bg-orange-500'
-                  : sensor.status === 'advisory'
-                  ? 'bg-amber-400'
-                  : 'bg-emerald-500'
-              }`}
+                    ? 'bg-orange-500'
+                    : sensor.status === 'advisory'
+                      ? 'bg-amber-400'
+                      : 'bg-emerald-500'
+                }`}
               style={{ width: `${currentPct}%` }}
             />
           </div>
