@@ -15,6 +15,8 @@ export interface MapViewGeoProps {
     convoys: Convoy[];
     sensors?: WaterSensor[];
     visibleLayers?: Set<MapLayer>;
+    /** Edge IDs of a citizen-planned route to draw as a highlighted overlay on top of the road network. */
+    highlightedEdgeIds?: Set<string>;
 }
 
 type BasemapStyle = 'street' | 'satellite';
@@ -33,54 +35,68 @@ const BASEMAPS: Record<BasemapStyle, { url: string; attribution: string; label: 
 };
 
 const NODE_STYLE: Record<Node['type'], { color: string; radius: number }> = {
-    depot: { color: '#1e293b', radius: 9 },
-    shelter: { color: '#e11d48', radius: 8 },
-    village: { color: '#10b981', radius: 6 },
-    junction: { color: '#9ca3af', radius: 4 },
+    depot: { color: '#FAF9F6', radius: 9 },
+    shelter: { color: '#A6403A', radius: 8 },
+    village: { color: '#2C4A3E', radius: 6 },
+    junction: { color: '#E4E1D8', radius: 4 },
 };
 
 const EDGE_STYLE: Record<Edge['status'], { color: string; weight: number; dashArray?: string }> = {
-    clear: { color: '#3b82f6', weight: 3 },
-    degraded: { color: '#f59e0b', weight: 4, dashArray: '8 6' },
-    blocked: { color: '#ef4444', weight: 4 },
+    clear: { color: '#4B7B4E', weight: 3.5 },
+    degraded: { color: '#B8863B', weight: 4.5, dashArray: '8 6' },
+    blocked: { color: '#A6403A', weight: 4.5 },
 };
 
 const CONVOY_COLOR: Partial<Record<Convoy['status'], string>> = {
-    enroute: '#22c55e',
-    rerouted: '#f59e0b',
-    recalled: '#ef4444',
+    enroute: '#4B7B4E',
+    rerouted: '#B8863B',
+    recalled: '#A6403A',
 };
 
 function getShelterStatusColor(node: Node): string {
-    if (!node.criticalSupplyNeed) return '#10b981';
+    if (!node.criticalSupplyNeed) return '#4B7B4E';
     const hoursLeft = node.criticalSupplyNeed.hoursOfStockRemaining;
-    if (hoursLeft <= 3.0) return '#ef4444';
-    if (hoursLeft <= 5.0) return '#f59e0b';
-    return '#10b981';
+    if (hoursLeft <= 3.0) return '#A6403A';
+    if (hoursLeft <= 5.0) return '#B8863B';
+    return '#4B7B4E';
 }
 
-function nodeDivIcon(node: Node): L.DivIcon {
+function nodeDivIcon(node: Node, showLabels: boolean): L.DivIcon {
     const style = NODE_STYLE[node.type];
     const fill = node.type === 'shelter' ? getShelterStatusColor(node) : style.color;
     const size = style.radius * 2;
     const shape =
         node.type === 'depot'
-            ? `<rect x="1" y="1" width="${size - 2}" height="${size - 2}" fill="${fill}" stroke="#fff" stroke-width="1.5" />`
+            ? `<rect x="1" y="1" width="${size - 2}" height="${size - 2}" rx="3" ry="3" fill="${fill}" stroke="#1C1B17" stroke-width="1.5" />`
             : node.type === 'shelter'
-                ? `<rect x="1" y="1" width="${size - 2}" height="${size - 2}" fill="${fill}" stroke="#fff" stroke-width="1.5" transform="rotate(45 ${size / 2} ${size / 2})" />`
-                : `<circle cx="${size / 2}" cy="${size / 2}" r="${style.radius - 1}" fill="${fill}" stroke="#fff" stroke-width="1.5" />`;
+                ? `<rect x="1" y="1" width="${size - 2}" height="${size - 2}" rx="3" ry="3" fill="${fill}" stroke="#1C1B17" stroke-width="1.5" transform="rotate(45 ${size / 2} ${size / 2})" />`
+                : `<circle cx="${size / 2}" cy="${size / 2}" r="${style.radius - 1}" fill="${fill}" stroke="#1C1B17" stroke-width="1.5" />`;
+
+    const labelHtml = showLabels
+        ? `<div class="mt-0.5 text-[#FAF9F6] text-[8.5px] font-mono font-black whitespace-nowrap uppercase tracking-wider select-none pointer-events-none" style="text-shadow: -1px -1px 0 #1c1b17, 1px -1px 0 #1c1b17, -1px 1px 0 #1c1b17, 1px 1px 0 #1c1b17, 0 1px 3px rgba(0,0,0,0.95);">
+            ${node.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '')}
+           </div>`
+        : '';
+
     return L.divIcon({
         className: 'relay-node-icon',
-        html: `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${shape}</svg>`,
-        iconSize: [size, size],
-        iconAnchor: [size / 2, size / 2],
+        html: `
+          <div class="flex flex-col items-center select-none pointer-events-none" style="transform: translate(-50%, -${size / 2}px); width: 140px;">
+            <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="filter drop-shadow-[0_1.5px_3.5px_rgba(0,0,0,0.65)]">
+              ${shape}
+            </svg>
+            ${labelHtml}
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
     });
 }
 
 function convoyDivIcon(color: string): L.DivIcon {
     return L.divIcon({
         className: 'relay-convoy-icon',
-        html: `<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="${color}" stroke="#fff" stroke-width="2" /></svg>`,
+        html: `<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="${color}" stroke="#1C1B17" stroke-width="2" /></svg>`,
         iconSize: [16, 16],
         iconAnchor: [8, 8],
     });
@@ -136,6 +152,7 @@ export default function MapViewGeo({
     convoys,
     sensors = [],
     visibleLayers = new Set(['edges', 'nodes', 'convoys', 'sensors'] as MapLayer[]),
+    highlightedEdgeIds,
 }: MapViewGeoProps) {
     const [basemap, setBasemap] = useState<BasemapStyle>('street');
     const [roadGeometry, setRoadGeometry] = useState<Map<string, LatLng[]>>(new Map());
@@ -194,8 +211,8 @@ export default function MapViewGeo({
                 center={initialCenter}
                 zoom={12}
                 scrollWheelZoom
-                className="h-full w-full rounded-lg"
-                style={{ background: '#0f172a' }}
+                className="h-full w-full rounded-2xl"
+                style={{ background: '#1C1B17' }}
             >
                 <TileLayer url={BASEMAPS[basemap].url} attribution={BASEMAPS[basemap].attribution} />
                 <FitBounds nodes={nodes} />
@@ -214,22 +231,40 @@ export default function MapViewGeo({
                         );
                     })}
 
-                {(!visibleLayers || visibleLayers.has('nodes')) &&
-                    nodes.map((node) => (
-                        <Marker key={node.id} position={[node.lat, node.lng]} icon={nodeDivIcon(node)}>
+                {highlightedEdgeIds &&
+                    highlightedEdgeIds.size > 0 &&
+                    edges
+                        .filter((edge) => highlightedEdgeIds.has(edge.id))
+                        .map((edge) => {
+                            const geom = geometryFor(edge.id);
+                            if (geom.length < 2) return null;
+                            return (
+                                <Polyline
+                                    key={`hl-${edge.id}`}
+                                    positions={geom}
+                                    pathOptions={{ color: '#38bdf8', weight: 6, opacity: 0.9, dashArray: '2 10', lineCap: 'round' }}
+                                />
+                            );
+                        })}
+
+                {(!visibleLayers || visibleLayers.has('nodes')) && (() => {
+                    const showLabels = !visibleLayers || visibleLayers.has('labels');
+                    return nodes.map((node) => (
+                        <Marker key={`${node.id}_${showLabels}`} position={[node.lat, node.lng]} icon={nodeDivIcon(node, showLabels)}>
                             <Popup>
-                                <strong>{node.name}</strong>
-                                <br />
-                                {node.type}
-                                {node.criticalSupplyNeed && (
-                                    <>
-                                        <br />
-                                        Stock remaining: {node.criticalSupplyNeed.hoursOfStockRemaining}h
-                                    </>
-                                )}
+                                <div className="font-sans text-xs text-white bg-[#1C1B17] p-2 rounded-xl border border-[#35332C]">
+                                    <strong className="block text-[#FAF9F6]">{node.name}</strong>
+                                    <span className="text-[10px] text-[#E4E1D8]/60 uppercase">{node.type}</span>
+                                    {node.criticalSupplyNeed && (
+                                        <div className="mt-1 font-mono text-[9px] text-[#B8863B]">
+                                            Stock remaining: {node.criticalSupplyNeed.hoursOfStockRemaining}h
+                                        </div>
+                                    )}
+                                </div>
                             </Popup>
                         </Marker>
-                    ))}
+                    ));
+                })()}
 
                 {(!visibleLayers || visibleLayers.has('convoys')) &&
                     convoys

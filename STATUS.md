@@ -48,7 +48,7 @@ Updated comprehensive project status report across data models, simulation engin
 
 2. **Anti-Boxy UI & Rounded Design Overhaul**:
    - Replaced all sharp 90-degree corners (`rounded-none`) with modern rounded containers (`rounded-2xl`, `rounded-3xl`) and pill badges (`rounded-full`).
-   - Tactical header metrics enclosed in a smooth `rounded-2xl` pill container with inset depth.
+   - System telemetry summary panel (active operations, hazard interrupts, and alert level shelters) moved to the top of the right aside panel inside a dark inset container.
    - Shelter priority placards styled as `rounded-2xl` cards with `border-l-4` color status bars and `rounded-full` status badges.
    - Timeline scrubber bar, frame step controls, and slider track upgraded to `rounded-2xl`, `rounded-xl`, and `rounded-full` capsule elements.
    - Map SVG warning tags and floating telemetry inspection panel styled with rounded geometry.
@@ -57,6 +57,7 @@ Updated comprehensive project status report across data models, simulation engin
 3. **Historical Replay & Live Scrubbing**:
    - `useReplayBuffer.ts` uses sequential snapshot capture with React 19 `useSyncExternalStore` cached server snapshots to prevent render-phase mutations.
    - Interactive timeline scrubber with scrubbing badge, live elapsed time, and time jump synchronization.
+   - Removed the top-right mission/scrub timer card from the header strip for a cleaner layout.
 
 4. **Tactical Topographic SVG Map (`MapViewTopo.tsx`)**:
    - **Bidirectional Movement Interpolation**: Dynamically checks exit junctions to eliminate convoy teleportation on reverse edge traversal.
@@ -65,7 +66,8 @@ Updated comprehensive project status report across data models, simulation engin
 
 5. **Left Collapsible Sidebar (`MapLayerToggle.tsx`)**:
    - Vertical icon rail (`w-16`) expanding to operational sidebar (`w-80`) on hover or pin.
-   - Dual-tab interface (`MAP LAYERS` for 6 layer toggles; `HYDRO SENSORS` for watershed overview and alert filters).
+   - Dual-tab interface (`MAP LAYERS` for layer toggles; `HYDRO SENSORS` for watershed overview and alert filters).
+   - Removed the redundant bottom collapse button for a cleaner, unified header-only pin control layout.
 
 6. **Dispatcher Flight Log Navbar Modal**:
    - Relocated from right sidebar to top navbar trigger button (`📋 FLIGHT LOG [N]`) with high-contrast incident feed modal.
@@ -80,6 +82,15 @@ Updated comprehensive project status report across data models, simulation engin
    - SNAPS routes to real road network geometry using the public OSRM API with in-flight request deduplication and dual caching (memory & sessionStorage).
    - Basemap toggle supporting street view and Esri satellite world imagery maps.
    - Brand theme status colors matching edges, node statuses, and active convoys.
+   - Fixed modal overlap bug by boosting z-indices on Grievance Modal and Flight Log Trigger components to `z-[9999]` to sit cleanly on top of Leaflet interactive overlays.
+   - Added permanently visible node name labels centered below all node markers (depots, shelters, villages, junctions) in both satellite and street mode basemaps, styled with transparent backgrounds and high-contrast text outlines.
+   - Added a `NODE LABELS` layer toggle in the map sidebar to dynamically show or hide the node name text overlays in both TACTICAL and REALISTIC maps.
+
+10. **Citizen Point-to-Point Route Planner (`RoutePlannerModal.tsx`, `routingEngine.ts`)**:
+    - Dijkstra routing for general citizens (`buildCitizenAdjacency`) that ignores the heavy vehicle safety weight constraints.
+    - Animated sky blue overlay route highlighting on both tactical (SVG animate dashoffset) and realistic (leaflet dashed polyline) map styles.
+    - Form layout featuring origin/destination selector selects, switch swapping, path nodes sequence listing, and ETA indicators.
+    - Uses `z-[9999]` index layers to sit on top of map panes and Leaflet overlays.
 
 ---
 

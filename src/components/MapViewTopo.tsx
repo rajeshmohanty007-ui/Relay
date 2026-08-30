@@ -3,9 +3,9 @@ import type { Node, Edge, Convoy } from '../lib/types';
 import { projectNodes, type ProjectedNode } from '../lib/projection';
 import type { WaterSensor } from '../lib/waterSensors';
 
-export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors';
+export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors' | 'labels';
 
-export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors']);
+export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors', 'labels']);
 
 export interface MapViewProps {
   nodes: Node[];
@@ -13,6 +13,8 @@ export interface MapViewProps {
   convoys: Convoy[];
   sensors?: WaterSensor[];
   visibleLayers?: Set<MapLayer>;
+  /** Edge IDs of a citizen-planned route to draw as a highlighted overlay on top of the road network. */
+  highlightedEdgeIds?: Set<string>;
 }
 
 const VIEW_WIDTH = 900;
@@ -46,6 +48,7 @@ export default function MapViewTopo({
   convoys,
   sensors = [],
   visibleLayers = ALL_MAP_LAYERS,
+  highlightedEdgeIds,
 }: MapViewProps) {
   const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
 
@@ -371,6 +374,45 @@ export default function MapViewTopo({
           </g>
         )}
 
+        {/* 4b. Citizen route planner highlight overlay */}
+        {highlightedEdgeIds && highlightedEdgeIds.size > 0 && (
+          <g>
+            {edges
+              .filter((edge) => highlightedEdgeIds.has(edge.id))
+              .map((edge) => {
+                const from = positionsById.get(edge.fromNodeId);
+                const to = positionsById.get(edge.toNodeId);
+                if (!from || !to) return null;
+                return (
+                  <g key={`hl-${edge.id}`}>
+                    <line
+                      x1={from.x}
+                      y1={from.y}
+                      x2={to.x}
+                      y2={to.y}
+                      stroke="#38BDF8"
+                      strokeWidth={7}
+                      strokeLinecap="round"
+                      opacity="0.25"
+                    />
+                    <line
+                      x1={from.x}
+                      y1={from.y}
+                      x2={to.x}
+                      y2={to.y}
+                      stroke="#38BDF8"
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                      strokeDasharray="10 8"
+                    >
+                      <animate attributeName="stroke-dashoffset" from="18" to="0" dur="0.6s" repeatCount="indefinite" />
+                    </line>
+                  </g>
+                );
+              })}
+          </g>
+        )}
+
         {/* 5. Hydrological Water Level Sensors & High Water Level Crossing Alerts */}
         {visibleLayers.has('sensors') && (
           <g>
@@ -582,15 +624,17 @@ export default function MapViewTopo({
                   {nodeElement}
 
                   {/* Node label text */}
-                  <text
-                    x={pos.x}
-                    y={pos.y - 10}
-                    textAnchor="middle"
-                    className={`font-display text-[8px] font-bold tracking-wider uppercase ${labelColor}`}
-                    fill="currentColor"
-                  >
-                    {node.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '')}
-                  </text>
+                  {visibleLayers?.has('labels') && (
+                    <text
+                      x={pos.x}
+                      y={pos.y - 10}
+                      textAnchor="middle"
+                      className={`font-display text-[8px] font-bold tracking-wider uppercase ${labelColor}`}
+                      fill="currentColor"
+                    >
+                      {node.name.replace(' Relief Shelter', '').replace(' Logistics Depot', '').replace(' Emergency Shelter', '')}
+                    </text>
+                  )}
                 </g>
               );
             })}

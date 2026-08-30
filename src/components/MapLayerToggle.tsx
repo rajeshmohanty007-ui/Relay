@@ -105,6 +105,18 @@ const LAYERS: LayerOption[] = [
       </svg>
     ),
   },
+  {
+    id: 'labels',
+    label: 'NODE LABELS',
+    sublabel: 'Show node name overlay',
+    shortKey: 'L',
+    icon: (active) => (
+      <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+        <rect x="3" y="5" width="18" height="14" rx="2" className={active ? 'stroke-signal-accent' : 'stroke-zinc-500'} />
+        <path d="M7 10h10M7 14h6" className={active ? 'stroke-signal-accent' : 'stroke-zinc-500'} />
+      </svg>
+    ),
+  },
 ];
 
 const STATUS_COLOR_MAP: Record<WaterLevelStatus, { badge: string; text: string; bar: string }> = {
@@ -525,18 +537,6 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
             </div>
           </div>
         )}
-      </div>
-
-      {/* Bottom Footer / Expansion Prompt */}
-      <div className="border-t border-[#35332C]/60 p-2.5 shrink-0">
-        <button
-          type="button"
-          onClick={() => setIsPinned(!isPinned)}
-          className="flex w-full items-center justify-center gap-1.5 border border-[#35332C] bg-[#24221D] py-1.5 rounded-xl text-[8px] font-mono text-[#E4E1D8]/80 hover:text-white hover:border-signal-accent transition-all"
-          title={expanded ? 'Click to collapse sidebar' : 'Click to expand sidebar'}
-        >
-          <span>{expanded ? '◀ COLLAPSE' : '▶'}</span>
-        </button>
       </div>
     </aside>
   );
