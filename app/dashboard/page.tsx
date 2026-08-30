@@ -7,7 +7,7 @@ import { useReplayBuffer } from '../../src/hooks/useReplayBuffer';
 import type { Node, Edge, Convoy, DemoLogEntry, DemoConfig } from '../../src/lib/types';
 import MapViewTopo, { ALL_MAP_LAYERS, type MapLayer } from '../../src/components/MapViewTopo';
 
-// Leaflet touches `window` on import, so the realistic map must never render on the server.
+
 const MapViewGeo = dynamic(() => import('../../src/components/MapViewGeo'), {
   ssr: false,
   loading: () => (
@@ -61,7 +61,7 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Live water level telemetry simulation for the tactical map feed
+  
   const [sensors, setSensors] = useState<WaterSensor[]>(() =>
     initializeSensors().filter((s) => STRATEGIC_SENSOR_IDS.has(s.id)),
   );
@@ -83,21 +83,21 @@ export default function DashboardPage() {
   const activeConfig = demoConfigs?.[0];
   const scenarioName = activeConfig?.scenarioName || "Aluva-Periyar River Flood Relief Basin (Monsoon Crisis)";
 
-  // Compute live elapsed simulation time
+  
   const liveElapsedSeconds = demoLog.length > 0
     ? Math.max(...demoLog.map(l => l.simTimeSec))
     : 0;
 
-  // Buffer live Firestore streams
+  
   const { availableTimes, getSnapshotByIndex, bufferSize } = useReplayBuffer(nodes, edges, convoys, liveElapsedSeconds);
 
-  // When in LIVE mode, automatically follow the latest available index.
-  // In REPLAY mode, use the manually scrubbed index.
+  
+  
   const activeIndex = mode === 'LIVE'
     ? Math.max(0, bufferSize - 1)
     : Math.min(selectedTimeIndex, Math.max(0, bufferSize - 1));
 
-  // Determine current active snapshot data from the buffer
+  
   const activeSnapshot = mode === 'REPLAY' ? getSnapshotByIndex(activeIndex) : null;
   const scrubbedTime = activeSnapshot ? activeSnapshot.simTimeSec : liveElapsedSeconds;
 
@@ -109,12 +109,12 @@ export default function DashboardPage() {
     : demoLog;
 
 
-  // Calculate stats for the tactical header based on current displayed state
+  
   const activeConvoys = displayConvoys.filter(c => c.status === 'enroute' || c.status === 'rerouted').length;
   const blockedRoads = displayEdges.filter(e => e.status === 'blocked').length;
   const criticalShelters = displayNodes.filter(n => n.type === 'shelter' && n.criticalSupplyNeed && n.criticalSupplyNeed.hoursOfStockRemaining <= 3.0).length;
 
-  // Citizen active planned route card to render inside replay timeline next to Tick indicator
+  
   const hasActiveRoute = !!(routeOriginId && routeDestId && highlightedRouteEdgeIds && highlightedRouteEdgeIds.size > 0);
   let plannedRouteCard: React.ReactNode = null;
 
@@ -156,138 +156,127 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen xl:h-screen w-full flex-col bg-base-cream text-base-dark font-sans overflow-y-auto xl:overflow-hidden">
-      {/* Tactical Header Strip */}
-      <header className="relative z-30 border-b border-struct-line bg-base-sand/90 backdrop-blur-md px-3 sm:px-5 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/drawing.svg" alt="Relay Logo" className="h-8 w-auto block" />
-            <div>
-              <p className="text-[10px] font-sans text-base-dark/70 tracking-wide uppercase">
-                SCENARIO: <span className="text-signal-accent font-semibold">{scenarioName}</span>
-              </p>
+      <header className="relative z-30 border-b border-struct-line bg-base-sand/90 backdrop-blur-md px-3 sm:px-5 py-2.5 flex flex-col xl:flex-row xl:items-center justify-between gap-2 xl:gap-4 shrink-0">
+        <div className="flex items-start xl:items-center gap-3 xl:gap-4 min-w-0 flex-1">
+          <img src="/drawing.svg" alt="Relay Logo" className="h-8 w-auto block shrink-0 mt-0.5 xl:mt-0" />
+
+          <div className="flex flex-col xl:flex-row xl:items-center gap-1.5 xl:gap-4 min-w-0 flex-1">
+            <p className="text-[10px] font-sans text-base-dark/70 tracking-wide uppercase shrink-0">
+              SCENARIO: <span className="text-signal-accent font-semibold">{scenarioName}</span>
+            </p>
+
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap overflow-x-auto scrollbar-hide xl:ml-auto">
+              {}
+              <button
+                type="button"
+                onClick={() => setIsGrievanceOpen(true)}
+                className="flex items-center gap-1 shrink-0 border border-status-danger bg-status-danger/15 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[9px] sm:text-[10px] font-display font-black tracking-wider uppercase text-status-danger hover:bg-status-danger/30 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_10px_rgba(153,116,96,0.25)] cursor-pointer"
+                title="Report Blocked Road & Request Priority Rescue Dispatch"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>REPORT BLOCKAGE</span>
+              </button>
+
+              {}
+              <button
+                type="button"
+                onClick={() => setIsRoutePlannerOpen(true)}
+                className="flex items-center gap-1 shrink-0 border border-signal-accent bg-signal-accent/15 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[9px] sm:text-[10px] font-display font-black tracking-wider uppercase text-signal-accent hover:bg-signal-accent/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                title="Plan a safe route between any two points"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
+                </svg>
+                <span>PLAN A ROUTE</span>
+              </button>
+
+              {}
+              <button
+                type="button"
+                onClick={() => setIsFlightLogOpen(true)}
+                className="flex items-center gap-1.5 shrink-0 border border-struct-line bg-base-cream px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[9px] sm:text-[10px] font-display font-bold tracking-wider uppercase text-base-dark hover:text-base-dark hover:border-signal-accent hover:bg-base-sand transition-all cursor-pointer"
+                title="Open Dispatcher Flight Log"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 11h6m-6 4h6" />
+                </svg>
+                <span>FLIGHT LOG</span>
+                <span className="bg-base-sand border border-struct-line text-signal-accent px-1.5 py-0.5 rounded-full text-[8px] font-mono font-bold">
+                  {displayDemoLog.length}
+                </span>
+              </button>
+
+              {}
+              <div className="flex shrink-0 border border-struct-line bg-base-cream p-0.5 sm:p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setMapStyle('TACTICAL')}
+                  className={`px-2 sm:px-3 py-1 rounded-lg text-[9px] sm:text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mapStyle === 'TACTICAL'
+                    ? 'bg-signal-accent text-white font-black shadow-sm'
+                    : 'text-base-dark/60 hover:text-base-dark'
+                    }`}
+                  title="Stylized tactical map (no internet required)"
+                >
+                  TACTICAL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMapStyle('REALISTIC')}
+                  className={`px-2 sm:px-3 py-1 rounded-lg text-[9px] sm:text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mapStyle === 'REALISTIC'
+                    ? 'bg-signal-accent text-white font-black shadow-sm'
+                    : 'text-base-dark/60 hover:text-base-dark'
+                    }`}
+                  title="Real satellite/street map with road-snapped routes (needs internet)"
+                >
+                  REALISTIC
+                </button>
+              </div>
+
+              {}
+              <div className="flex shrink-0 border border-struct-line bg-base-cream p-0.5 sm:p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('LIVE');
+                    if (bufferSize > 0) {
+                      setSelectedTimeIndex(bufferSize - 1);
+                    }
+                  }}
+                  className={`px-2 sm:px-3 py-1 rounded-lg text-[9px] sm:text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mode === 'LIVE'
+                    ? 'bg-status-ok text-white font-black shadow-sm'
+                    : 'text-base-dark/60 hover:text-base-dark'
+                    }`}
+                >
+                  LIVE
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode('REPLAY');
+                    if (bufferSize > 0) {
+                      setSelectedTimeIndex(bufferSize - 1);
+                    }
+                  }}
+                  className={`px-2 sm:px-3 py-1 rounded-lg text-[9px] sm:text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mode === 'REPLAY'
+                    ? 'bg-status-warn text-white font-black shadow-sm'
+                    : 'text-base-dark/60 hover:text-base-dark'
+                    }`}
+                >
+                  REPLAY
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-
-
-        {/* Mode Toggle, Flight Log, Grievance Trigger & Mission Clock */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Grievance / Emergency Road Blockage Report Button */}
-          <button
-            type="button"
-            onClick={() => setIsGrievanceOpen(true)}
-            className="flex items-center gap-1.5 border border-status-danger bg-status-danger/15 px-3 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider uppercase text-status-danger hover:bg-status-danger/30 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_10px_rgba(153,116,96,0.25)] cursor-pointer"
-            title="Report Blocked Road & Request Priority Rescue Dispatch"
-          >
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              <span className="hidden sm:inline">REPORT BLOCKAGE</span>
-            </span>
-          </button>
-
-          {/* Citizen Route Planner Trigger Button */}
-          <button
-            type="button"
-            onClick={() => setIsRoutePlannerOpen(true)}
-            className="flex items-center gap-1.5 border border-signal-accent bg-signal-accent/15 px-3 py-1.5 rounded-xl text-[10px] font-display font-black tracking-wider uppercase text-signal-accent hover:bg-signal-accent/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-            title="Plan a safe route between any two points"
-          >
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="10" />
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
-              </svg>
-              <span className="hidden sm:inline">PLAN A ROUTE</span>
-            </span>
-          </button>
-
-          {/* Flight Log Navbar Modal Trigger Button */}
-          <button
-            type="button"
-            onClick={() => setIsFlightLogOpen(true)}
-            className="flex items-center gap-2 border border-struct-line bg-base-cream px-3 py-1.5 rounded-xl text-[10px] font-display font-bold tracking-wider uppercase text-base-dark hover:text-base-dark hover:border-signal-accent hover:bg-base-sand transition-all cursor-pointer"
-            title="Open Dispatcher Flight Log"
-          >
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 11h6m-6 4h6" />
-              </svg>
-              <span className="hidden sm:inline">FLIGHT LOG</span>
-            </span>
-            <span className="bg-base-sand border border-struct-line text-signal-accent px-1.5 py-0.5 rounded-full text-[8px] font-mono font-bold">
-              {displayDemoLog.length}
-            </span>
-          </button>
-
-          {/* Map Style Switch */}
-          <div className="flex border border-struct-line bg-base-cream p-1 rounded-xl">
-            <button
-              type="button"
-              onClick={() => setMapStyle('TACTICAL')}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mapStyle === 'TACTICAL'
-                ? 'bg-signal-accent text-white font-black shadow-sm'
-                : 'text-base-dark/60 hover:text-base-dark'
-                }`}
-              title="Stylized tactical map (no internet required)"
-            >
-              TACTICAL
-            </button>
-            <button
-              type="button"
-              onClick={() => setMapStyle('REALISTIC')}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mapStyle === 'REALISTIC'
-                ? 'bg-signal-accent text-white font-black shadow-sm'
-                : 'text-base-dark/60 hover:text-base-dark'
-                }`}
-              title="Real satellite/street map with road-snapped routes (needs internet)"
-            >
-              REALISTIC
-            </button>
-          </div>
-
-          {/* Mode Switch */}
-          <div className="flex border border-struct-line bg-base-cream p-1 rounded-xl">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('LIVE');
-                if (bufferSize > 0) {
-                  setSelectedTimeIndex(bufferSize - 1);
-                }
-              }}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mode === 'LIVE'
-                ? 'bg-status-ok text-white font-black shadow-sm'
-                : 'text-base-dark/60 hover:text-base-dark'
-                }`}
-            >
-              LIVE
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('REPLAY');
-                if (bufferSize > 0) {
-                  setSelectedTimeIndex(bufferSize - 1);
-                }
-              }}
-              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all cursor-pointer ${mode === 'REPLAY'
-                ? 'bg-status-warn text-white font-black shadow-sm'
-                : 'text-base-dark/60 hover:text-base-dark'
-                }`}
-            >
-              REPLAY
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Workspace Layout */}
+      {}
       <div className="flex min-h-0 flex-1 bg-base-cream gap-2 p-2 flex-col xl:flex-row overflow-y-auto xl:overflow-hidden">
-        {/* Left Collapsible Layer Sidebar — hidden on mobile, shown on xl */}
+        {}
         <div className="hidden xl:flex rounded-2xl border border-struct-line bg-brand-bg overflow-hidden shadow-lg shrink-0">
           <MapLayerToggle
             visibleLayers={visibleLayers}
@@ -295,10 +284,10 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Central Tactical Area (Map + Scrubber) */}
+        {}
         <main className="min-w-0 flex-1 flex flex-col gap-2">
           <div className={`relative z-0 h-[50vh] sm:h-[55vh] md:h-[60vh] xl:flex-1 xl:h-auto bg-base-cream rounded-2xl border overflow-hidden shadow-lg transition-all ${mode === 'REPLAY' ? 'border-status-warn/60 ring-1 ring-status-warn/20' : 'border-struct-line'}`}>
-            {/* Replay Mode Indicator Badge */}
+            {}
             {mode === 'REPLAY' && (
               <div className="absolute top-3 left-3 z-10 border border-status-warn bg-base-cream/95 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_12px_rgba(184,134,59,0.3)] flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-status-warn animate-ping" />
@@ -331,7 +320,7 @@ export default function DashboardPage() {
               )
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-cream gap-4 p-6 rounded-2xl border border-struct-line select-none">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {}
                 <img src="/drawing.svg" alt="Relay Logo" className="h-10 w-auto animate-pulse" />
                 <div className="flex flex-col items-center gap-2 w-full max-w-[180px]">
                   <div className="w-full h-1 bg-struct-line/30 rounded-full overflow-hidden relative">
@@ -345,7 +334,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Timeline Scrubber Bar */}
+          {}
           <div className="relative z-10 rounded-2xl overflow-hidden shadow-lg">
             <ReplayTimeline
               availableTimes={availableTimes}
@@ -362,9 +351,9 @@ export default function DashboardPage() {
           </div>
         </main>
 
-        {/* Right Info Sidebar Panels */}
+        {}
         <aside className="flex w-full xl:w-88 shrink-0 flex-col rounded-2xl border border-struct-line bg-brand-bg p-3 shadow-lg gap-3 max-h-[50vh] xl:max-h-none xl:overflow-hidden overflow-y-auto">
-          {/* Tactical Counters Summary Card */}
+          {}
           <div className="flex flex-col gap-2 bg-base-cream border border-struct-line/60 rounded-2xl p-3 shrink-0 shadow-inner">
             <div className="flex items-center justify-between border-b border-struct-line/30 pb-1.5">
               <span className="font-display text-[9px] font-black tracking-widest text-base-dark/60 uppercase">SYSTEM TELEMETRY SUMMARY</span>
@@ -390,7 +379,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Dispatch Panel (Full Height) */}
+          {}
           <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
             {mapReady ? (
               <DispatchPanelPlacard nodes={displayNodes} convoys={displayConvoys} demoLog={displayDemoLog} />
@@ -401,7 +390,7 @@ export default function DashboardPage() {
         </aside>
       </div>
 
-      {/* Mobile Map Layers Drawer */}
+      {}
       {isMobileLayersOpen && (
         <div className="fixed inset-0 z-[9999] xl:hidden flex">
           <div
@@ -427,7 +416,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Mobile Layers Floating Action Button */}
+      {}
       <button
         type="button"
         onClick={() => setIsMobileLayersOpen(true)}
@@ -439,11 +428,11 @@ export default function DashboardPage() {
         </svg>
       </button>
 
-      {/* Dispatcher Flight Log Modal Dialog */}
+      {}
       {isFlightLogOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
           <div className="flex h-[80vh] w-full max-w-2xl flex-col rounded-2xl border border-struct-line bg-base-cream shadow-[0_0_40px_rgba(0,0,0,0.85)] overflow-hidden">
-            {/* Modal Header */}
+            {}
             <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-5 py-3">
               <div className="flex items-center gap-2.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-signal-accent animate-pulse" />
@@ -463,7 +452,7 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {/* Modal Log Content */}
+            {}
             <div className="flex-1 min-h-0 p-4 overflow-hidden">
               <EventFeedDispatcher entries={displayDemoLog} loading={demoLogLoading} />
             </div>
@@ -471,7 +460,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Citizen Road Grievance & Emergency Rescue Dispatch Modal */}
+      {}
       <GrievanceFormModal
         isOpen={isGrievanceOpen}
         onClose={() => setIsGrievanceOpen(false)}
@@ -479,7 +468,7 @@ export default function DashboardPage() {
         nodes={displayNodes}
       />
 
-      {/* Citizen Point-to-Point Route Planner Modal */}
+      {}
       <RoutePlannerModal
         isOpen={isRoutePlannerOpen}
         onClose={() => setIsRoutePlannerOpen(false)}

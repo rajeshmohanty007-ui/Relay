@@ -856,9 +856,9 @@ export const INITIAL_NETWORK_NODES: NetworkNode[] = [
   },
 ];
 
-/**
- * Generate 12 historical ping / packet loss points for sparklines
- */
+
+
+
 export function generateInitialNetworkHistory(node: NetworkNode): NetworkPingPoint[] {
   const points: NetworkPingPoint[] = [];
   const baseLatency = node.latencyMs;
@@ -895,9 +895,9 @@ export function initializeNetworkNodes(): NetworkNode[] {
   }));
 }
 
-/**
- * Step network simulation physics
- */
+
+
+
 export function stepNetworkSimulation(
   nodes: NetworkNode[],
   scenarioId: NetworkScenarioId,
@@ -906,7 +906,7 @@ export function stepNetworkSimulation(
   const scenario = NETWORK_SCENARIOS[scenarioId] ?? NETWORK_SCENARIOS.monsoon_power_outage;
 
   return nodes.map((node) => {
-    // Determine target trends
+    
     let targetLatency = node.latencyMs;
     let targetLoss = node.packetLossPct;
     let targetBw = node.bandwidthMbps;
@@ -914,7 +914,7 @@ export function stepNetworkSimulation(
     let batteryHours = node.batteryHoursRemaining;
     let activeChannel = node.activeChannel;
 
-    // Power drain
+    
     if (powerSource === 'Battery Backup') {
       batteryHours = Math.max(0, Number((batteryHours - (stepSeconds / 3600) * (scenario.powerStress ? 2.5 : 1.0)).toFixed(2)));
       if (batteryHours === 0) {
@@ -922,7 +922,7 @@ export function stepNetworkSimulation(
       }
     }
 
-    // Node-specific scenario reactions
+    
     if (powerSource === 'Power Failed') {
       targetLoss = Math.min(100, Math.max(75, targetLoss + 5));
       targetLatency = Math.min(800, targetLatency + 25);
@@ -948,13 +948,13 @@ export function stepNetworkSimulation(
       batteryHours = 24;
       activeChannel = '5G/LTE Cellular Base Station';
     } else {
-      // General stochastic drift
+      
       const noise = (Math.random() - 0.48) * 4;
       targetLatency = Math.max(14, Number((node.latencyMs * 0.9 + (node.latencyMs * scenario.latencyFactor * 0.1) + noise).toFixed(0)));
       targetLoss = Math.max(0, Math.min(100, Number((node.packetLossPct * 0.85 + scenario.packetLossBonusPct * 0.15 + (Math.random() - 0.5) * 0.8).toFixed(1))));
     }
 
-    // Determine status
+    
     let status: NetworkStatus = 'optimal';
     if (targetLoss > 40 || targetLatency > 300 || powerSource === 'Power Failed') {
       status = 'blackout';
@@ -988,9 +988,9 @@ export function stepNetworkSimulation(
   });
 }
 
-/**
- * Aggregate summary calculations for network connectivity
- */
+
+
+
 export function computeNetworkSummary(nodes: NetworkNode[]): NetworkSummary {
   let optimalCount = 0;
   let degradedCount = 0;

@@ -14,7 +14,7 @@ const VIEW_WIDTH = 920;
 const VIEW_HEIGHT = 650;
 const PADDING_RATIO = 0.08;
 
-// Coordinate bounds mapping Aluva-Periyar basin
+
 const MIN_LAT = 10.075;
 const MAX_LAT = 10.245;
 const MIN_LNG = 76.255;
@@ -80,7 +80,7 @@ export default function NetworkMapView({
     return projectedNodes.find((n) => n.id === targetId) ?? null;
   }, [hoveredNodeId, selectedNodeId, projectedNodes]);
 
-  // Generate unique mesh connection links from peers
+  
   const meshLines = useMemo(() => {
     const lines: Array<{ from: { x: number; y: number }; to: { x: number; y: number }; key: string; status: NetworkNode['status'] }> = [];
     const seen = new Set<string>();
@@ -135,7 +135,7 @@ export default function NetworkMapView({
         <rect width={VIEW_WIDTH} height={VIEW_HEIGHT} fill="#0b0f19" />
         <rect width={VIEW_WIDTH} height={VIEW_HEIGHT} fill="url(#telecomGrid)" />
 
-        {/* Tactical VHF & Microwave Mesh Connectivity Links */}
+        {}
         {showMeshLinks && (
           <g>
             {meshLines.map((link) => {
@@ -161,7 +161,7 @@ export default function NetworkMapView({
           </g>
         )}
 
-        {/* Network Tower Coverage Halos & Nodes */}
+        {}
         <g>
           {projectedNodes.map((node) => {
             const isSelected = node.id === selectedNodeId;
@@ -179,7 +179,7 @@ export default function NetworkMapView({
                 onMouseEnter={() => setHoveredNodeId(node.id)}
                 onMouseLeave={() => setHoveredNodeId(null)}
               >
-                {/* Blackout / Alert Ping Ring */}
+                {}
                 {(isBlackout || isCrit) && (
                   <circle
                     cx={node.pos.x}
@@ -191,7 +191,7 @@ export default function NetworkMapView({
                   />
                 )}
 
-                {/* RF Coverage Halo */}
+                {}
                 <circle
                   cx={node.pos.x}
                   cy={node.pos.y}
@@ -203,7 +203,7 @@ export default function NetworkMapView({
                   opacity={0.35}
                 />
 
-                {/* Selected Halo Outline */}
+                {}
                 {(isSelected || isHovered) && (
                   <circle
                     cx={node.pos.x}
@@ -217,7 +217,7 @@ export default function NetworkMapView({
                   />
                 )}
 
-                {/* Main Node Geometry */}
+                {}
                 {shapeInfo.shape === 'circle' && (
                   <circle
                     cx={node.pos.x}
@@ -257,7 +257,7 @@ export default function NetworkMapView({
                   />
                 )}
 
-                {/* Latency / Status Badge */}
+                {}
                 <g transform={`translate(${node.pos.x}, ${node.pos.y - 14})`}>
                   <rect
                     x={-26}
@@ -282,7 +282,7 @@ export default function NetworkMapView({
                   </text>
                 </g>
 
-                {/* Node Name Label */}
+                {}
                 {(isSelected || isHovered || isBlackout || isCrit) && (
                   <text
                     x={node.pos.x}
@@ -302,7 +302,7 @@ export default function NetworkMapView({
         </g>
       </svg>
 
-      {/* Floating Active Node Details Tooltip Overlay */}
+      {}
       {activeNode && (
         <div className="pointer-events-none absolute bottom-4 left-4 z-20 w-84 rounded-lg border border-slate-700 bg-slate-900/95 p-3.5 text-xs text-white shadow-2xl backdrop-blur-md">
           <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
@@ -371,7 +371,7 @@ export default function NetworkMapView({
         </div>
       )}
 
-      {/* Map Legend */}
+      {}
       <div className="absolute right-4 top-4 flex flex-col gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 text-[11px] text-slate-300 backdrop-blur-md">
         <span className="font-semibold text-slate-200">Network Telemetry Legend</span>
         <div className="flex items-center gap-2">

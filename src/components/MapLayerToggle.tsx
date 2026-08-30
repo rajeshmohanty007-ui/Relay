@@ -142,14 +142,14 @@ const STATUS_COLOR_MAP: Record<WaterLevelStatus, { badge: string; text: string; 
   },
 };
 
-// Key strategic watershed sensors directly tied to the flood crisis scenario
+
 const STRATEGIC_SENSOR_IDS = new Set([
-  'ws_periyar_dam_01',    // Upper Dam Sluice Gate
-  'ws_central_bridge_07',  // Central Causeway Cross
-  'ws_canal_sluice_12',   // Grand Canal Sluice Gate
-  'ws_causeway_haven_14', // Causeway Haven Culvert
-  'ws_west_culvert_15',   // West Canal Sluice Culvert
-  'ws_delta_stadium_17',  // Delta Sports Complex Canal
+  'ws_periyar_dam_01',    
+  'ws_central_bridge_07',  
+  'ws_canal_sluice_12',   
+  'ws_causeway_haven_14', 
+  'ws_west_culvert_15',   
+  'ws_delta_stadium_17',  
 ]);
 
 export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerToggleProps) {
@@ -157,14 +157,14 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
 
-  // Curated strategic water level sensors state
+  
   const [sensors, setSensors] = useState<WaterSensor[]>(() =>
     initializeSensors().filter((s) => STRATEGIC_SENSOR_IDS.has(s.id)),
   );
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [scenarioId] = useState<WeatherScenarioId>('heavy_monsoon');
 
-  // Hydrological simulation interval
+  
   useEffect(() => {
     const timer = setInterval(() => {
       setSensors((prev) => stepSensorSimulation(prev, scenarioId, 15));
@@ -210,12 +210,12 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
         expanded ? 'w-full lg:w-80 shadow-2xl' : 'w-full lg:w-16'
       }`}
     >
-      {/* Top Section */}
+      {}
       <div className="flex flex-col min-h-0 flex-1 overflow-hidden p-2.5 gap-2.5">
-        {/* Header Strip */}
+        {}
         <div className="flex items-center justify-between border-b border-struct-line/60 pb-2 px-1">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            {/* Tactical Icon */}
+            {}
             <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-struct-line bg-base-cream rounded-xl text-signal-accent shadow-sm">
               {activeTab === 'layers' ? (
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -243,7 +243,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
             )}
           </div>
 
-          {/* Pin/Lock Expansion Toggle Button (when expanded) */}
+          {}
           {expanded && (
             <button
               type="button"
@@ -269,9 +269,9 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
           )}
         </div>
 
-        {/* Tab Switcher: Responsive for Collapsed vs Expanded */}
+        {}
         {expanded ? (
-          /* Expanded Full Width Tab Strip */
+          
           <div className="flex border border-struct-line bg-base-sand p-1 rounded-xl shrink-0">
             <button
               type="button"
@@ -306,7 +306,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
             </button>
           </div>
         ) : (
-          /* Collapsed Vertical Icon Toggle Buttons */
+          
           <div className="flex flex-col gap-1.5 shrink-0">
             <button
               type="button"
@@ -344,7 +344,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
           </div>
         )}
 
-        {/* Tab Content 1: Map Layers */}
+        {}
         {activeTab === 'layers' && (
           <div className="flex flex-col gap-1.5 pt-1 overflow-y-auto">
             {LAYERS.map((layer) => {
@@ -361,12 +361,12 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                   }`}
                   title={`Toggle ${layer.label} (${isVisible ? 'Active' : 'Hidden'})`}
                 >
-                  {/* Layer Icon */}
+                  {}
                   <div className="flex shrink-0 items-center justify-center">
                     {layer.icon(isVisible)}
                   </div>
 
-                  {/* Expanded Label & Details */}
+                  {}
                   {expanded && (
                     <div className="flex flex-1 items-center justify-between overflow-hidden whitespace-nowrap text-left">
                       <div className="flex flex-col min-w-0 pr-1">
@@ -378,7 +378,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         </span>
                       </div>
 
-                      {/* Status Pill */}
+                      {}
                       <div className="flex items-center gap-1 shrink-0">
                         <span
                           className={`h-2 w-2 rounded-full ${
@@ -396,10 +396,10 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
           </div>
         )}
 
-        {/* Tab Content 2: Water Level Sensor Telemetry */}
+        {}
         {activeTab === 'sensors' && (
           <div className="flex flex-col min-h-0 flex-1 gap-2 overflow-hidden">
-            {/* Header: Basin Hydrological Overview */}
+            {}
             {expanded && (
               <div className="flex flex-col gap-2 border border-struct-line bg-base-sand p-2.5 rounded-2xl shrink-0">
                 <div className="flex items-center justify-between text-[8px] font-mono">
@@ -420,7 +420,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                   </span>
                 </div>
 
-                {/* Key Summary Strip */}
+                {}
                 <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[8px] pt-0.5">
                   <div className="border border-struct-line bg-base-cream py-1 px-1 rounded-xl">
                     <span className="text-base-dark/60 block text-[7px] uppercase">MAX STAGE</span>
@@ -440,7 +440,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                   </div>
                 </div>
 
-                {/* Filter Selector */}
+                {}
                 <div className="flex gap-1 pt-0.5">
                   {[
                     { id: 'all', label: `ALL (${sensors.length})` },
@@ -464,7 +464,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
               </div>
             )}
 
-            {/* Streamlined Sensor Station List */}
+            {}
             <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2 pr-0.5">
               {displayedSensors.map((sensor) => {
                 const styles = STATUS_COLOR_MAP[sensor.status];
@@ -481,7 +481,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         : 'border-struct-line'
                     }`}
                   >
-                    {/* Collapsed Icon-Only View */}
+                    {}
                     {!expanded ? (
                       <div
                         className="flex flex-col items-center justify-center py-1 gap-1"
@@ -491,9 +491,9 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                         <span className="font-mono text-[7px] text-base-dark font-bold">{sensor.currentLevelM.toFixed(1)}m</span>
                       </div>
                     ) : (
-                      /* Expanded Realistic Station Card */
+                      
                       <>
-                        {/* Station Name & Status */}
+                        {}
                         <div className="flex items-center justify-between gap-1">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="font-mono text-[10px] font-bold text-signal-accent shrink-0">
@@ -508,7 +508,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                           </span>
                         </div>
 
-                        {/* Gauge Telemetry & Threshold */}
+                        {}
                         <div className="flex flex-col gap-1">
                           <div className="flex items-baseline justify-between font-mono text-[10px]">
                             <div className="flex items-center gap-1">
@@ -526,7 +526,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                             </div>
                           </div>
 
-                          {/* Mini Multi-Segment Progress Gauge */}
+                          {}
                           <div className="h-2 w-full bg-base-cream border border-struct-line rounded-full flex overflow-hidden p-0.5">
                             <div
                               className={`h-full rounded-full transition-all duration-300 ${styles.bar}`}
@@ -535,7 +535,7 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
                           </div>
                         </div>
 
-                        {/* Operational Road Impact Tag */}
+                        {}
                         {sensor.roadSubmersionDepthM > 0 ? (
                           <div className="border border-[#997460]/60 bg-[#997460]/15 px-2 py-1 rounded-xl text-[9px] font-mono text-base-dark flex items-center justify-between">
                             <span className="flex items-center gap-1">

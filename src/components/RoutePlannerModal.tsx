@@ -8,7 +8,7 @@ import { saveCitizenRoute, clearSavedCitizenRoute } from '../lib/CitizenRouteSto
 export interface RoutePlannerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  /** Re-opens the planner panel — used by the floating summary chip's "Edit" action. */
+  
   onOpen: () => void;
   nodes: Node[];
   edges: Edge[];
@@ -16,7 +16,7 @@ export interface RoutePlannerModalProps {
   destId: string;
   onChangeOrigin: (id: string) => void;
   onChangeDest: (id: string) => void;
-  /** Called with the edge IDs and node sequence of the currently-active route. */
+  
   onHighlightRoute: (edgeIds: string[] | null, nodeSequence: string[] | null) => void;
 }
 
@@ -48,8 +48,8 @@ export default function RoutePlannerModal({
   const nodesById = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
   const edgesById = useMemo(() => new Map(edges.map((e) => [e.id, e])), [edges]);
 
-  // Prefer real destinations (depot/shelter/village) over bare road junctions
-  // in the dropdown ordering, but junctions remain selectable for precision.
+  
+  
   const sortedNodes = useMemo(
     () =>
       [...nodes].sort((a, b) => {
@@ -60,13 +60,13 @@ export default function RoutePlannerModal({
     [nodes],
   );
 
-  // Guards against a stale saved ID from an older graph — falls back to
-  // "nothing selected" rather than silently picking a different node.
+  
+  
   const effectiveOriginId = nodesById.has(originId) ? originId : '';
   const effectiveDestId = nodesById.has(destId) ? destId : '';
 
-  // Recomputed live whenever road conditions change, so a closure that
-  // happens after the trip was planned is reflected immediately.
+  
+  
   const outcome: RouteOutcome = useMemo(() => {
     if (!effectiveOriginId || !effectiveDestId) return { kind: 'unselected' };
     if (effectiveOriginId === effectiveDestId) return { kind: 'same' };
@@ -83,9 +83,9 @@ export default function RoutePlannerModal({
 
   const hasActiveRoute = outcome.kind === 'found' && outcome.result.path.length > 0;
 
-  // The highlight is driven purely by what's currently selected — it stays
-  // lit on the map whether this panel is open or closed, and disappears
-  // only when the route is cleared or becomes genuinely invalid.
+  
+  
+  
   useEffect(() => {
     if (hasActiveRoute) {
       const found = outcome as { kind: 'found'; result: PathResult };
@@ -93,7 +93,7 @@ export default function RoutePlannerModal({
     } else {
       onHighlightRoute(null, null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [outcome, hasActiveRoute]);
 
   const pickOrigin = (id: string) => {
@@ -119,10 +119,10 @@ export default function RoutePlannerModal({
     onHighlightRoute(null, null);
   };
 
-  // Small always-visible reminder once a route is active but the panel is
-  // closed, so the highlighted line on the map isn't the only cue — and
-  // nobody has to reopen the panel or read a turn list to know what's
-  // planned.
+  
+  
+  
+  
   if (!isOpen) {
     return null;
   }
@@ -130,7 +130,7 @@ export default function RoutePlannerModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
       <div className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-3xl border border-struct-line bg-base-cream shadow-[0_0_50px_rgba(0,0,0,0.2)] overflow-hidden">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-6 py-3.5 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-signal-accent bg-signal-accent/15 text-signal-accent shadow-sm">
@@ -158,7 +158,7 @@ export default function RoutePlannerModal({
         </div>
 
         <div className="flex flex-col gap-4 overflow-y-auto p-6">
-          {/* Origin / Destination selectors */}
+          {}
           <div className="flex flex-col gap-2">
             <label htmlFor="route-origin" className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
               FROM
@@ -212,7 +212,7 @@ export default function RoutePlannerModal({
             </select>
           </div>
 
-          {/* Result panel */}
+          {}
           <div className="mt-1 rounded-2xl border border-struct-line bg-base-cream p-4">
             {outcome.kind === 'unselected' && (
               <p className="font-mono text-xs text-base-dark/70">Select a starting point and a destination.</p>

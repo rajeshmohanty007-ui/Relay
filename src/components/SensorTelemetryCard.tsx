@@ -33,14 +33,14 @@ export default function SensorTelemetryCard({
 }: SensorTelemetryCardProps) {
   const badge = STATUS_BADGE[sensor.status];
 
-  // Calculate threshold percentage for level bar (0 to 100% based on criticalLevelM * 1.15)
+  
   const maxScale = sensor.criticalLevelM * 1.15;
   const currentPct = Math.min(100, Math.max(0, (sensor.currentLevelM / maxScale) * 100));
   const advisoryPct = (sensor.advisoryLevelM / maxScale) * 100;
   const warningPct = (sensor.warningLevelM / maxScale) * 100;
   const criticalPct = (sensor.criticalLevelM / maxScale) * 100;
 
-  // Mini sparkline generation
+  
   const history = sensor.history || [];
   const sparklineSvg = (() => {
     if (history.length < 2) return null;
@@ -62,17 +62,17 @@ export default function SensorTelemetryCard({
     const pathData = `M ${pts.join(' L ')}`;
     const strokeColor =
       sensor.status === 'critical'
-        ? '#997460' // Terracotta: Critical
+        ? '#997460' 
         : sensor.status === 'warning'
-          ? '#EDE4DF' // Sand: Warning
+          ? '#EDE4DF' 
           : sensor.status === 'advisory'
-            ? '#6AADAB' // Slate Teal: Advisory
-            : '#206E6B'; // Pine Teal: Stable
+            ? '#6AADAB' 
+            : '#206E6B'; 
 
     return (
       <svg viewBox={`0 0 ${width} ${height}`} className="h-10 w-full overflow-visible">
         <path d={pathData} fill="none" stroke={strokeColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        {/* Latest point circle */}
+        {}
         {pts.length > 0 && (
           <circle
             cx={Number(pts[pts.length - 1].split(',')[0])}
@@ -93,7 +93,7 @@ export default function SensorTelemetryCard({
           : 'border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700'
         } ${onSelect ? 'cursor-pointer' : ''}`}
     >
-      {/* Top row: Code, Hardware, Status */}
+      {}
       <div>
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -121,7 +121,7 @@ export default function SensorTelemetryCard({
           Basin: <span className="font-medium text-zinc-700 dark:text-zinc-300">{sensor.basinSection}</span>
         </div>
 
-        {/* Current Level Gauge & Metrics */}
+        {}
         <div className="mt-3.5 flex items-baseline justify-between">
           <div>
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 font-mono">
@@ -141,7 +141,7 @@ export default function SensorTelemetryCard({
           </div>
         </div>
 
-        {/* Level Progression Threshold Bar */}
+        {}
         <div className="mt-3">
           <div className="flex justify-between text-[10px] text-zinc-400">
             <span>Normal: {sensor.normalLevelM}m</span>
@@ -149,23 +149,23 @@ export default function SensorTelemetryCard({
             <span className="font-bold text-red-500">Crit: {sensor.criticalLevelM}m</span>
           </div>
           <div className="relative mt-1 h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-            {/* Advisory marker */}
+            {}
             <div
               className="absolute top-0 bottom-0 w-0.5 bg-amber-400 z-10 opacity-70"
               style={{ left: `${advisoryPct}%` }}
             />
-            {/* Warning marker */}
+            {}
             <div
               className="absolute top-0 bottom-0 w-0.5 bg-orange-500 z-10 opacity-70"
               style={{ left: `${warningPct}%` }}
             />
-            {/* Critical marker */}
+            {}
             <div
               className="absolute top-0 bottom-0 w-0.5 bg-red-600 z-10 opacity-90"
               style={{ left: `${criticalPct}%` }}
             />
 
-            {/* Current Fill */}
+            {}
             <div
               className={`h-full transition-all duration-300 rounded-full ${sensor.status === 'critical'
                   ? 'bg-red-500'
@@ -180,7 +180,7 @@ export default function SensorTelemetryCard({
           </div>
         </div>
 
-        {/* Sparkline & Submersion warning */}
+        {}
         <div className="mt-3">
           <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">
             Water Level History
@@ -198,7 +198,7 @@ export default function SensorTelemetryCard({
         )}
       </div>
 
-      {/* Footer telemetry health */}
+      {}
       <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-2.5 text-[10px] text-zinc-400 dark:border-zinc-800">
         <div className="flex items-center gap-2">
           <span>🔋 {sensor.batteryPct}%</span>

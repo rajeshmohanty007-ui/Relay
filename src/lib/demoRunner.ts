@@ -12,15 +12,15 @@ import type {
 } from './types';
 import { evaluateConvoy, evaluateFleet } from './routingEngine';
 
-// Load environment variables from .env / .env.local if present
+
 dotenv.config();
 dotenv.config({ path: '.env.local' });
 
-/**
- * Initializes Firebase Admin SDK using available environment credentials.
- * Mirrors the init logic in seed.ts (kept separate since seed.ts does not
- * export it).
- */
+
+
+
+
+
 function initFirebaseAdmin(): admin.firestore.Firestore {
   if (admin.apps.length > 0) {
     return admin.firestore();
@@ -42,7 +42,7 @@ function initFirebaseAdmin(): admin.firestore.Firestore {
       projectId: serviceAccount.project_id || projectId,
     });
   } else {
-    // Falls back to Google Application Default Credentials or Firestore Emulator
+    
     admin.initializeApp({
       projectId: projectId || 'demo-disaster-relief',
     });
@@ -53,7 +53,7 @@ function initFirebaseAdmin(): admin.firestore.Firestore {
   return db;
 }
 
-// ─── CLI args ───────────────────────────────────────────────────────────────
+
 
 function parseSpeed(argv: string[]): number {
   const arg = argv.find((a) => a.startsWith('--speed='));
@@ -62,7 +62,7 @@ function parseSpeed(argv: string[]): number {
   return Number.isFinite(value) && value > 0 ? value : 4;
 }
 
-// ─── Small helpers ──────────────────────────────────────────────────────────
+
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -74,20 +74,20 @@ function nextLogId(): string {
   return `log_${Date.now()}_${logSeq}`;
 }
 
-/** Every logMessage produced by routingEngine.ts starts with "Convoy <id> ...". */
+
 function extractConvoyId(message: string): string | undefined {
   const match = /^Convoy (\S+)/.exec(message);
   return match ? match[1] : undefined;
 }
 
-// A file-based stop request, checked between ticks. Does not depend on OS
-// signal delivery — taskkill /F on Windows does not reliably reach the
-// SIGINT handler below, so this is the primary controlled-stop mechanism.
+
+
+
 const STOP_FILE_PATH = path.resolve(process.cwd(), '.demo-stop');
 
-// A file-based manual event injection request, checked alongside the stop
-// file. Lets a rehearsal operator force a hazard event outside the
-// scheduled /events timeline without restarting the simulation.
+
+
+
 export const TRIGGER_FILE_PATH = path.resolve(process.cwd(), '.demo-trigger.json');
 
 export interface ManualTriggerPayload {
@@ -109,12 +109,12 @@ function isManualTriggerPayload(value: unknown): value is ManualTriggerPayload {
   );
 }
 
-/**
- * Reads and immediately deletes .demo-trigger.json if present — same
- * check-before-writes ordering as the stop file, so it can't double-fire.
- * A missing, unparsable, or incomplete file is logged and discarded rather
- * than retried on the next tick.
- */
+
+
+
+
+
+
 export function consumeManualTrigger(): ManualTriggerPayload | null {
   if (!fs.existsSync(TRIGGER_FILE_PATH)) return null;
 
@@ -139,7 +139,7 @@ export function consumeManualTrigger(): ManualTriggerPayload | null {
   return payload;
 }
 
-// ─── Main ───────────────────────────────────────────────────────────────────
+
 
 async function main() {
   const speed = parseSpeed(process.argv);
@@ -195,8 +195,8 @@ async function main() {
   });
 
   async function tick(): Promise<void> {
-    // Check for a stop request BEFORE this tick's Firestore writes begin,
-    // so a stop never interrupts an in-flight batch.commit().
+    
+    
     if (fs.existsSync(STOP_FILE_PATH)) {
       stopped = true;
       console.log(`\n[Demo Runner] Stop file detected at t=${simTimeSec}s. Shutting down cleanly...`);
@@ -205,9 +205,9 @@ async function main() {
       process.exit(0);
     }
 
-    // Check for a manual event-injection request, same ordering guarantee
-    // as the stop check above: read + delete before this tick's writes
-    // begin, so a trigger file can't be consumed twice.
+    
+    
+    
     const manualTrigger = consumeManualTrigger();
 
     simTimeSec += speed;
@@ -229,7 +229,7 @@ async function main() {
       console.log(`  [t=${simTimeSec}s] ${message}`);
     }
 
-    // b. Apply any hazard events whose threshold was just crossed.
+    
     while (eventCursor < events.length && events[eventCursor].timestampOffsetSec <= simTimeSec) {
       const event = events[eventCursor];
       eventCursor++;
@@ -245,7 +245,7 @@ async function main() {
       queueLog(event.description);
     }
 
-    // b2. Apply a manually-injected event, exactly like a scheduled one.
+    
     if (manualTrigger) {
       const edge = edgesById.get(manualTrigger.targetEdgeId);
       if (edge) {
@@ -260,7 +260,7 @@ async function main() {
 
     const currentEdges = Array.from(edgesById.values());
 
-    // c. Deploy any 'pending' convoy whose departure time was just crossed.
+    
     for (const convoy of convoysById.values()) {
       if (convoy.status !== 'pending') continue;
       if (convoy.departTimestampOffsetSec > simTimeSec) continue;
@@ -279,7 +279,7 @@ async function main() {
       }
     }
 
-    // d. Advance 'enroute'/'rerouted' convoys along their current edge.
+    
     for (const convoy of Array.from(convoysById.values())) {
       if (convoy.status !== 'enroute' && convoy.status !== 'rerouted') continue;
       if (!convoy.currentEdgeId) continue;
@@ -319,7 +319,7 @@ async function main() {
       dirtyConvoyIds.add(working.id);
     }
 
-    // e. If any edge changed this tick, re-evaluate the whole active fleet.
+    
     if (edgesChangedThisTick) {
       const activeConvoys = Array.from(convoysById.values()).filter(
         (c) => c.status !== 'arrived',
@@ -335,7 +335,7 @@ async function main() {
       }
     }
 
-    // Flush every convoy touched this tick.
+    
     for (const convoyId of dirtyConvoyIds) {
       batch.set(db.collection('convoys').doc(convoyId), convoysById.get(convoyId)!);
       batchOps++;
@@ -345,7 +345,7 @@ async function main() {
       await batch.commit();
     }
 
-    // f. One-line console summary.
+    
     const statusSummary = Array.from(convoysById.values())
       .map((c) => `${c.id}=${c.status}`)
       .join(' ');

@@ -14,12 +14,12 @@ const MAX_BUFFER_SIZE = 500;
 const EMPTY_SNAPSHOTS: SnapshotEntry[] = [];
 const getServerSnapshot = () => EMPTY_SNAPSHOTS;
 
-// Deep clone function to avoid mutating stored snapshots
+
 function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-// In-memory external store for replay frames
+
 class ReplayStore {
   private snapshots: SnapshotEntry[] = [];
   private listeners = new Set<() => void>();
@@ -79,22 +79,22 @@ class ReplayStore {
 
 const replayStore = new ReplayStore();
 
-/**
- * Capture lightweight state snapshots of the simulation client-side.
- * Appends sequential snapshots whenever convoys, edges, or simulation time updates.
- */
+
+
+
+
 export function useReplayBuffer(
   nodes: Node[],
   edges: Edge[],
   convoys: Convoy[],
   currentSimTime: number,
 ) {
-  // Record incoming Firestore stream state outside the render cycle
+  
   useEffect(() => {
     replayStore.record(nodes, edges, convoys, currentSimTime);
   }, [nodes, edges, convoys, currentSimTime]);
 
-  // Subscribe reactively to store updates with cached server snapshot
+  
   const snapshots = useSyncExternalStore(
     replayStore.subscribe,
     replayStore.getSnapshot,
@@ -103,9 +103,9 @@ export function useReplayBuffer(
 
   const availableTimes = snapshots.map((s) => s.simTimeSec);
 
-  /**
-   * Retrieve snapshot data by its sequential index
-   */
+  
+
+
   const getSnapshotByIndex = useCallback(
     (index: number): SnapshotEntry | null => {
       if (index < 0 || index >= snapshots.length) return null;
@@ -114,9 +114,9 @@ export function useReplayBuffer(
     [snapshots],
   );
 
-  /**
-   * Retrieve snapshot data corresponding to a specific simulation second
-   */
+  
+
+
   const getSnapshot = useCallback(
     (simTime: number): SnapshotEntry | null => {
       for (let i = snapshots.length - 1; i >= 0; i--) {
@@ -129,7 +129,7 @@ export function useReplayBuffer(
     [snapshots],
   );
 
-  // TODO: §3.3 Historical run persistence - sync buffer back to Firestore for review after reload.
+  
 
   return {
     snapshots,

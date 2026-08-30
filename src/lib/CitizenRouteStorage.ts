@@ -1,9 +1,9 @@
-/**
- * Persists a citizen's chosen route (origin + destination) in the browser's
- * own localStorage. This is deliberately NOT written to Firestore or any
- * shared store — localStorage is scoped to one browser/device, so one
- * person's planned route is never visible to anyone else using the app.
- */
+
+
+
+
+
+
 
 const STORAGE_KEY = 'relay_citizen_route_v1';
 
@@ -27,7 +27,7 @@ export function saveCitizenRoute(originId: string, destId: string): void {
     try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ originId, destId }));
     } catch {
-        // localStorage unavailable (private browsing / quota) — selection just won't persist across reloads
+        
     }
 }
 
@@ -36,6 +36,6 @@ export function clearSavedCitizenRoute(): void {
     try {
         window.localStorage.removeItem(STORAGE_KEY);
     } catch {
-        // ignore
+        
     }
 }

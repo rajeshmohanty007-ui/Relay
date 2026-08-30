@@ -15,7 +15,7 @@ const VIEW_WIDTH = 920;
 const VIEW_HEIGHT = 650;
 const PADDING_RATIO = 0.08;
 
-// Coordinate bounds mapping Aluva-Periyar basin
+
 const MIN_LAT = 10.075;
 const MAX_LAT = 10.245;
 const MIN_LNG = 76.255;
@@ -69,20 +69,20 @@ export default function SensorMapView({
     return projectedSensors.find((s) => s.id === targetId) ?? null;
   }, [hoveredSensorId, selectedSensorId, projectedSensors]);
 
-  // River Channels topology paths
+  
   const riverMainStem = useMemo(() => {
     const pts = [
-      projectCoord(10.235, 76.47), // Upper dam reach
-      projectCoord(10.228, 76.44), // Dam spillway
+      projectCoord(10.235, 76.47), 
+      projectCoord(10.228, 76.44), 
       projectCoord(10.215, 76.41),
-      projectCoord(10.205, 76.392), // Riverbank north
-      projectCoord(10.192, 76.365), // Causeway bridge
+      projectCoord(10.205, 76.392), 
+      projectCoord(10.192, 76.365), 
       projectCoord(10.165, 76.345),
-      projectCoord(10.138, 76.342), // Grand canal junction
-      projectCoord(10.11, 76.345), // Delta split
-      projectCoord(10.089, 76.368), // Marshland bend
+      projectCoord(10.138, 76.342), 
+      projectCoord(10.11, 76.345), 
+      projectCoord(10.089, 76.368), 
       projectCoord(10.08, 76.31),
-      projectCoord(10.092, 76.265), // Estuary outfall
+      projectCoord(10.092, 76.265), 
     ];
     return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   }, []);
@@ -111,39 +111,39 @@ export default function SensorMapView({
         style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}
       >
         <defs>
-          {/* Subtle hydro background grid */}
+          {}
           <pattern id="hydroGrid" width="30" height="30" patternUnits="userSpaceOnUse">
             <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(56, 189, 248, 0.05)" strokeWidth="0.8" />
           </pattern>
 
-          {/* Water channel gradient */}
+          {}
           <linearGradient id="riverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#0284c7" stopOpacity="0.8" />
             <stop offset="50%" stopColor="#0ea5e9" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.75" />
           </linearGradient>
 
-          {/* Water shimmer effect */}
+          {}
           <linearGradient id="canalGradient" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#0369a1" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#0284c7" stopOpacity="0.7" />
           </linearGradient>
 
-          {/* Glow filter */}
+          {}
           <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
         </defs>
 
-        {/* Map Background Grid */}
+        {}
         <rect width={VIEW_WIDTH} height={VIEW_HEIGHT} fill="#090d16" />
         {showRoadGrid && <rect width={VIEW_WIDTH} height={VIEW_HEIGHT} fill="url(#hydroGrid)" />}
 
-        {/* River Hydrological Overlays */}
+        {}
         {showRiverOverlays && (
           <g opacity={0.85}>
-            {/* Catchment flood buffer / wetland glow */}
+            {}
             <path
               d={riverMainStem}
               fill="none"
@@ -153,7 +153,7 @@ export default function SensorMapView({
               strokeLinejoin="round"
               opacity={0.2}
             />
-            {/* Main Periyar River Stem */}
+            {}
             <path
               d={riverMainStem}
               fill="none"
@@ -162,7 +162,7 @@ export default function SensorMapView({
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Center water flow pulse line */}
+            {}
             <path
               d={riverMainStem}
               fill="none"
@@ -174,7 +174,7 @@ export default function SensorMapView({
               className="animate-pulse"
             />
 
-            {/* Canal Tributaries */}
+            {}
             {canalBranches.map((d, i) => (
               <g key={i}>
                 <path
@@ -197,7 +197,7 @@ export default function SensorMapView({
               </g>
             ))}
 
-            {/* Water features labels */}
+            {}
             <text x={VIEW_WIDTH - 150} y={60} fill="#38bdf8" fontSize={11} fontWeight={600} opacity={0.6}>
               ▲ Upper Periyar Catchment
             </text>
@@ -207,13 +207,13 @@ export default function SensorMapView({
           </g>
         )}
 
-        {/* Basin Sections Visual Boundary Lines */}
+        {}
         <g opacity={0.25}>
           <line x1={VIEW_WIDTH * 0.45} y1={0} x2={VIEW_WIDTH * 0.45} y2={VIEW_HEIGHT} stroke="#38bdf8" strokeDasharray="4 6" />
           <line x1={0} y1={VIEW_HEIGHT * 0.52} x2={VIEW_WIDTH} y2={VIEW_HEIGHT * 0.52} stroke="#38bdf8" strokeDasharray="4 6" />
         </g>
 
-        {/* Water Sensor Nodes */}
+        {}
         <g>
           {projectedSensors.map((sensor) => {
             const isSelected = sensor.id === selectedSensorId;
@@ -229,7 +229,7 @@ export default function SensorMapView({
                 onMouseEnter={() => setHoveredSensorId(sensor.id)}
                 onMouseLeave={() => setHoveredSensorId(null)}
               >
-                {/* Pulsing Radar Ring for Warning/Critical Alerts */}
+                {}
                 {isAlert && (
                   <circle
                     cx={sensor.pos.x}
@@ -241,7 +241,7 @@ export default function SensorMapView({
                   />
                 )}
 
-                {/* Outer Glow Halo for Selected Sensor */}
+                {}
                 {(isSelected || isHovered) && (
                   <circle
                     cx={sensor.pos.x}
@@ -255,7 +255,7 @@ export default function SensorMapView({
                   />
                 )}
 
-                {/* Submersion depth indicator halo */}
+                {}
                 {sensor.roadSubmersionDepthM > 0 && (
                   <circle
                     cx={sensor.pos.x}
@@ -268,7 +268,7 @@ export default function SensorMapView({
                   />
                 )}
 
-                {/* Main Sensor Node Circle */}
+                {}
                 <circle
                   cx={sensor.pos.x}
                   cy={sensor.pos.y}
@@ -279,7 +279,7 @@ export default function SensorMapView({
                   filter="url(#glow)"
                 />
 
-                {/* Water Level Reading Badge */}
+                {}
                 <g transform={`translate(${sensor.pos.x}, ${sensor.pos.y - 14})`}>
                   <rect
                     x={-28}
@@ -304,7 +304,7 @@ export default function SensorMapView({
                   </text>
                 </g>
 
-                {/* Sensor Name Text (Hover or Warning/Critical) */}
+                {}
                 {(isSelected || isHovered || isAlert) && (
                   <text
                     x={sensor.pos.x}
@@ -324,7 +324,7 @@ export default function SensorMapView({
         </g>
       </svg>
 
-      {/* Floating Active Sensor Details Tooltip Overlay */}
+      {}
       {activeSensor && (
         <div className="pointer-events-none absolute bottom-4 left-4 z-20 w-80 rounded-lg border border-slate-700 bg-slate-900/95 p-3.5 text-xs text-white shadow-2xl backdrop-blur-md">
           <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
@@ -380,7 +380,7 @@ export default function SensorMapView({
         </div>
       )}
 
-      {/* Map Legend */}
+      {}
       <div className="absolute right-4 top-4 flex flex-col gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 text-[11px] text-slate-300 backdrop-blur-md">
         <span className="font-semibold text-slate-200">Sensor Status Legend</span>
         <div className="flex items-center gap-2">

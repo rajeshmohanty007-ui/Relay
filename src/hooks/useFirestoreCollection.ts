@@ -9,10 +9,10 @@ export interface UseFirestoreCollectionResult<T> {
   loading: boolean;
 }
 
-/**
- * Subscribes to a Firestore collection with onSnapshot and keeps `data` in
- * sync in real time. `orderByField`, when given, sorts ascending server-side.
- */
+
+
+
+
 export function useFirestoreCollection<T>(
   collectionName: string,
   orderByField?: string,

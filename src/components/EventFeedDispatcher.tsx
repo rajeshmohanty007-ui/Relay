@@ -7,29 +7,29 @@ export interface EventFeedProps {
   loading?: boolean;
 }
 
-/**
- * Categorize the message to determine its status dot color
- */
+
+
+
 function getEventColor(message: string): string {
   const msg = message.toLowerCase();
 
-  // Danger/Block/Recall
+  
   if (msg.includes('block') || msg.includes('recall') || msg.includes('danger') || msg.includes('closed') || msg.includes('severed')) {
-    return '#997460'; // Terracotta
+    return '#997460'; 
   }
 
-  // Degraded/Reroute
+  
   if (msg.includes('degrad') || msg.includes('rerout') || msg.includes('watch') || msg.includes('warning') || msg.includes('congested')) {
-    return '#6AADAB'; // Slate Teal
+    return '#6AADAB'; 
   }
 
-  // Success/Arrival/Deploy
+  
   if (msg.includes('arrive') || msg.includes('clear') || msg.includes('safe') || msg.includes('success') || msg.includes('deploy') || msg.includes('start')) {
-    return '#206E6B'; // Pine Teal
+    return '#206E6B'; 
   }
 
-  // Other/System
-  return '#206E6B'; // Pine Teal
+  
+  return '#206E6B'; 
 }
 
 export default function EventFeedDispatcher({ entries, loading }: EventFeedProps) {
@@ -62,12 +62,12 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
                   key={entry.id}
                   className="flex items-start gap-2.5 bg-base-cream border border-struct-line/60 p-2.5 rounded-xl font-mono text-[10px] text-base-dark transition-all hover:bg-base-sand"
                 >
-                  {/* Timestamp */}
+                  {}
                   <span className="shrink-0 font-bold text-base-dark bg-base-sand px-2 py-0.5 rounded-lg border border-struct-line tracking-tight select-none text-[9px]">
                     t={entry.simTimeSec.toString().padStart(4, '0')}s
                   </span>
 
-                  {/* Status Indicator Dot */}
+                  {}
                   <span className="mt-1 shrink-0 flex items-center justify-center">
                     <span
                       className="h-2 w-2 rounded-full"
@@ -78,7 +78,7 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
                     />
                   </span>
 
-                  {/* Log Content */}
+                  {}
                   <span className="flex-1 leading-normal tracking-wide text-base-dark">
                     {entry.message}
                   </span>

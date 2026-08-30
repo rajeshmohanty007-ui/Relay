@@ -25,7 +25,7 @@ export default function NetworkNodeCard({
 }: NetworkNodeCardProps) {
   const badge = STATUS_BADGE[node.status];
 
-  // Mini sparkline generation for latency history
+  
   const history = node.history || [];
   const sparklineSvg = (() => {
     if (history.length < 2) return null;
@@ -105,7 +105,7 @@ export default function NetworkNodeCard({
           <span className="truncate font-medium text-sky-700 dark:text-sky-300">{node.activeChannel}</span>
         </div>
 
-        {/* Latency & Packet Loss Telemetry */}
+        {}
         <div className="mt-3.5 flex items-baseline justify-between">
           <div>
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 font-mono">
@@ -130,7 +130,7 @@ export default function NetworkNodeCard({
           </div>
         </div>
 
-        {/* Latency Sparkline */}
+        {}
         <div className="mt-3">
           <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider mb-1">
             Roundtrip Ping Trend
@@ -148,7 +148,7 @@ export default function NetworkNodeCard({
         )}
       </div>
 
-      {/* Footer telemetry status */}
+      {}
       <div className="mt-4 flex items-center justify-between border-t border-zinc-100 pt-2.5 text-[10px] text-zinc-400 dark:border-zinc-800">
         <div className="flex items-center gap-2">
           <span>🔋 {node.batteryHoursRemaining}h ({node.powerSource})</span>

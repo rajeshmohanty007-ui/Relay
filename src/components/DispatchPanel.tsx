@@ -8,11 +8,11 @@ export interface DispatchPanelProps {
   demoLog: DemoLogEntry[];
 }
 
-/**
- * Convoy has no persisted ETA field — routingEngine only emits ETA text
- * inside its logMessage strings. The most recent /demoLog entry tagged
- * with this convoy's id is the closest available source for it.
- */
+
+
+
+
+
 function latestLogFor(convoyId: string, demoLog: DemoLogEntry[]): DemoLogEntry | undefined {
   let latest: DemoLogEntry | undefined;
   for (const entry of demoLog) {
@@ -22,12 +22,12 @@ function latestLogFor(convoyId: string, demoLog: DemoLogEntry[]): DemoLogEntry |
   return latest;
 }
 
-/**
- * Status is checked first, explicitly. Log-message parsing (the only
- * source of ETA text — see latestLogFor's docstring) only applies to the
- * enroute/rerouted case; every other status has a direct, known label and
- * must never fall through to a stale ETA parsed from an old log entry.
- */
+
+
+
+
+
+
 function statusDetailFor(convoy: Convoy, demoLog: DemoLogEntry[]): string {
   if (convoy.status === 'pending') {
     return 'Not yet deployed';
@@ -39,7 +39,7 @@ function statusDetailFor(convoy: Convoy, demoLog: DemoLogEntry[]): string {
     const latest = latestLogFor(convoy.id, demoLog);
     return latest ? latest.message : 'Recalled';
   }
-  // 'enroute' | 'rerouted'
+  
   const latest = latestLogFor(convoy.id, demoLog);
   return latest ? `${convoy.status} — ${latest.message}` : convoy.status;
 }

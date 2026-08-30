@@ -101,7 +101,7 @@ export default function GrievanceFormModal({
     roadName: string;
   } | null>(null);
 
-  // Form input states
+  
   const [selectedEdgeId, setSelectedEdgeId] = useState<string>(edges[0]?.id || 'edge_jdam_vtea');
   const [reporterName, setReporterName] = useState('');
   const [vehicleNumber, setVehicleNumber] = useState('');
@@ -114,7 +114,7 @@ export default function GrievanceFormModal({
 
   const nodesById = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes]);
 
-  // Group reports by road edge to calculate unique vehicle counts & priority
+  
   const roadIncidentStats = useMemo(() => {
     const grouped = new Map<string, { count: number; uniqueVehicles: Set<string>; reports: GrievanceReport[] }>();
     for (const report of reports) {
@@ -176,7 +176,7 @@ export default function GrievanceFormModal({
       setReports((prev) => [newReport, ...prev]);
       setIsSubmitting(false);
       setSubmitSuccess(true);
-      // Reset fields
+      
       setReporterName('');
       setVehicleNumber('');
       setContactNumber('');
@@ -189,7 +189,7 @@ export default function GrievanceFormModal({
     }, 600);
   };
 
-  // Dispatch rescue team to a road segment
+  
   const handleDispatchRescue = (edgeId: string, roadName: string) => {
     const teams = [
       'NDRF Disaster Response Unit Alpha',
@@ -198,7 +198,7 @@ export default function GrievanceFormModal({
       'Civil Defense Amphibious Rescue Crew',
     ];
     const chosenTeam = teams[Math.floor(Math.random() * teams.length)];
-    const eta = Math.floor(Math.random() * 8) + 6; // 6 to 14 mins
+    const eta = Math.floor(Math.random() * 8) + 6; 
 
     setReports((prev) =>
       prev.map((r) =>
@@ -213,7 +213,7 @@ export default function GrievanceFormModal({
       ),
     );
 
-    // Pick a vehicle to notify
+    
     const targetReport = reports.find((r) => r.roadEdgeId === edgeId);
     if (targetReport) {
       setLatestNotification({
@@ -228,7 +228,7 @@ export default function GrievanceFormModal({
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md p-3 sm:p-6 animate-in fade-in duration-150">
       <div className="flex h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-struct-line bg-base-cream shadow-[0_0_50px_rgba(0,0,0,0.15)] overflow-hidden">
-        {/* Modal Header */}
+        {}
         <div className="flex items-center justify-between border-b border-struct-line bg-base-sand px-6 py-3.5 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-status-danger bg-status-danger/15 text-status-danger shadow-sm">
@@ -254,7 +254,7 @@ export default function GrievanceFormModal({
           </button>
         </div>
 
-        {/* Live Rescue Notification Banner (if any team dispatched) */}
+        {}
         {latestNotification && (
           <div className="bg-status-danger/20 border-b border-status-danger px-6 py-2.5 flex items-center justify-between animate-in slide-in-from-top-2 duration-200 shrink-0">
             <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export default function GrievanceFormModal({
           </div>
         )}
 
-        {/* Tab Navigation */}
+        {}
         <div className="flex border-b border-struct-line bg-base-sand px-6 pt-2.5 gap-2 shrink-0">
           <button
             type="button"
@@ -322,9 +322,9 @@ export default function GrievanceFormModal({
           </button>
         </div>
 
-        {/* Tab Content Body */}
+        {}
         <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-base-cream">
-          {/* TAB 1: SUBMISSION FORM */}
+          {}
           {activeTab === 'form' && (
             <form onSubmit={handleSubmit} className="max-w-2xl mx-auto flex flex-col gap-4">
               {submitSuccess && (
@@ -338,7 +338,7 @@ export default function GrievanceFormModal({
                 </div>
               )}
 
-              {/* Road / Location Selection */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="road-selection" className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
                   1. SELECT BLOCKED ROAD CORRIDOR (POINT A ↔ POINT B) *
@@ -362,7 +362,7 @@ export default function GrievanceFormModal({
                 </select>
               </div>
 
-              {/* Hazard / Blockage Type */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
                   2. BLOCKAGE / HAZARD SEVERITY *
@@ -421,7 +421,7 @@ export default function GrievanceFormModal({
                 </div>
               </div>
 
-              {/* Unique Identity Fields */}
+              {}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border border-struct-line bg-base-sand p-3.5 rounded-2xl shadow-sm">
                 <div className="flex flex-col gap-1">
                   <label htmlFor="vehicle-reg" className="font-display text-[9px] font-bold uppercase tracking-wider text-base-dark">
@@ -470,7 +470,7 @@ export default function GrievanceFormModal({
                 </div>
               </div>
 
-              {/* Photo Upload Attachment */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
                   3. ATTACH EVIDENCE / PHOTO OF BLOCKED ROAD (OPTIONAL)
@@ -484,7 +484,7 @@ export default function GrievanceFormModal({
                   />
                   {photoPreview && (
                     <div className="relative h-12 w-16 shrink-0 rounded-xl border border-signal-accent overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      {}
                       <img src={photoPreview} alt="Blocked Road Preview" className="h-full w-full object-cover" />
                       <button
                         type="button"
@@ -498,7 +498,7 @@ export default function GrievanceFormModal({
                 </div>
               </div>
 
-              {/* Description */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="situation-notes" className="font-display text-[10px] font-bold uppercase tracking-wider text-signal-accent">
                   4. SITUATION DETAILS / LANDMARK NOTES
@@ -513,7 +513,7 @@ export default function GrievanceFormModal({
                 />
               </div>
 
-              {/* Submit Button */}
+              {}
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -535,7 +535,7 @@ export default function GrievanceFormModal({
             </form>
           )}
 
-          {/* TAB 2: ACTIVE INCIDENT QUEUE & RESCUE DISPATCH */}
+          {}
           {activeTab === 'reports' && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between border-b border-struct-line pb-2">
@@ -553,7 +553,7 @@ export default function GrievanceFormModal({
                 </button>
               </div>
 
-              {/* Grouped Incidents by Road Corridor */}
+              {}
               <div className="flex flex-col gap-4">
                 {Array.from(roadIncidentStats.entries()).map(([edgeId, data]) => {
                   const uniqueCount = data.uniqueVehicles.size;
@@ -579,7 +579,7 @@ export default function GrievanceFormModal({
 
                   return (
                     <div key={edgeId} className={`border ${priorityBorder} ${priorityBg} p-4 rounded-2xl flex flex-col gap-3 transition-all`}>
-                      {/* Corridor Header */}
+                      {}
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-struct-line/60 pb-2.5">
                         <div className="flex flex-col min-w-0">
                           <div className="flex items-center gap-2">
@@ -593,7 +593,7 @@ export default function GrievanceFormModal({
                           </span>
                         </div>
 
-                        {/* Dispatch Action Button */}
+                        {}
                         <div className="flex items-center gap-2">
                           {hasDispatched ? (
                             <div className="border border-[#206E6B] bg-[#206E6B]/15 px-3 py-1 rounded-full text-[9px] font-mono text-[#206E6B] font-bold flex items-center gap-1.5">
@@ -615,7 +615,7 @@ export default function GrievanceFormModal({
                         </div>
                       </div>
 
-                      {/* Citizen Reports on this Corridor */}
+                      {}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">
                         {data.reports.map((report) => (
                           <div key={report.id} className="border border-struct-line bg-base-cream p-3 rounded-xl flex flex-col gap-1.5">
@@ -635,7 +635,7 @@ export default function GrievanceFormModal({
 
                             {report.photoUrl && (
                               <div className="mt-1 h-20 w-32 rounded-xl border border-struct-line overflow-hidden">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                {}
                                 <img src={report.photoUrl} alt="Reported blockage" className="h-full w-full object-cover" />
                               </div>
                             )}

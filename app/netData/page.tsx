@@ -32,7 +32,7 @@ export default function NetworkDataPage() {
 
   const summary = useMemo(() => computeNetworkSummary(nodes), [nodes]);
 
-  // Stepped Simulation Timer
+  
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function NetworkDataPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
-      {/* Top Navigation Header */}
+      {}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/90 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export default function NetworkDataPage() {
             </div>
           </div>
 
-          {/* Quick links & controls */}
+          {}
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/dashboard"
@@ -168,9 +168,9 @@ export default function NetworkDataPage() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {}
       <main className="flex-1 p-4 sm:p-6 flex flex-col gap-5">
-        {/* Scenario Switcher */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
@@ -202,7 +202,7 @@ export default function NetworkDataPage() {
           </div>
         </div>
 
-        {/* Emergency Alert Banner */}
+        {}
         <NetworkAlertBanner
           nodes={nodes}
           onSelectNode={(node) => {
@@ -211,10 +211,10 @@ export default function NetworkDataPage() {
           }}
         />
 
-        {/* Summary Overview KPIs */}
+        {}
         <NetworkStatsOverview summary={summary} />
 
-        {/* View Tabs & Type Filter */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-2 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <button
@@ -269,7 +269,7 @@ export default function NetworkDataPage() {
           </div>
         </div>
 
-        {/* Tab 1: Tactical Mesh Map & Inspector */}
+        {}
         {activeTab === 'map' && (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <div className="h-[640px] lg:col-span-8">
@@ -296,7 +296,7 @@ export default function NetworkDataPage() {
                   </div>
                   <NetworkNodeCard node={selectedNode} isSelected />
 
-                  {/* Mesh Topology Peering List */}
+                  {}
                   <div className="mt-3 rounded-xl border border-zinc-200 bg-white p-4 text-xs dark:border-zinc-800 dark:bg-zinc-900 shadow-xs">
                     <h5 className="font-semibold text-zinc-800 dark:text-zinc-200">
                       Tactical Mesh RF Peers ({selectedNode.meshPeers.length})
@@ -333,7 +333,7 @@ export default function NetworkDataPage() {
           </div>
         )}
 
-        {/* Tab 2: Grid of Node Cards */}
+        {}
         {activeTab === 'cards' && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredNodes.map((node) => (
@@ -350,7 +350,7 @@ export default function NetworkDataPage() {
           </div>
         )}
 
-        {/* Tab 3: Detailed Data Table */}
+        {}
         {activeTab === 'table' && (
           <NetworkDataTable
             nodes={filteredNodes}

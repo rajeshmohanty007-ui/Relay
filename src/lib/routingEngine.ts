@@ -1,19 +1,19 @@
 import type { Node, Edge, Convoy, ConvoyStatus } from './types';
 
-// ─── Adjacency Types ────────────────────────────────────────────────────────
+
 
 export interface AdjacencyEdge {
   edgeId: string;
   toNodeId: string;
-  weight: number; // minutes
+  weight: number; 
 }
 
-/** nodeId → list of outgoing adjacency edges (filtered, weighted) */
+
 export type AdjacencyList = Map<string, AdjacencyEdge[]>;
 
 export interface PathResult {
-  path: string[];          // edge IDs along the route
-  nodeSequence: string[];  // node IDs in traversal order
+  path: string[];          
+  nodeSequence: string[];  
   totalTimeMin: number;
 }
 
@@ -31,22 +31,22 @@ export interface FleetEvaluation {
   log: string[];
 }
 
-// ─── buildAdjacency ─────────────────────────────────────────────────────────
 
-/**
- * Builds an adjacency list from nodes and edges.
- *
- * Rules:
- *  - Exclude edges with status === 'blocked'
- *  - Exclude edges with heavyVehicleSafe === false
- *  - Weight = baseTravelTimeMin for 'clear', baseTravelTimeMin * 2 for 'degraded'
- *  - Bidirectional edges produce entries in both directions
- */
+
+
+
+
+
+
+
+
+
+
 export function buildAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
   const adj: AdjacencyList = new Map();
 
-  // Pre-populate every node with an empty neighbor list so isolated nodes
-  // still exist as keys — important for Dijkstra start/end validation.
+  
+  
   for (const node of nodes) {
     adj.set(node.id, []);
   }
@@ -60,14 +60,14 @@ export function buildAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
         ? edge.baseTravelTimeMin * 2
         : edge.baseTravelTimeMin;
 
-    // Forward direction
+    
     adj.get(edge.fromNodeId)?.push({
       edgeId: edge.id,
       toNodeId: edge.toNodeId,
       weight,
     });
 
-    // Reverse direction (if bidirectional)
+    
     if (edge.bidirectional) {
       adj.get(edge.toNodeId)?.push({
         edgeId: edge.id,
@@ -80,17 +80,17 @@ export function buildAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
   return adj;
 }
 
-// ─── buildCitizenAdjacency ──────────────────────────────────────────────────
 
-/**
- * Builds an adjacency list for ordinary travelers (car/bike/on foot), as
- * opposed to `buildAdjacency` which is convoy-specific.
- *
- * Differs from `buildAdjacency` in one way: it does NOT exclude edges with
- * heavyVehicleSafe === false — a road unsafe for a loaded relief truck may
- * still be perfectly fine for a private car or two-wheeler. Blocked edges
- * are still excluded, and the same clear/degraded weighting applies.
- */
+
+
+
+
+
+
+
+
+
+
 export function buildCitizenAdjacency(nodes: Node[], edges: Edge[]): AdjacencyList {
   const adj: AdjacencyList = new Map();
 
@@ -124,12 +124,12 @@ export function buildCitizenAdjacency(nodes: Node[], edges: Edge[]): AdjacencyLi
   return adj;
 }
 
-// ─── shortestPath (Dijkstra) ────────────────────────────────────────────────
 
-/**
- * Dijkstra's algorithm returning the shortest path as edge IDs, node sequence,
- * and total travel time in minutes.  Returns null when no path exists.
- */
+
+
+
+
+
 export function shortestPath(
   adjacency: AdjacencyList,
   fromNodeId: string,
@@ -139,20 +139,20 @@ export function shortestPath(
     return { path: [], nodeSequence: [fromNodeId], totalTimeMin: 0 };
   }
 
-  // dist[nodeId] = best-known cost from source
+  
   const dist = new Map<string, number>();
-  // prev[nodeId] = { via edge, from node }
+  
   const prev = new Map<string, { edgeId: string; fromNodeId: string }>();
   const visited = new Set<string>();
 
-  // Simple priority queue backed by an array (adequate for ≤ hundreds of nodes)
+  
   const pq: Array<{ nodeId: string; cost: number }> = [];
 
   dist.set(fromNodeId, 0);
   pq.push({ nodeId: fromNodeId, cost: 0 });
 
   while (pq.length > 0) {
-    // Extract min
+    
     let minIdx = 0;
     for (let i = 1; i < pq.length; i++) {
       if (pq[i].cost < pq[minIdx].cost) minIdx = i;
@@ -162,7 +162,7 @@ export function shortestPath(
     if (visited.has(current)) continue;
     visited.add(current);
 
-    if (current === toNodeId) break; // found shortest path
+    if (current === toNodeId) break; 
 
     const neighbors = adjacency.get(current);
     if (!neighbors) continue;
@@ -184,9 +184,9 @@ export function shortestPath(
     }
   }
 
-  // Reconstruct path
+  
   if (!prev.has(toNodeId) && fromNodeId !== toNodeId) {
-    return null; // unreachable
+    return null; 
   }
 
   const edgePath: string[] = [];
@@ -195,7 +195,7 @@ export function shortestPath(
 
   while (cursor !== fromNodeId) {
     const step = prev.get(cursor);
-    if (!step) return null; // safety
+    if (!step) return null; 
     edgePath.push(step.edgeId);
     nodeSeq.push(cursor);
     cursor = step.fromNodeId;
@@ -212,12 +212,12 @@ export function shortestPath(
   };
 }
 
-// ─── nearestReachableDepot ──────────────────────────────────────────────────
 
-/**
- * Returns the shortest path from `fromNodeId` to the nearest reachable depot,
- * or null if no depot is reachable.
- */
+
+
+
+
+
 export function nearestReachableDepot(
   adjacency: AdjacencyList,
   fromNodeId: string,
@@ -235,46 +235,46 @@ export function nearestReachableDepot(
   return best;
 }
 
-// ─── evaluateConvoy ─────────────────────────────────────────────────────────
 
-/**
- * Evaluates a single convoy against the current graph state and returns the
- * (potentially updated) convoy plus a human-readable log message.
- */
+
+
+
+
+
 export function evaluateConvoy(
   convoy: Convoy,
   nodes: Node[],
   edges: Edge[],
   depotNodeIds: string[],
 ): ConvoyEvaluation {
-  // Rule 1: arrived convoys are untouched
+  
   if (convoy.status === 'arrived') {
     return { updatedConvoy: { ...convoy }, logMessage: '' };
   }
 
-  // Rule 2: determine effective current position
+  
   let effectivePosition: string;
   if (convoy.status === 'pending') {
     effectivePosition = convoy.originNodeId;
   } else {
-    // 'enroute' or 'rerouted' — finish the current edge first
+    
     if (convoy.currentEdgeId) {
       const currentEdge = edges.find((e) => e.id === convoy.currentEdgeId);
       if (currentEdge) {
-        // The TO-node depends on direction of travel. We need to figure out
-        // which direction the convoy is travelling on this edge.  We look at
-        // the convoy's currentRoute (edge IDs) and nodeSequence to decide,
-        // but we only have edge IDs in currentRoute at this point.  The safest
-        // approach: determine which endpoint we're heading towards based on
-        // the previous node in the route or the convoy's origin.
-        //
-        // Simple heuristic: if the convoy was at fromNodeId, it's heading to
-        // toNodeId; if at toNodeId, it's heading to fromNodeId (bidirectional).
-        // Since we don't track direction explicitly, use the convoy's
-        // originNodeId and destination to infer via the currentRoute.
-        //
-        // For correctness, just pick toNodeId of the edge by default (the
-        // spec says "the TO-node of convoy.currentEdgeId").
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         effectivePosition = currentEdge.toNodeId;
       } else {
         effectivePosition = convoy.originNodeId;
@@ -284,13 +284,13 @@ export function evaluateConvoy(
     }
   }
 
-  // Rule 3: build adjacency from current graph state
+  
   const adjacency = buildAdjacency(nodes, edges);
 
-  // Rule 4: attempt path to destination
+  
   const pathToDest = shortestPath(adjacency, effectivePosition, convoy.destNodeId);
 
-  // ── Branch A: convoy is 'pending' — initial deployment ──
+  
   if (convoy.status === 'pending') {
     if (pathToDest) {
       return {
@@ -305,7 +305,7 @@ export function evaluateConvoy(
       };
     }
 
-    // No path at deployment time
+    
     return {
       updatedConvoy: {
         ...convoy,
@@ -318,7 +318,7 @@ export function evaluateConvoy(
     };
   }
 
-  // ── Branch B: convoy is 'recalled' — check whether it can resume ──
+  
   if (convoy.status === 'recalled') {
     if (pathToDest) {
       return {
@@ -333,16 +333,16 @@ export function evaluateConvoy(
       };
     }
 
-    // Still stranded — remain recalled, no repeated log spam
+    
     return {
       updatedConvoy: { ...convoy },
       logMessage: '',
     };
   }
 
-  // ── Branch C: convoy is 'enroute' or 'rerouted' — reroute check ──
+  
   if (pathToDest) {
-    // Check whether the new path differs from the planned remaining route
+    
     const routesDiffer = !arraysEqual(pathToDest.path, convoy.currentRoute);
 
     if (routesDiffer) {
@@ -358,14 +358,14 @@ export function evaluateConvoy(
       };
     }
 
-    // Path matches current plan — no change needed
+    
     return {
       updatedConvoy: { ...convoy },
       logMessage: '',
     };
   }
 
-  // Rule 5: no path to destination — attempt recall to nearest depot
+  
   const depotResult = nearestReachableDepot(
     adjacency,
     effectivePosition,
@@ -386,7 +386,7 @@ export function evaluateConvoy(
     };
   }
 
-  // Stranded — no depot reachable either
+  
   return {
     updatedConvoy: {
       ...convoy,
@@ -400,12 +400,12 @@ export function evaluateConvoy(
   };
 }
 
-// ─── evaluateFleet ──────────────────────────────────────────────────────────
 
-/**
- * Evaluates every convoy against the current graph state.
- * Returns updated convoys and a filtered log (empty messages omitted).
- */
+
+
+
+
+
 export function evaluateFleet(
   convoys: Convoy[],
   nodes: Node[],
@@ -434,7 +434,7 @@ export function evaluateFleet(
   return { updatedConvoys, log };
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+
 
 function arraysEqual(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
