@@ -15,21 +15,21 @@ function getEventColor(message: string): string {
   
   // Danger/Block/Recall
   if (msg.includes('block') || msg.includes('recall') || msg.includes('danger') || msg.includes('closed') || msg.includes('severed')) {
-    return '#C6423B'; // Red
+    return '#A6403A'; // Rust Red
   }
   
   // Degraded/Reroute
   if (msg.includes('degrad') || msg.includes('rerout') || msg.includes('watch') || msg.includes('warning') || msg.includes('congested')) {
-    return '#E8A33D'; // Amber
+    return '#B8863B'; // Amber Ochre
   }
   
   // Success/Arrival/Deploy
   if (msg.includes('arrive') || msg.includes('clear') || msg.includes('safe') || msg.includes('success') || msg.includes('deploy') || msg.includes('start')) {
-    return '#4CAF6D'; // Green
+    return '#4B7B4E'; // Green
   }
   
   // Other/System
-  return '#4FB3BF'; // Signal Accent (cyan)
+  return '#2C4A3E'; // Deep Slate Accent
 }
 
 export default function EventFeedDispatcher({ entries, loading }: EventFeedProps) {
@@ -42,15 +42,15 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
           DISPATCHER FLIGHT LOG
         </h2>
         {loading && (
-          <span className="font-mono text-[9px] text-zinc-500 animate-pulse">
+          <span className="font-mono text-[9px] text-[#E4E1D8]/60 animate-pulse">
             SYNCING LIVE...
           </span>
         )}
       </div>
 
-      <div className="flex-1 min-h-0 border border-struct-line bg-[#080C10] p-2">
+      <div className="flex-1 min-h-0 border border-[#35332C] bg-[#1C1B17] p-2">
         {!loading && newestFirst.length === 0 ? (
-          <p className="font-mono text-[10px] text-zinc-500 italic p-2">
+          <p className="font-mono text-[10px] text-[#E4E1D8]/50 italic p-2">
             NO LOG ENTRIES RECORDED
           </p>
         ) : (
@@ -60,10 +60,10 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
               return (
                 <li 
                   key={entry.id} 
-                  className="flex items-start gap-2 border-b border-struct-line/20 pb-1.5 font-mono text-[10px] text-zinc-300"
+                  className="flex items-start gap-2 border-b border-[#35332C]/40 pb-1.5 font-mono text-[10px] text-[#E4E1D8]"
                 >
                   {/* Timestamp */}
-                  <span className="shrink-0 font-bold text-zinc-500 tracking-tight select-none">
+                  <span className="shrink-0 font-bold text-[#E4E1D8]/60 tracking-tight select-none">
                     t={entry.simTimeSec.toString().padStart(4, '0')}s
                   </span>
                   
@@ -79,7 +79,7 @@ export default function EventFeedDispatcher({ entries, loading }: EventFeedProps
                   </span>
                   
                   {/* Log Content */}
-                  <span className="flex-1 leading-normal tracking-wide text-zinc-200">
+                  <span className="flex-1 leading-normal tracking-wide text-[#FAF9F6]">
                     {entry.message}
                   </span>
                 </li>

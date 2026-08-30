@@ -88,34 +88,34 @@ export default function DashboardPage() {
   const criticalShelters = displayNodes.filter(n => n.type === 'shelter' && n.criticalSupplyNeed && n.criticalSupplyNeed.hoursOfStockRemaining <= 3.0).length;
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-brand-bg text-zinc-100 font-sans overflow-hidden">
+    <div className="flex h-screen w-screen flex-col bg-[#1C1B17] text-[#FAF9F6] font-sans overflow-hidden">
       {/* Tactical Header Strip */}
-      <header className="border-b border-struct-line bg-[#080C10] px-4 py-2.5 flex items-center justify-between">
+      <header className="border-b border-[#35332C] bg-[#24221D] px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className="font-display text-xs font-black tracking-widest text-white uppercase">
+            <h1 className="font-display text-xs font-black tracking-widest text-[#FAF9F6] uppercase">
               RELAY OPERATION CONTROL
             </h1>
-            <p className="text-[9px] font-sans text-zinc-400 tracking-wide uppercase mt-0.5">
+            <p className="text-[9px] font-sans text-[#E4E1D8]/70 tracking-wide uppercase mt-0.5">
               SCENARIO: <span className="text-signal-accent font-semibold">{scenarioName}</span>
             </p>
           </div>
         </div>
 
         {/* Tactical Counters */}
-        <div className="hidden md:flex items-center gap-6 border-l border-r border-struct-line/30 px-6 py-0.5">
+        <div className="hidden md:flex items-center gap-6 border-l border-r border-[#35332C]/60 px-6 py-0.5">
           <div className="font-mono text-[10px] leading-tight">
-            <span className="text-zinc-500 block">ACTIVE OPERATIONS</span>
+            <span className="text-[#E4E1D8]/60 block">ACTIVE OPERATIONS</span>
             <span className="font-bold text-signal-accent tracking-wider font-mono text-xs">{activeConvoys} CONVOYS</span>
           </div>
           <div className="font-mono text-[10px] leading-tight">
-            <span className="text-zinc-500 block">HAZARD INTERRUPTS</span>
-            <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-zinc-400'}`}>
+            <span className="text-[#E4E1D8]/60 block">HAZARD INTERRUPTS</span>
+            <span className={`font-bold tracking-wider font-mono text-xs ${blockedRoads > 0 ? 'text-status-danger' : 'text-[#E4E1D8]/60'}`}>
               {blockedRoads} BLOCKED SECTIONS
             </span>
           </div>
           <div className="font-mono text-[10px] leading-tight">
-            <span className="text-zinc-500 block">ALERT LEVEL SHELTERS</span>
+            <span className="text-[#E4E1D8]/60 block">ALERT LEVEL SHELTERS</span>
             <span className={`font-bold tracking-wider font-mono text-xs ${criticalShelters > 0 ? 'text-status-danger animate-pulse' : 'text-status-ok'}`}>
               {criticalShelters} CRITICAL
             </span>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setIsGrievanceOpen(true)}
-            className="flex items-center gap-1.5 border border-status-danger/70 bg-status-danger/15 px-2.5 py-1 text-[10px] font-display font-black tracking-wider uppercase text-status-danger hover:bg-status-danger/30 hover:text-white transition-all shadow-[0_0_8px_rgba(198,66,59,0.25)]"
+            className="flex items-center gap-1.5 border border-[#A6403A] bg-[#A6403A]/15 px-2.5 py-1 text-[10px] font-display font-black tracking-wider uppercase text-[#A6403A] hover:bg-[#A6403A]/30 hover:text-white transition-all shadow-[0_0_8px_rgba(166,64,58,0.25)]"
             title="Report Blocked Road & Request Priority Rescue Dispatch"
           >
             <span>🚨 REPORT BLOCKAGE</span>
@@ -138,17 +138,17 @@ export default function DashboardPage() {
           <button
             type="button"
             onClick={() => setIsFlightLogOpen(true)}
-            className="flex items-center gap-2 border border-struct-line bg-[#0E151E] px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase text-zinc-300 hover:text-signal-accent hover:border-signal-accent/50 transition-colors"
+            className="flex items-center gap-2 border border-[#35332C] bg-[#1C1B17] px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase text-[#E4E1D8] hover:text-white hover:border-signal-accent transition-colors"
             title="Open Dispatcher Flight Log"
           >
             <span>📋 FLIGHT LOG</span>
-            <span className="bg-[#080C10] border border-struct-line text-signal-accent px-1.5 py-0.2 text-[8px] font-mono font-bold">
+            <span className="bg-[#24221D] border border-[#35332C] text-signal-accent px-1.5 py-0.2 text-[8px] font-mono font-bold">
               {displayDemoLog.length}
             </span>
           </button>
 
           {/* Mode Switch */}
-          <div className="flex border border-struct-line bg-[#0E151E] p-0.5">
+          <div className="flex border border-[#35332C] bg-[#1C1B17] p-0.5">
             <button
               type="button"
               onClick={() => {
@@ -159,8 +159,8 @@ export default function DashboardPage() {
               }}
               className={`px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase transition-colors ${
                 mode === 'LIVE'
-                  ? 'bg-status-ok text-black font-black shadow-[0_0_6px_rgba(76,175,109,0.5)]'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-status-ok text-white font-black shadow-[0_0_6px_rgba(75,123,78,0.5)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
               }`}
             >
               LIVE
@@ -175,8 +175,8 @@ export default function DashboardPage() {
               }}
               className={`px-2.5 py-1 text-[10px] font-display font-bold tracking-wider uppercase transition-colors ${
                 mode === 'REPLAY'
-                  ? 'bg-status-warn text-black font-black shadow-[0_0_6px_rgba(232,163,61,0.5)]'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-status-warn text-black font-black shadow-[0_0_6px_rgba(184,134,59,0.5)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
               }`}
             >
               REPLAY
@@ -184,20 +184,20 @@ export default function DashboardPage() {
           </div>
 
           {/* Mission Clock Display */}
-          <div className="flex items-center gap-3 bg-[#0E151E] border border-struct-line px-3 py-1.5 rounded-none">
-            <span className="font-display text-[9px] font-bold text-zinc-400 tracking-wider">
+          <div className="flex items-center gap-3 bg-[#1C1B17] border border-[#35332C] px-3 py-1.5 rounded-none">
+            <span className="font-display text-[9px] font-bold text-[#E4E1D8]/70 tracking-wider">
               {mode === 'LIVE' ? 'MISSION CLOCK' : 'SCRUB CLOCK'}
             </span>
             <span
               className={`font-mono text-sm font-black tracking-widest tabular-nums filter ${
                 mode === 'LIVE'
-                  ? 'text-status-ok drop-shadow-[0_0_2px_rgba(76,175,109,0.4)]'
-                  : 'text-status-warn drop-shadow-[0_0_2px_rgba(232,163,61,0.4)]'
+                  ? 'text-status-ok drop-shadow-[0_0_2px_rgba(75,123,78,0.4)]'
+                  : 'text-status-warn drop-shadow-[0_0_2px_rgba(184,134,59,0.4)]'
               }`}
             >
               {formatTime(displayClockSeconds)}
             </span>
-            <span className="font-mono text-[9px] text-zinc-600">
+            <span className="font-mono text-[9px] text-[#E4E1D8]/50">
               / {formatTime(activeConfig?.totalDurationSec || 1200)}
             </span>
           </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Workspace Layout */}
-      <div className="flex min-h-0 flex-1 bg-[#090D12]">
+      <div className="flex min-h-0 flex-1 bg-[#1C1B17]">
         {/* Left Collapsible Layer Sidebar */}
         <MapLayerToggle
           visibleLayers={visibleLayers}
@@ -214,10 +214,10 @@ export default function DashboardPage() {
 
         {/* Central Tactical Area (Map + Scrubber) */}
         <main className="min-w-0 flex-1 p-3 flex flex-col gap-2">
-          <div className={`flex-1 relative min-h-0 bg-[#070A0E] border transition-colors ${mode === 'REPLAY' ? 'border-status-warn/50' : 'border-struct-line'}`}>
+          <div className={`flex-1 relative min-h-0 bg-[#1C1B17] border transition-colors ${mode === 'REPLAY' ? 'border-status-warn/50' : 'border-[#35332C]'}`}>
             {/* Replay Mode Indicator Badge */}
             {mode === 'REPLAY' && (
-              <div className="absolute top-2 left-2 z-10 border border-status-warn bg-[#080C10]/90 backdrop-blur-sm px-2.5 py-1 text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_8px_rgba(232,163,61,0.3)] flex items-center gap-1.5">
+              <div className="absolute top-2 left-2 z-10 border border-status-warn bg-[#1C1B17]/95 backdrop-blur-sm px-2.5 py-1 text-[9px] font-display font-black tracking-widest text-status-warn shadow-[0_0_8px_rgba(184,134,59,0.3)] flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-status-warn animate-ping" />
                 <span>HISTORICAL REPLAY — FRAME {activeIndex + 1}/{bufferSize}</span>
               </div>
@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 visibleLayers={visibleLayers}
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-zinc-500">
+              <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#E4E1D8]/50">
                 INITIALIZING TACTICAL GRAPH MAP...
               </div>
             )}
@@ -252,13 +252,13 @@ export default function DashboardPage() {
         </main>
 
         {/* Right Info Sidebar Panels */}
-        <aside className="flex w-88 shrink-0 flex-col border-l border-struct-line bg-[#080C10] p-3 overflow-hidden">
+        <aside className="flex w-88 shrink-0 flex-col border-l border-[#35332C] bg-[#1C1B17] p-3 overflow-hidden">
           {/* Dispatch Panel (Full Height) */}
           <div className="flex-1 min-h-0 overflow-y-auto pr-0.5">
             {mapReady ? (
               <DispatchPanelPlacard nodes={displayNodes} convoys={displayConvoys} demoLog={displayDemoLog} />
             ) : (
-              <div className="font-mono text-xs text-zinc-500">LOADING DISPATCH DATABASES...</div>
+              <div className="font-mono text-xs text-[#E4E1D8]/50">LOADING DISPATCH DATABASES...</div>
             )}
           </div>
         </aside>
@@ -266,23 +266,23 @@ export default function DashboardPage() {
 
       {/* Dispatcher Flight Log Modal Dialog */}
       {isFlightLogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="flex h-[80vh] w-full max-w-2xl flex-col border border-struct-line bg-[#080C10] shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="flex h-[80vh] w-full max-w-2xl flex-col border border-[#35332C] bg-[#1C1B17] shadow-[0_0_30px_rgba(0,0,0,0.8)] overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-struct-line bg-[#0E151E] px-4 py-2.5">
+            <div className="flex items-center justify-between border-b border-[#35332C] bg-[#24221D] px-4 py-2.5">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-signal-accent animate-pulse shadow-[0_0_6px_#4FB3BF]" />
-                <h2 className="font-display text-xs font-black tracking-widest text-white uppercase">
+                <span className="h-2 w-2 rounded-full bg-signal-accent animate-pulse" />
+                <h2 className="font-display text-xs font-black tracking-widest text-[#FAF9F6] uppercase">
                   DISPATCHER FLIGHT LOG & INCIDENT FEED
                 </h2>
-                <span className="font-mono text-[9px] text-zinc-500">
+                <span className="font-mono text-[9px] text-[#E4E1D8]/60">
                   ({displayDemoLog.length} EVENTS RECORDED)
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setIsFlightLogOpen(false)}
-                className="border border-struct-line bg-[#080C10] px-2.5 py-1 font-mono text-[10px] font-bold text-zinc-400 hover:text-white hover:border-signal-accent transition-colors"
+                className="border border-[#35332C] bg-[#1C1B17] px-2.5 py-1 font-mono text-[10px] font-bold text-[#E4E1D8] hover:text-white hover:border-signal-accent transition-colors"
               >
                 ✕ CLOSE
               </button>
