@@ -10,10 +10,10 @@ interface SensorDataTableProps {
 }
 
 const STATUS_PILL: Record<WaterLevelStatus, { label: string; className: string }> = {
-  normal: { label: 'Normal', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' },
-  advisory: { label: 'Advisory', className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800' },
-  warning: { label: 'Warning', className: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800' },
-  critical: { label: 'Critical', className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800' },
+  normal: { label: 'Normal', className: 'bg-[#203024] text-status-ok border-[#4B7B4E]/60' },
+  advisory: { label: 'Advisory', className: 'bg-[#2C2A1E] text-status-warn border-[#B8863B]/60' },
+  warning: { label: 'Warning', className: 'bg-[#352718] text-status-warn border-[#B8863B]/60' },
+  critical: { label: 'Critical', className: 'bg-[#351C1A] text-status-danger border-[#A6403A]/60' },
 };
 
 export default function SensorDataTable({
