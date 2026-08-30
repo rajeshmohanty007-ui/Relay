@@ -206,8 +206,8 @@ export default function MapLayerToggle({ visibleLayers, onChange }: MapLayerTogg
     <aside
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`relative z-20 flex shrink-0 flex-col justify-between bg-brand-bg select-none transition-all duration-200 ease-in-out border-r border-struct-line/50 ${
-        expanded ? 'w-80 shadow-2xl' : 'w-16'
+      className={`relative z-20 flex shrink-0 flex-col justify-between bg-brand-bg select-none transition-all duration-200 ease-in-out border-b lg:border-b-0 lg:border-r border-struct-line/50 ${
+        expanded ? 'w-full lg:w-80 shadow-2xl' : 'w-full lg:w-16'
       }`}
     >
       {/* Top Section */}

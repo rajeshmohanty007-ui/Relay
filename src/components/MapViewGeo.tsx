@@ -36,30 +36,30 @@ const BASEMAPS: Record<BasemapStyle, { url: string; attribution: string; label: 
 };
 
 const NODE_STYLE: Record<Node['type'], { color: string; radius: number }> = {
-    depot: { color: '#FAF9F6', radius: 9 },
-    shelter: { color: '#A6403A', radius: 8 },
-    village: { color: '#2C4A3E', radius: 6 },
-    junction: { color: '#E4E1D8', radius: 4 },
+    depot: { color: '#206E6B', radius: 9 },
+    shelter: { color: '#997460', radius: 8 },
+    village: { color: '#206E6B', radius: 6 },
+    junction: { color: '#6AADAB', radius: 4 },
 };
 
 const EDGE_STYLE: Record<Edge['status'], { color: string; weight: number; dashArray?: string }> = {
-    clear: { color: '#4B7B4E', weight: 3.5 },
-    degraded: { color: '#B8863B', weight: 4.5, dashArray: '8 6' },
-    blocked: { color: '#A6403A', weight: 4.5 },
+    clear: { color: '#206E6B', weight: 3.5 },
+    degraded: { color: '#6AADAB', weight: 4.5, dashArray: '8 6' },
+    blocked: { color: '#997460', weight: 4.5 },
 };
 
 const CONVOY_COLOR: Partial<Record<Convoy['status'], string>> = {
-    enroute: '#4B7B4E',
-    rerouted: '#B8863B',
-    recalled: '#A6403A',
+    enroute: '#206E6B',
+    rerouted: '#6AADAB',
+    recalled: '#997460',
 };
 
 function getShelterStatusColor(node: Node): string {
-    if (!node.criticalSupplyNeed) return '#4B7B4E';
+    if (!node.criticalSupplyNeed) return '#206E6B';
     const hoursLeft = node.criticalSupplyNeed.hoursOfStockRemaining;
-    if (hoursLeft <= 3.0) return '#A6403A';
-    if (hoursLeft <= 5.0) return '#B8863B';
-    return '#4B7B4E';
+    if (hoursLeft <= 3.0) return '#997460';
+    if (hoursLeft <= 5.0) return '#6AADAB';
+    return '#206E6B';
 }
 
 function nodeDivIcon(node: Node, showLabels: boolean): L.DivIcon {
@@ -256,7 +256,7 @@ export default function MapViewGeo({
                 zoom={12}
                 scrollWheelZoom
                 className="h-full w-full rounded-2xl"
-                style={{ background: '#1C1B17' }}
+                style={{ background: '#EDE4DF' }}
             >
                 <TileLayer url={BASEMAPS[basemap].url} attribution={BASEMAPS[basemap].attribution} />
                 <FitBounds nodes={nodes} />
@@ -287,11 +287,11 @@ export default function MapViewGeo({
                     return nodes.map((node) => (
                         <Marker key={`${node.id}_${showLabels}`} position={[node.lat, node.lng]} icon={nodeDivIcon(node, showLabels)}>
                             <Popup>
-                                <div className="font-sans text-xs text-white bg-[#1C1B17] p-2 rounded-xl border border-[#35332C]">
-                                    <strong className="block text-[#FAF9F6]">{node.name}</strong>
-                                    <span className="text-[10px] text-[#E4E1D8]/60 uppercase">{node.type}</span>
+                                <div className="font-sans text-xs text-base-dark bg-base-cream p-2 rounded-xl border border-struct-line">
+                                    <strong className="block text-base-dark">{node.name}</strong>
+                                    <span className="text-[10px] text-base-dark/60 uppercase">{node.type}</span>
                                     {node.criticalSupplyNeed && (
-                                        <div className="mt-1 font-mono text-[9px] text-[#B8863B]">
+                                        <div className="mt-1 font-mono text-[9px] text-status-warn">
                                             Stock remaining: {node.criticalSupplyNeed.hoursOfStockRemaining}h
                                         </div>
                                     )}

@@ -24,18 +24,18 @@ const VIEW_HEIGHT = 640;
 
 // Returns status color for a shelter node based on remaining stock hours
 function getShelterStatusColor(node: Node): string {
-  if (!node.criticalSupplyNeed) return '#4B7B4E'; // Green: Stable
+  if (!node.criticalSupplyNeed) return '#206E6B'; // Pine Teal: Stable
   const hoursLeft = node.criticalSupplyNeed.hoursOfStockRemaining;
-  if (hoursLeft <= 3.0) return '#A6403A'; // Rust Red: Critical
-  if (hoursLeft <= 5.0) return '#B8863B'; // Amber Ochre: Degraded
-  return '#4B7B4E'; // Green: Stable
+  if (hoursLeft <= 3.0) return '#997460'; // Terracotta: Critical
+  if (hoursLeft <= 5.0) return '#6AADAB'; // Slate Teal: Warning
+  return '#206E6B'; // Pine Teal: Stable
 }
 
 // Tactical style configuration matching NDMA alerts
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
-  clear: { stroke: '#204c4a', strokeWidth: 1.5 }, // Pine teal line
-  degraded: { stroke: '#EDE4DF', strokeWidth: 2, dashArray: '4 4' }, // Sand warning dash
-  blocked: { stroke: '#997460', strokeWidth: 3 }, // Terracotta placard alert
+  clear: { stroke: '#206E6B', strokeWidth: 2 }, // Pine teal line
+  degraded: { stroke: '#6AADAB', strokeWidth: 2.5, dashArray: '4 4' }, // Slate Teal warning dash
+  blocked: { stroke: '#997460', strokeWidth: 3.5 }, // Terracotta placard alert
 };
 
 export default function MapViewTopo({
@@ -202,7 +202,7 @@ export default function MapViewTopo({
     <div className="relative h-full w-full select-none overflow-hidden">
       <svg
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        className="h-full w-full bg-base-cream border border-struct-line"
+        className="h-full w-full bg-[#EDE4DF] border border-struct-line"
       >
         <defs>
           {/* River Water Flow Glow Filter */}
@@ -214,7 +214,7 @@ export default function MapViewTopo({
           <radialGradient id="hazardGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#997460" stopOpacity="0.6" />
             <stop offset="60%" stopColor="#b05d47" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#DFEDED" stopOpacity="0" />
+            <stop offset="100%" stopColor="#EDE4DF" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -256,7 +256,7 @@ export default function MapViewTopo({
                 <path
                   d={periyarPath}
                   fill="none"
-                  stroke="#EDE4DF"
+                  stroke="#DFEDED"
                   strokeWidth="14"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -288,7 +288,7 @@ export default function MapViewTopo({
                 <path
                   d={canalPath}
                   fill="none"
-                  stroke="#EDE4DF"
+                  stroke="#DFEDED"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -322,14 +322,14 @@ export default function MapViewTopo({
                   y="-3"
                   width="16"
                   height="6"
-                  fill="#EDE4DF"
-                  stroke="#DFEDED"
+                  fill="#DFEDED"
+                  stroke="#206E6B"
                   strokeWidth="1"
                   transform="rotate(45)"
                 />
                 {/* Mini Bridge Rail Icon */}
-                <line x1="-6" y1="-4" x2="6" y2="-4" stroke="#E4E1D8" strokeWidth="1" />
-                <line x1="-6" y1="4" x2="6" y2="4" stroke="#E4E1D8" strokeWidth="1" />
+                <line x1="-6" y1="-4" x2="6" y2="-4" stroke="#206E6B" strokeWidth="1" />
+                <line x1="-6" y1="4" x2="6" y2="4" stroke="#206E6B" strokeWidth="1" />
               </g>
             ))}
           </g>
@@ -559,11 +559,11 @@ export default function MapViewTopo({
               if (!pos) return null;
 
               let nodeElement = null;
-              let labelColor = 'text-[#E4E1D8]';
+              let labelColor = 'text-base-dark';
 
               if (node.type === 'depot') {
                 // Signal Accent Solid Square
-                labelColor = 'text-[#FAF9F6]';
+                labelColor = 'text-base-dark';
                 nodeElement = (
                   <rect
                     x={pos.x - 7}
@@ -571,9 +571,9 @@ export default function MapViewTopo({
                     width={14}
                     height={14}
                     fill="none"
-                    stroke="#2C4A3E"
+                    stroke="#206E6B"
                     strokeWidth={2.5}
-                    className="filter drop-shadow-[0_0_4px_rgba(44,74,62,0.6)]"
+                    className="filter drop-shadow-[0_0_4px_rgba(32,110,107,0.4)]"
                   />
                 );
               } else if (node.type === 'shelter') {
@@ -586,10 +586,10 @@ export default function MapViewTopo({
                     width={14}
                     height={14}
                     fill={alertColor}
-                    stroke="#1C1B17"
+                    stroke="#206E6B"
                     strokeWidth={1.5}
                     transform={`rotate(45 ${pos.x} ${pos.y})`}
-                    className="filter drop-shadow-[0_0_4px_rgba(0,0,0,0.6)]"
+                    className="filter drop-shadow-[0_0_4px_rgba(0,0,0,0.15)]"
                   />
                 );
               } else if (node.type === 'village') {
@@ -599,8 +599,8 @@ export default function MapViewTopo({
                     cx={pos.x}
                     cy={pos.y}
                     r={4}
-                    fill="#24221D"
-                    stroke="#E4E1D8"
+                    fill="#206E6B"
+                    stroke="#DFEDED"
                     strokeWidth={1.5}
                   />
                 );
@@ -611,7 +611,7 @@ export default function MapViewTopo({
                     cx={pos.x}
                     cy={pos.y}
                     r={2.5}
-                    fill="#E4E1D8"
+                    fill="#6AADAB"
                   />
                 );
               }
