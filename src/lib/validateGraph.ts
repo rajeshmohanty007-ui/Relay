@@ -15,10 +15,10 @@ export interface ValidationResult {
   errors: string[];
 }
 
-/**
- * Validates that every node in the graph is reachable from at least one depot
- * via traversable (non-blocked) edges, respecting edge directionality.
- */
+
+
+
+
 export function validateGraphReachability(data: GraphFixtureData): ValidationResult {
   const errors: string[] = [];
   const nodeMap = new Map<string, Node>();
@@ -49,7 +49,7 @@ export function validateGraphReachability(data: GraphFixtureData): ValidationRes
     errors.push('No depot nodes found in the graph. At least one depot is required for reachability validation.');
   }
 
-  // Build adjacency list for non-blocked edges
+  
   const adjacencyList = new Map<string, string[]>();
   for (const nodeId of nodeMap.keys()) {
     adjacencyList.set(nodeId, []);
@@ -65,7 +65,7 @@ export function validateGraphReachability(data: GraphFixtureData): ValidationRes
       continue;
     }
 
-    // Only non-blocked edges are traversable
+    
     if (edge.status !== 'blocked') {
       adjacencyList.get(edge.fromNodeId)?.push(edge.toNodeId);
       if (edge.bidirectional) {
@@ -74,7 +74,7 @@ export function validateGraphReachability(data: GraphFixtureData): ValidationRes
     }
   }
 
-  // Multi-source BFS from all depots
+  
   const visited = new Set<string>();
   const queue: string[] = [];
 
@@ -112,9 +112,9 @@ export function validateGraphReachability(data: GraphFixtureData): ValidationRes
   };
 }
 
-/**
- * CLI execution entrypoint
- */
+
+
+
 export function runValidatorCli(): void {
   const fixturePath =
     process.argv[2] ||
@@ -174,7 +174,7 @@ export function runValidatorCli(): void {
   }
 }
 
-// Run CLI directly when executed
+
 if (require.main === module || (typeof process !== 'undefined' && process.argv[1]?.includes('validateGraph'))) {
   runValidatorCli();
 }

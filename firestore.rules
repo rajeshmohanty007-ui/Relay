@@ -2,9 +2,9 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Flat root collections for the disaster-relief routing system
-    // Public read access enabled for all clients
-    // Client-side writes are strictly denied (writes reserved for Admin SDK and server APIs)
+    
+    
+    
 
     match /nodes/{nodeId} {
       allow read: if true;
@@ -31,7 +31,7 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Default catch-all rule: allow read, deny write
+    
     match /{document=**} {
       allow read: if true;
       allow write: if false;

@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  /* Custom spacing for right sidebar */
+  
   --spacing-88: 22rem;
   --font-sans: var(--font-inter), sans-serif;
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  /* ---- Brand tokens (use these directly in new code, e.g. bg-base-dark) ---- */
+  
   --color-brand-bg: #EDE4DF;
   --color-struct-line: #B0C4C3;
   --color-status-ok: #206E6B;
@@ -20,12 +20,12 @@
   --color-base-dark: #102e2c;
   --color-base-white: #FFFFFF;
 
-  /*
-   * ---- Palette re-skin ----
-   * Remapped built-in scales to use the user's custom color codes in light-theme mode.
-   */
+  
 
-  /* Neutral scale (zinc) — reused for slate below */
+
+
+
+  
   --color-zinc-50: #FFFFFF;
   --color-zinc-100: #DFEDED;
   --color-zinc-200: #EDE4DF;
@@ -50,7 +50,7 @@
   --color-slate-900: var(--color-zinc-900);
   --color-slate-950: var(--color-zinc-950);
 
-  /* Danger scale (red) — anchored on status-danger #997460 (terracotta) */
+  
   --color-red-50: #FBF8F6;
   --color-red-100: #F5ECE8;
   --color-red-200: #ECD9D0;
@@ -63,7 +63,7 @@
   --color-red-900: #4A2F24;
   --color-red-950: #2F1B14;
 
-  /* Warn scale (amber) — anchored on status-warn #6AADAB (slate teal) */
+  
   --color-amber-50: #F0F6F6;
   --color-amber-100: #E0ECEC;
   --color-amber-200: #EDE4DF;
@@ -76,7 +76,7 @@
   --color-amber-900: #1E4443;
   --color-amber-950: #102C2B;
 
-  /* Higher-severity warn scale (orange) — warn blended toward danger */
+  
   --color-orange-50: #FAF5F2;
   --color-orange-100: #F4E7E0;
   --color-orange-200: #EAD0C1;
@@ -89,7 +89,7 @@
   --color-orange-900: #51301C;
   --color-orange-950: #331F12;
 
-  /* Ok scale (emerald) — anchored on status-ok #206E6B */
+  
   --color-emerald-50: #F2F8F8;
   --color-emerald-100: #E5ECEC;
   --color-emerald-200: #C7DCDC;
@@ -102,7 +102,7 @@
   --color-emerald-900: #103534;
   --color-emerald-950: #0A2423;
 
-  /* Accent scale (sky) — same as emerald */
+  
   --color-sky-50: var(--color-emerald-50);
   --color-sky-100: var(--color-emerald-100);
   --color-sky-200: var(--color-emerald-200);
@@ -115,7 +115,7 @@
   --color-sky-900: var(--color-emerald-900);
   --color-sky-950: var(--color-emerald-950);
 
-  /* Accent scale (indigo) — same as emerald */
+  
   --color-indigo-50: var(--color-emerald-50);
   --color-indigo-100: var(--color-emerald-100);
   --color-indigo-200: var(--color-emerald-200);
@@ -128,7 +128,7 @@
   --color-indigo-900: var(--color-emerald-900);
   --color-indigo-950: var(--color-emerald-950);
 
-  /* cyan appears twice (a connection-line stroke) — treat as accent too */
+  
   --color-cyan-400: var(--color-sky-600);
 }
 
@@ -143,7 +143,7 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
-/* Custom scrollbars */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -162,8 +162,16 @@ body {
   background: #206E6B;
 }
 
-/* Leaflet divIcon overrides to keep styling clean and transparent */
+
 .leaflet-div-icon {
   background: transparent !important;
   border: none !important;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

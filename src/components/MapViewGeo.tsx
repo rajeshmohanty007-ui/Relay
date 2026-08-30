@@ -120,7 +120,7 @@ function routePinDivIcon(label: 'A' | 'B'): L.DivIcon {
     });
 }
 
-/** Total path length in the same units as the lat/lng coordinates (fine for short-distance interpolation). */
+
 function pathLength(path: LatLng[]): number {
     let total = 0;
     for (let i = 1; i < path.length; i++) {
@@ -131,7 +131,7 @@ function pathLength(path: LatLng[]): number {
     return total;
 }
 
-/** Interpolates a point along a polyline at fraction t (0-1), walking the path in the given direction. */
+
 function interpolateAlongPath(path: LatLng[], t: number, reversed: boolean): LatLng {
     if (path.length === 0) return [0, 0];
     if (path.length === 1) return path[0];
@@ -213,7 +213,7 @@ export default function MapViewGeo({
         };
     }, [highlightedNodeSequence, nodesById]);
 
-    // Straight-line geometry available instantly; upgraded to real road geometry once OSRM resolves.
+    
     const straightGeometry = useMemo(() => {
         const map = new Map<string, LatLng[]>();
         for (const edge of edges) {
@@ -310,8 +310,8 @@ export default function MapViewGeo({
                             const geom = geometryFor(edge.id);
                             if (geom.length < 2) return null;
 
-                            // Same reversed-traversal detection used by the tactical map, so
-                            // convoys move the correct direction along bidirectional edges.
+                            
+                            
                             let isReversed = false;
                             const route = convoy.currentRoute || [];
                             const routeIdx = route.indexOf(convoy.currentEdgeId as string);

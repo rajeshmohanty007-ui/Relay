@@ -9,7 +9,7 @@ interface SensorStatsOverviewProps {
 export default function SensorStatsOverview({ summary }: SensorStatsOverviewProps) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-      {/* Total Active Sensors */}
+      {}
       <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -30,7 +30,7 @@ export default function SensorStatsOverview({ summary }: SensorStatsOverviewProp
         </div>
       </div>
 
-      {/* Active High Flood Alerts */}
+      {}
       <div className="flex flex-col justify-between rounded-xl border border-red-200 bg-red-50/50 p-4 shadow-xs dark:border-red-900/40 dark:bg-red-950/20">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">
@@ -53,7 +53,7 @@ export default function SensorStatsOverview({ summary }: SensorStatsOverviewProp
         </div>
       </div>
 
-      {/* Peak Water Level Recorded */}
+      {}
       <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -72,7 +72,7 @@ export default function SensorStatsOverview({ summary }: SensorStatsOverviewProp
         </div>
       </div>
 
-      {/* Basin Mean Rate of Rise */}
+      {}
       <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
@@ -99,7 +99,7 @@ export default function SensorStatsOverview({ summary }: SensorStatsOverviewProp
         </div>
       </div>
 
-      {/* Submerged Road Corridors */}
+      {}
       <div className="col-span-2 flex flex-col justify-between rounded-xl border border-amber-200 bg-amber-50/50 p-4 shadow-xs sm:col-span-1 dark:border-amber-900/40 dark:bg-amber-950/20">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">

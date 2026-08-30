@@ -1,12 +1,12 @@
-/**
- * Snaps a straight node-to-node edge onto real road geometry using OSRM's
- * free public routing API (no key required). Results are cached in memory
- * and in sessionStorage so repeated renders / demo replays don't re-fetch,
- * and any edge that fails to resolve (offline, rate-limited, no road match)
- * falls back to a straight line so the map never breaks.
- */
 
-export type LatLng = [number, number]; // [lat, lng]
+
+
+
+
+
+
+
+export type LatLng = [number, number]; 
 
 const OSRM_BASE_URL = 'https://router.project-osrm.org/route/v1/driving';
 const CACHE_KEY_PREFIX = 'relay_osrm_route_v1:';
@@ -34,15 +34,15 @@ function writeSessionCache(key: string, coords: LatLng[]): void {
     try {
         window.sessionStorage.setItem(CACHE_KEY_PREFIX + key, JSON.stringify(coords));
     } catch {
-        // sessionStorage full or unavailable — in-memory cache still covers this session
+        
     }
 }
 
-/**
- * Fetches a real-road polyline between two points. Returns [from, to]
- * (a straight line) if OSRM is unreachable or returns no route, so callers
- * can always render *something* without extra error handling.
- */
+
+
+
+
+
 export async function fetchRoadRoute(from: LatLng, to: LatLng): Promise<LatLng[]> {
     const key = cacheKey(from, to);
 
@@ -74,7 +74,7 @@ export async function fetchRoadRoute(from: LatLng, to: LatLng): Promise<LatLng[]
             const geometry = data?.routes?.[0]?.geometry?.coordinates as [number, number][] | undefined;
             if (!geometry || geometry.length < 2) return straightLineFallback;
 
-            // OSRM returns [lng, lat] pairs — flip to [lat, lng] for Leaflet.
+            
             const coords: LatLng[] = geometry.map(([lng, lat]) => [lat, lng]);
 
             memoryCache.set(key, coords);
@@ -91,11 +91,11 @@ export async function fetchRoadRoute(from: LatLng, to: LatLng): Promise<LatLng[]
     return request;
 }
 
-/**
- * Resolves road geometry for many edges concurrently, with a small
- * concurrency cap so we don't fire 46 simultaneous requests at the free
- * OSRM demo server. Each result is keyed by the edge id passed in.
- */
+
+
+
+
+
 export async function fetchRoadRoutesForEdges(
     edges: Array<{ id: string; from: LatLng; to: LatLng }>,
     concurrency = 6,

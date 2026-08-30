@@ -4,13 +4,13 @@ import * as admin from 'firebase-admin';
 import dotenv from 'dotenv';
 import { GraphFixtureData } from './types';
 
-// Load environment variables from .env / .env.local if present
+
 dotenv.config();
 dotenv.config({ path: '.env.local' });
 
-/**
- * Initializes Firebase Admin SDK using available environment credentials
- */
+
+
+
 function initFirebaseAdmin(): admin.firestore.Firestore {
   if (admin.apps.length > 0) {
     return admin.firestore();
@@ -32,7 +32,7 @@ function initFirebaseAdmin(): admin.firestore.Firestore {
       projectId: serviceAccount.project_id || projectId,
     });
   } else {
-    // Falls back to Google Application Default Credentials or Firestore Emulator
+    
     admin.initializeApp({
       projectId: projectId || 'demo-disaster-relief',
     });
@@ -43,12 +43,12 @@ function initFirebaseAdmin(): admin.firestore.Firestore {
   return db;
 }
 
-/**
- * Deletes every document in /demoLog. The simulation in demoRunner.ts is
- * deterministic, so re-running it against a re-seeded graph reproduces the
- * exact same (simTimeSec, message) entries — without clearing old log
- * history first, every re-run doubles up the event feed with duplicates.
- */
+
+
+
+
+
+
 async function clearDemoLog(db: admin.firestore.Firestore): Promise<number> {
   const snapshot = await db.collection('demoLog').get();
   if (snapshot.empty) return 0;
@@ -76,9 +76,9 @@ async function clearDemoLog(db: admin.firestore.Firestore): Promise<number> {
   return deleted;
 }
 
-/**
- * Executes Firestore seed operation with batching
- */
+
+
+
 export async function seedFirestore(
   fixturePath?: string,
   options: { dryRun?: boolean } = {}
@@ -124,7 +124,7 @@ export async function seedFirestore(
   const clearedLogCount = await clearDemoLog(db);
   console.log(`[Seed Script] Cleared ${clearedLogCount} existing /demoLog document(s).`);
 
-  // Firestore batch limit is 500 ops per commit
+  
   const BATCH_LIMIT = 450;
   let currentBatch = db.batch();
   let currentOpCount = 0;
@@ -139,7 +139,7 @@ export async function seedFirestore(
     }
   }
 
-  // 1. Seed Nodes: /nodes/{nodeId}
+  
   for (const node of data.nodes) {
     const ref = db.collection('nodes').doc(node.id);
     currentBatch.set(ref, node);
@@ -147,7 +147,7 @@ export async function seedFirestore(
     await commitBatchIfNeeded();
   }
 
-  // 2. Seed Edges: /edges/{edgeId}
+  
   for (const edge of data.edges) {
     const ref = db.collection('edges').doc(edge.id);
     currentBatch.set(ref, edge);
@@ -155,7 +155,7 @@ export async function seedFirestore(
     await commitBatchIfNeeded();
   }
 
-  // 3. Seed Hazard Events: /events/{eventId}
+  
   for (const event of data.hazardEvents) {
     const ref = db.collection('events').doc(event.id);
     currentBatch.set(ref, event);
@@ -163,7 +163,7 @@ export async function seedFirestore(
     await commitBatchIfNeeded();
   }
 
-  // 4. Seed Convoys: /convoys/{id}
+  
   for (const convoy of data.convoys) {
     const ref = db.collection('convoys').doc(convoy.id);
     currentBatch.set(ref, convoy);
@@ -171,20 +171,20 @@ export async function seedFirestore(
     await commitBatchIfNeeded();
   }
 
-  // 5. Seed DemoConfig: /demoConfig/current
+  
   const configRef = db.collection('demoConfig').doc('current');
   currentBatch.set(configRef, data.demoConfig);
   currentOpCount++;
 
-  // Commit remaining
+  
   await commitBatchIfNeeded(true);
 
   console.log(`\n✔ [Seed Script] SUCCESS: Successfully seeded ${totalDocs} documents across ${totalBatchesCommitted} batch commit(s) into Firestore.`);
 }
 
-/**
- * CLI Entrypoint
- */
+
+
+
 async function main() {
   const isDryRun = process.argv.includes('--dry-run');
   const customFixture = process.argv.find((arg) => arg.endsWith('.json'));

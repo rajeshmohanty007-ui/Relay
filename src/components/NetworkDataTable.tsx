@@ -51,7 +51,7 @@ export default function NetworkDataTable({
       });
   }, [nodes, searchTerm, statusFilter, typeFilter, sortField, sortAsc]);
 
-  // Export CSV
+  
   const handleExportCsv = () => {
     const headers = [
       'Station Code',
@@ -99,7 +99,7 @@ export default function NetworkDataTable({
 
   return (
     <div className="flex flex-col rounded-xl border border-zinc-200 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-      {/* Control Header */}
+      {}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 p-4 dark:border-zinc-800">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
@@ -120,7 +120,7 @@ export default function NetworkDataTable({
             )}
           </div>
 
-          {/* Status Filter */}
+          {}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -133,7 +133,7 @@ export default function NetworkDataTable({
             <option value="optimal">Optimal Only</option>
           </select>
 
-          {/* Type Filter */}
+          {}
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
@@ -160,7 +160,7 @@ export default function NetworkDataTable({
         </div>
       </div>
 
-      {/* Table Content */}
+      {}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead className="border-b border-zinc-200 bg-zinc-50 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/60 dark:text-zinc-400">

@@ -32,7 +32,7 @@ export default function SensorDataPage() {
 
   const summary = useMemo(() => computeSensorSummary(sensors), [sensors]);
 
-  // Stepped Simulation Timer
+  
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function SensorDataPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
-      {/* Top Application Header */}
+      {}
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/90 px-4 py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/90 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export default function SensorDataPage() {
             </div>
           </div>
 
-          {/* Quick links and scenario controls */}
+          {}
           <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/dashboard"
@@ -159,9 +159,9 @@ export default function SensorDataPage() {
         </div>
       </header>
 
-      {/* Main Page Body */}
+      {}
       <main className="flex-1 p-4 sm:p-6 flex flex-col gap-5">
-        {/* Weather Scenario & Hydrologic State Selector */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
           <div className="flex items-center gap-3">
             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
@@ -193,7 +193,7 @@ export default function SensorDataPage() {
           </div>
         </div>
 
-        {/* Urgent Emergency Alert Banner */}
+        {}
         <SensorAlertBanner
           sensors={sensors}
           onSelectSensor={(sensor) => {
@@ -202,10 +202,10 @@ export default function SensorDataPage() {
           }}
         />
 
-        {/* Aggregate KPI Summary Stats */}
+        {}
         <SensorStatsOverview summary={summary} />
 
-        {/* View Selection Tabs & Sub-basin Filter */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-2 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <button
@@ -262,7 +262,7 @@ export default function SensorDataPage() {
           </div>
         </div>
 
-        {/* Tab 1: Interactive Map View + Live Inspector Side Panel */}
+        {}
         {activeTab === 'map' && (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <div className="h-[640px] lg:col-span-8">
@@ -289,7 +289,7 @@ export default function SensorDataPage() {
                   </div>
                   <SensorTelemetryCard sensor={selectedSensor} isSelected />
 
-                  {/* Correlated Relief Roads & Nodes */}
+                  {}
                   <div className="mt-3 rounded-xl border border-zinc-200 bg-white p-4 text-xs dark:border-zinc-800 dark:bg-zinc-900 shadow-xs">
                     <h5 className="font-semibold text-zinc-800 dark:text-zinc-200">
                       Disaster Convoy Route Correlation
@@ -325,7 +325,7 @@ export default function SensorDataPage() {
           </div>
         )}
 
-        {/* Tab 2: Grid of all Telemetry Cards */}
+        {}
         {activeTab === 'cards' && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredSensors.map((sensor) => (
@@ -342,7 +342,7 @@ export default function SensorDataPage() {
           </div>
         )}
 
-        {/* Tab 3: Detailed Tabular View */}
+        {}
         {activeTab === 'table' && (
           <SensorDataTable
             sensors={filteredSensors}

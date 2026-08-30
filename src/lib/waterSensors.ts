@@ -675,9 +675,9 @@ export const INITIAL_WATER_SENSORS: WaterSensor[] = [
   },
 ];
 
-/**
- * Generate 12 historical points for sparklines
- */
+
+
+
 export function generateInitialHistory(sensor: WaterSensor): HistoricalReading[] {
   const points: HistoricalReading[] = [];
   const base = sensor.baselineLevelM;
@@ -686,7 +686,7 @@ export function generateInitialHistory(sensor: WaterSensor): HistoricalReading[]
 
   for (let i = 0; i < count; i++) {
     const fraction = i / (count - 1);
-    // Add natural fluctuation
+    
     const noise = Math.sin(i * 0.8) * 0.25;
     const level = Math.max(0.5, Number((base + (current - base) * fraction + noise).toFixed(2)));
 
@@ -699,7 +699,7 @@ export function generateInitialHistory(sensor: WaterSensor): HistoricalReading[]
     const flowVel = Number((sensor.flowVelocityMps * (0.7 + 0.3 * (level / sensor.warningLevelM))).toFixed(2));
 
     points.push({
-      timestampSec: (i - count + 1) * 300, // 5 minute steps backwards
+      timestampSec: (i - count + 1) * 300, 
       waterLevelM: level,
       flowVelocityMps: Math.max(0.5, flowVel),
       rateOfRiseMPerHour: rateOfRise,
@@ -717,9 +717,9 @@ export function initializeSensors(): WaterSensor[] {
   }));
 }
 
-/**
- * Stepped simulation physics step
- */
+
+
+
 export function stepSensorSimulation(
   sensors: WaterSensor[],
   scenarioId: WeatherScenarioId,
@@ -728,14 +728,14 @@ export function stepSensorSimulation(
   const scenario = WEATHER_SCENARIOS[scenarioId] ?? WEATHER_SCENARIOS.heavy_monsoon;
 
   return sensors.map((sensor) => {
-    // Determine target trend from scenario
+    
     const surgeFactor = scenario.surgeMultiplier;
     const flowFactor = scenario.flowMultiplier;
 
-    // Introduce natural hydrologic stochastic noise
+    
     const stochasticDrift = (Math.random() - 0.48) * 0.08;
 
-    // Upstream dam / mountain sensors rise quicker under flash/dam scenarios
+    
     let zoneBonus = 0;
     if (sensor.basinSection === 'Upper Periyar Catchment' && scenarioId === 'dam_spillway_release') {
       zoneBonus = 0.22;
@@ -751,12 +751,12 @@ export function stepSensorSimulation(
       ((sensor.rateOfRiseMPerHour * 0.85 + (surgeFactor - 1.0) * 0.4 + zoneBonus + stochasticDrift)).toFixed(2)
     );
 
-    // Apply incremental change scaled to step time
+    
     const levelDelta = (calculatedRateOfRise * (stepSeconds / 3600));
     let nextLevel = Math.max(sensor.baselineLevelM * 0.8, sensor.currentLevelM + levelDelta);
     nextLevel = Number(nextLevel.toFixed(2));
 
-    // Calculate status based on thresholds
+    
     let status: WaterLevelStatus = 'normal';
     if (nextLevel >= sensor.criticalLevelM) {
       status = 'critical';
@@ -766,11 +766,11 @@ export function stepSensorSimulation(
       status = 'advisory';
     }
 
-    // Road submersion depth
+    
     const submersionDelta = nextLevel - sensor.warningLevelM;
     const roadSubmersionDepthM = submersionDelta > 0 ? Number((submersionDelta * 0.9).toFixed(2)) : 0;
 
-    // Flow velocity scaled with water level
+    
     const nextFlowVelocity = Number(
       Math.max(
         0.5,
@@ -778,12 +778,12 @@ export function stepSensorSimulation(
       ).toFixed(2)
     );
 
-    // Discharge rate
+    
     const dischargeRateCumecs = Math.round(
       nextLevel * 45 * nextFlowVelocity * (1 + (surgeFactor - 1) * 0.3)
     );
 
-    // Subtle battery and signal fluctuation
+    
     const batteryPct = Math.max(65, Math.min(100, sensor.batteryPct - (Math.random() < 0.05 ? 1 : 0)));
     const signalDbm = Math.min(-45, Math.max(-95, sensor.signalDbm + Math.floor((Math.random() - 0.5) * 3)));
 
@@ -813,9 +813,9 @@ export function stepSensorSimulation(
   });
 }
 
-/**
- * Compute aggregate statistics for the entire water sensor network
- */
+
+
+
 export function computeSensorSummary(sensors: WaterSensor[]): SensorNetworkSummary {
   let normalCount = 0;
   let advisoryCount = 0;

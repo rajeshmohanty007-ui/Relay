@@ -8,10 +8,10 @@ export interface ProjectedNode {
 
 const PADDING_RATIO = 0.1;
 
-/**
- * Linearly maps each node's lat/lng into viewport pixel coordinates,
- * preserving relative position. Padding keeps nodes off the viewport edge.
- */
+
+
+
+
 export function projectNodes(nodes: Node[], viewWidth: number, viewHeight: number): ProjectedNode[] {
   if (nodes.length === 0) return [];
 
@@ -37,7 +37,7 @@ export function projectNodes(nodes: Node[], viewWidth: number, viewHeight: numbe
 
   return nodes.map((node) => {
     const xFrac = (node.lng - minLng) / lngRange;
-    // Latitude increases northward; SVG y increases downward, so invert.
+    
     const yFrac = 1 - (node.lat - minLat) / latRange;
 
     return {

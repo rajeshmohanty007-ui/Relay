@@ -8,11 +8,11 @@ export interface DispatchPanelProps {
   demoLog: DemoLogEntry[];
 }
 
-/**
- * Convoy has no persisted ETA field — routingEngine only emits ETA text
- * inside its logMessage strings. The most recent /demoLog entry tagged
- * with this convoy's id is the closest available source for it.
- */
+
+
+
+
+
 function latestLogFor(convoyId: string, demoLog: DemoLogEntry[]): DemoLogEntry | undefined {
   let latest: DemoLogEntry | undefined;
   for (const entry of demoLog) {
@@ -22,12 +22,12 @@ function latestLogFor(convoyId: string, demoLog: DemoLogEntry[]): DemoLogEntry |
   return latest;
 }
 
-/**
- * Status is checked first, explicitly. Log-message parsing (the only
- * source of ETA text — see latestLogFor's docstring) only applies to the
- * enroute/rerouted case; every other status has a direct, known label and
- * must never fall through to a stale ETA parsed from an old log entry.
- */
+
+
+
+
+
+
 function statusDetailFor(convoy: Convoy, demoLog: DemoLogEntry[]): string {
   if (convoy.status === 'pending') {
     return 'Not yet deployed';
@@ -39,7 +39,7 @@ function statusDetailFor(convoy: Convoy, demoLog: DemoLogEntry[]): string {
     const latest = latestLogFor(convoy.id, demoLog);
     return latest ? latest.message : 'Recalled';
   }
-  // 'enroute' | 'rerouted'
+  
   const latest = latestLogFor(convoy.id, demoLog);
   return latest ? `${convoy.status} — ${latest.message}` : convoy.status;
 }
@@ -67,19 +67,19 @@ export default function DispatchPanelPlacard({ nodes, convoys, demoLog }: Dispat
           const incoming = convoys.filter((c) => c.destNodeId === shelter.id);
           const hoursLeft = shelter.criticalSupplyNeed.hoursOfStockRemaining;
 
-          // Determine status color based on stock hours left
-          let statusColor = '#4B7B4E'; // Green: > 5h remaining
+          
+          let statusColor = '#4B7B4E'; 
           let statusLabel = 'STABLE';
           let borderClass = 'border-l-status-ok';
           let glowShadow = 'hover:shadow-[0_0_15px_rgba(75,123,78,0.15)]';
 
           if (hoursLeft <= 3.0) {
-            statusColor = '#A6403A'; // Rust Red: Critical
+            statusColor = '#A6403A'; 
             statusLabel = 'CRITICAL';
             borderClass = 'border-l-status-danger';
             glowShadow = 'hover:shadow-[0_0_15px_rgba(166,64,58,0.2)]';
           } else if (hoursLeft <= 5.0) {
-            statusColor = '#B8863B'; // Amber Ochre: Degraded
+            statusColor = '#B8863B'; 
             statusLabel = 'WARNING';
             borderClass = 'border-l-status-warn';
             glowShadow = 'hover:shadow-[0_0_15px_rgba(184,134,59,0.15)]';
@@ -90,7 +90,7 @@ export default function DispatchPanelPlacard({ nodes, convoys, demoLog }: Dispat
               key={shelter.id}
               className={`relative overflow-hidden rounded-2xl border border-struct-line bg-base-cream p-3.5 pl-4 border-l-4 ${borderClass} transition-all duration-200 hover:bg-base-sand/40 ${glowShadow}`}
             >
-              {/* Header */}
+              {}
               <div className="flex items-baseline justify-between gap-2">
                 <span className="font-sans text-xs font-semibold tracking-wide text-base-dark">
                   {shelter.name.toUpperCase()}
@@ -100,7 +100,7 @@ export default function DispatchPanelPlacard({ nodes, convoys, demoLog }: Dispat
                 </span>
               </div>
 
-              {/* Status Badge & details */}
+              {}
               <div className="mt-2.5 flex items-center justify-between border-t border-struct-line/50 pt-2 text-[10px]">
                 <span
                   className="font-display font-semibold px-2 py-0.5 rounded-full text-[9px]"
@@ -109,13 +109,13 @@ export default function DispatchPanelPlacard({ nodes, convoys, demoLog }: Dispat
                   {statusLabel}
                 </span>
 
-                {/* Micro supply details */}
+                {}
                 <span className="font-mono text-base-dark/80 bg-base-sand px-2 py-0.5 rounded-full border border-struct-line/60 text-[9px]">
                   F:{shelter.criticalSupplyNeed.food} W:{shelter.criticalSupplyNeed.water} I:{shelter.criticalSupplyNeed.insulin}
                 </span>
               </div>
 
-              {/* Incoming Convoys Section */}
+              {}
               <div className="mt-2.5 space-y-1.5 border-t border-struct-line/40 pt-2">
                 <span className="font-display text-[9px] font-bold tracking-widest text-base-dark/60 uppercase">
                   Incoming Operations ({incoming.length})

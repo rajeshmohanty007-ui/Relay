@@ -10,14 +10,14 @@ import {
   evaluateFleet,
 } from './routingEngine';
 
-// ─── Load fixture data ──────────────────────────────────────────────────────
+
 
 const fixturePath = path.resolve(process.cwd(), 'fixtures', 'graph.json');
 const fixture: GraphFixtureData = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
 const { nodes, edges } = fixture;
 const depotIds = nodes.filter((n) => n.type === 'depot').map((n) => n.id);
 
-// ─── Test runner ────────────────────────────────────────────────────────────
+
 
 let passed = 0;
 let failed = 0;
@@ -35,7 +35,7 @@ function test(name: string, fn: () => void): void {
   }
 }
 
-// ─── Helper: clone edges with modifications ─────────────────────────────────
+
 
 function cloneEdges(overrides: Record<string, Partial<Edge>>): Edge[] {
   return edges.map((e) => {
@@ -44,10 +44,10 @@ function cloneEdges(overrides: Record<string, Partial<Edge>>): Edge[] {
   });
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+
 console.log('\n=== Routing Engine Tests ===\n');
 console.log('--- buildAdjacency ---');
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 test('Excludes blocked edges from adjacency', () => {
   const modEdges = cloneEdges({ edge_dn_jnorth: { status: 'blocked' } });
@@ -57,14 +57,14 @@ test('Excludes blocked edges from adjacency', () => {
   const hasBlockedEdge = fromDepotNorth.some((e) => e.edgeId === 'edge_dn_jnorth');
   assert.equal(hasBlockedEdge, false, 'Blocked edge should not appear in adjacency');
 
-  // Reverse direction should also be absent (bidirectional)
+  
   const fromJuncNorthFork = adj.get('junc_north_fork')!;
   const hasBlockedReverse = fromJuncNorthFork.some((e) => e.edgeId === 'edge_dn_jnorth');
   assert.equal(hasBlockedReverse, false, 'Blocked edge reverse should not appear');
 });
 
 test('Excludes heavyVehicleSafe=false edges from adjacency', () => {
-  // edge_jdam_vhighland has heavyVehicleSafe=false in fixture
+  
   const adj = buildAdjacency(nodes, edges);
 
   const fromJuncDam = adj.get('junc_dam_road')!;
@@ -73,7 +73,7 @@ test('Excludes heavyVehicleSafe=false edges from adjacency', () => {
 });
 
 test('Degraded edges have doubled weight', () => {
-  // edge_jrbn_jcentral: baseTravelTimeMin=11, make it degraded
+  
   const modEdges = cloneEdges({ edge_jrbn_jcentral: { status: 'degraded' } });
   const adj = buildAdjacency(nodes, modEdges);
 
@@ -86,20 +86,20 @@ test('Degraded edges have doubled weight', () => {
 test('Bidirectional edges appear in both directions', () => {
   const adj = buildAdjacency(nodes, edges);
 
-  // edge_dn_jnorth: depot_north ↔ junc_north_fork, bidirectional=true
+  
   const forward = adj.get('depot_north')!.some((e) => e.edgeId === 'edge_dn_jnorth');
   const reverse = adj.get('junc_north_fork')!.some((e) => e.edgeId === 'edge_dn_jnorth');
   assert.ok(forward, 'Forward direction should exist');
   assert.ok(reverse, 'Reverse direction should exist');
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
+
 console.log('\n--- shortestPath ---');
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 test('Finds shortest path and avoids a blocked edge', () => {
-  // Block the direct East Overpass → Valley School edge, forcing an alternative
-  // via junc_central_cross → shelter_valley_school (edge_jcentral_svalley).
+  
+  
   const modEdges = cloneEdges({ edge_jeast_svalley: { status: 'blocked' } });
   const adj = buildAdjacency(nodes, modEdges);
 
@@ -124,26 +124,26 @@ test('Same source and destination returns empty path with zero cost', () => {
 });
 
 test('Returns null when destination is unreachable', () => {
-  // Block ALL edges out of depot_north to make shelter_east_hospital unreachable
-  // from a hypothetical isolated node.  Easier: use a node that only connects
-  // via heavyVehicleSafe=false edges.
-  //
-  // village_highland_reach connects only via edge_jdam_vhighland (heavyVehicleSafe=false)
-  // and edge_vhighland_jeast (heavyVehicleSafe=false), so it's fully isolated for
-  // heavy vehicles.
+  
+  
+  
+  
+  
+  
+  
   const adj = buildAdjacency(nodes, edges);
   const result = shortestPath(adj, 'village_highland_reach', 'depot_north');
   assert.equal(result, null, 'Should return null — node isolated for heavy vehicles');
 });
 
 test('Degraded edge used when it is still the fastest option', () => {
-  // Make edge_jrbn_jcentral degraded (weight 11→22) but block
-  // the alternative via vpaddy→jcentral (edge_vpaddy_jcentral).
-  // From junc_river_bridge_n to junc_central_cross:
-  //   - Direct degraded: 22 min
-  //   - Via vpaddy: edge_jrbn_vpaddy(9) + edge_vpaddy_jcentral → blocked
-  //   - Via jeast: edge_jrbn_jeast(14) + various longer routes
-  // So the degraded edge at 22 should be used if it's cheaper than any alternative.
+  
+  
+  
+  
+  
+  
+  
   const modEdges = cloneEdges({
     edge_jrbn_jcentral: { status: 'degraded' },
     edge_vpaddy_jcentral: { status: 'blocked' },
@@ -161,9 +161,9 @@ test('Degraded edge used when it is still the fastest option', () => {
 });
 
 test('Degraded edge avoided when a clear alternative is faster', () => {
-  // Make edge_jrbn_jcentral degraded (weight 11→22).
-  // Keep edge_vpaddy_jcentral clear (weight 10).
-  // Route junc_river_bridge_n → vpaddy(9) → jcentral(10) = 19 min < 22 min
+  
+  
+  
   const modEdges = cloneEdges({
     edge_jrbn_jcentral: { status: 'degraded' },
   });
@@ -178,14 +178,14 @@ test('Degraded edge avoided when a clear alternative is faster', () => {
   assert.ok(result!.totalTimeMin < 22, 'Alternative should be cheaper than degraded path');
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
+
 console.log('\n--- nearestReachableDepot ---');
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 test('Returns the nearest depot', () => {
   const adj = buildAdjacency(nodes, edges);
 
-  // junc_south_express is 6 min from depot_south via edge_jsexpress_dsouth
+  
   const result = nearestReachableDepot(adj, 'junc_south_express', depotIds);
   assert.ok(result, 'Should find a depot');
   assert.equal(result!.depotId, 'depot_south', 'Nearest depot should be depot_south');
@@ -193,15 +193,15 @@ test('Returns the nearest depot', () => {
 });
 
 test('Returns null when no depot reachable', () => {
-  // village_highland_reach is isolated for heavy vehicles
+  
   const adj = buildAdjacency(nodes, edges);
   const result = nearestReachableDepot(adj, 'village_highland_reach', depotIds);
   assert.equal(result, null, 'Should return null — node isolated for heavy vehicles');
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
+
 console.log('\n--- evaluateConvoy ---');
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 test('Arrived convoy is untouched', () => {
   const arrivedConvoy: Convoy = {
@@ -247,7 +247,7 @@ test('Pending convoy deploys with correct log message', () => {
 });
 
 test('Pending convoy with no safe path logs cannot deploy', () => {
-  // shelter_east_hospital becomes unreachable by blocking its 2 heavy-safe edges
+  
   const modEdges = cloneEdges({
     edge_vtea_seast: { status: 'blocked' },
     edge_jvalleylink_seast: { status: 'blocked' },
@@ -274,10 +274,10 @@ test('Pending convoy with no safe path logs cannot deploy', () => {
 });
 
 test('Convoy reroutes when its planned edge becomes blocked', () => {
-  // Convoy charlie heading to shelter_valley_school via East Overpass.
-  // Block edge_jeast_svalley — alternative exists via junc_central_cross.
+  
+  
   const convoy: Convoy = {
-    ...fixture.convoys[2],  // convoy_charlie
+    ...fixture.convoys[2],  
     status: 'enroute',
     currentRoute: ['edge_dn_jnorth', 'edge_jnf_vriver', 'edge_vriver_jeast', 'edge_jeast_svalley'],
     currentEdgeId: 'edge_dn_jnorth',
@@ -299,8 +299,8 @@ test('Convoy reroutes when its planned edge becomes blocked', () => {
 });
 
 test('Enroute convoy recalled when destination fully unreachable, targets nearest depot', () => {
-  // Convoy is already enroute, then destination becomes unreachable.
-  // Block all heavy-vehicle-safe paths to shelter_east_hospital.
+  
+  
   const modEdges = cloneEdges({
     edge_vtea_seast: { status: 'blocked' },
     edge_jvalleylink_seast: { status: 'blocked' },
@@ -329,7 +329,7 @@ test('Enroute convoy recalled when destination fully unreachable, targets neares
     'Log should mention depot return or stranded status',
   );
 
-  // Verify the recall path leads to a depot
+  
   if (updatedConvoy.currentRoute.length > 0) {
     assert.ok(
       logMessage.includes('ETA'),
@@ -339,8 +339,8 @@ test('Enroute convoy recalled when destination fully unreachable, targets neares
 });
 
 test('Enroute convoy stranded when no depot is reachable either', () => {
-  // Convoy is enroute at village_highland_reach (isolated for heavy vehicles).
-  // Use a fake edge ID so currentEdgeId lookup falls back to originNodeId.
+  
+  
   const convoy: Convoy = {
     id: 'test_stranded',
     cargoType: 'blood',
@@ -363,8 +363,8 @@ test('Enroute convoy stranded when no depot is reachable either', () => {
 });
 
 test('Recalled convoy with destination still unreachable stays recalled and does not re-log', () => {
-  // village_highland_reach is isolated for heavy vehicles under the default
-  // fixture edges, so its destination stays unreachable across calls.
+  
+  
   const recalledConvoy: Convoy = {
     id: 'test_recalled_stranded',
     cargoType: 'blood',
@@ -399,8 +399,8 @@ test('Recalled convoy resumes to destination when blocking edge reverts to clear
     positionProgress: 0,
   };
 
-  // Unmodified fixture edges — the road that previously forced the recall
-  // is clear again.
+  
+  
   const { updatedConvoy, logMessage } = evaluateConvoy(
     recalledConvoy, nodes, edges, depotIds,
   );
@@ -412,9 +412,9 @@ test('Recalled convoy resumes to destination when blocking edge reverts to clear
   assert.ok(!logMessage.includes('rerouted'), 'Log should NOT say rerouted for a resume');
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
+
 console.log('\n--- evaluateFleet ---');
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 test('evaluateFleet processes all convoys and filters empty logs', () => {
   const testConvoys: Convoy[] = [
@@ -450,13 +450,13 @@ test('evaluateFleet processes all convoys and filters empty logs', () => {
     !log.some((l) => l.includes('fleet_b')),
     'Arrived convoy should not appear in log',
   );
-  // fleet_a should have gotten a route
+  
   assert.ok(updatedConvoys[0].currentRoute.length > 0, 'Active convoy should get a route');
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Summary
-// ═══════════════════════════════════════════════════════════════════════════
+
+
+
 
 console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
 

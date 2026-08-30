@@ -61,10 +61,10 @@ export default function ReplayTimeline({
 
   return (
     <div className="w-full border border-struct-line bg-brand-bg p-2.5 sm:p-3.5 rounded-2xl flex flex-col gap-2.5 shadow-md">
-      {/* Top row: controls and state display */}
+      {}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          {/* Status banner */}
+          {}
           <div className="flex items-center border border-struct-line px-3 py-1 rounded-full select-none bg-base-cream">
             <span 
               className={`h-2 w-2 rounded-full mr-2 ${mode === 'LIVE' ? 'bg-status-ok animate-pulse' : 'bg-status-warn'}`}
@@ -79,7 +79,7 @@ export default function ReplayTimeline({
             </span>
           </div>
 
-          {/* Time indicator */}
+          {}
           <div className="font-mono text-[10px] text-base-dark/80 bg-base-cream px-2.5 py-0.5 rounded-full border border-struct-line">
             TICK <span className="font-bold text-base-dark font-mono">{selectedIndex + 1}</span> /{' '}
             <span className="font-mono text-base-dark/50">{availableTimes.length}</span>
@@ -88,9 +88,9 @@ export default function ReplayTimeline({
           {plannedRouteCard}
         </div>
 
-        {/* Action Controls */}
+        {}
         <div className="flex items-center gap-2">
-          {/* Frame Step Buttons */}
+          {}
           <div className="flex border border-struct-line rounded-xl bg-base-cream overflow-hidden p-0.5 gap-0.5">
             <button
               onClick={stepBack}
@@ -110,7 +110,7 @@ export default function ReplayTimeline({
             </button>
           </div>
 
-          {/* Jump to Live Button */}
+          {}
           {mode === 'REPLAY' && (
             <button
               onClick={jumpToLive}
@@ -122,14 +122,14 @@ export default function ReplayTimeline({
         </div>
       </div>
 
-      {/* Slider scrubbing track */}
+      {}
       <div className="flex items-center gap-4 w-full">
-        {/* Min mark */}
+        {}
         <span className="font-mono text-[9px] text-base-dark/70 bg-base-cream px-2 py-0.5 rounded-full border border-struct-line select-none">
           {formatTime(availableTimes[0] || 0)}
         </span>
 
-        {/* Custom styled range slider */}
+        {}
         <div className="flex-1 relative flex items-center">
           <input
             type="range"
@@ -145,13 +145,13 @@ export default function ReplayTimeline({
           />
         </div>
 
-        {/* Max mark */}
+        {}
         <span className="font-mono text-[9px] text-base-dark/70 bg-base-cream px-2 py-0.5 rounded-full border border-struct-line select-none">
           {formatTime(latestSimTime)}
         </span>
       </div>
 
-      {/* Detailed telemetry readout */}
+      {}
       <div className="flex justify-between font-mono text-[8px] text-base-dark/60 tracking-wider px-1">
         <span>SCRUBBED TIME: {currentSimTime}s ({formatTime(currentSimTime)})</span>
         <span>LATEST TICKET: {latestSimTime}s ({formatTime(latestSimTime)})</span>
