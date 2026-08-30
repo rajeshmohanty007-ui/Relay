@@ -49,9 +49,9 @@ const EDGE_STYLE: Record<Edge['status'], { color: string; weight: number; dashAr
 };
 
 const CONVOY_COLOR: Partial<Record<Convoy['status'], string>> = {
-    enroute: '#206E6B',
-    rerouted: '#6AADAB',
-    recalled: '#997460',
+    enroute: '#FACC15',
+    rerouted: '#EAB308',
+    recalled: '#CA8A04',
 };
 
 function getShelterStatusColor(node: Node): string {

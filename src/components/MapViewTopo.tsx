@@ -710,19 +710,19 @@ export default function MapViewTopo({
                 const x = start.x + (end.x - start.x) * t;
                 const y = start.y + (end.y - start.y) * t;
 
-                let color = '#FAF9F6'; 
-                let pulseColor = '#FAF9F6';
+                let color = '#FACC15'; 
+                let pulseColor = '#FACC15';
                 if (convoy.status === 'enroute') {
-                  color = '#4B7B4E'; 
-                  pulseColor = '#4B7B4E';
+                  color = '#FACC15'; 
+                  pulseColor = '#FACC15';
                 }
                 if (convoy.status === 'rerouted') {
-                  color = '#B8863B'; 
-                  pulseColor = '#B8863B';
+                  color = '#EAB308'; 
+                  pulseColor = '#EAB308';
                 }
                 if (convoy.status === 'recalled') {
-                  color = '#A6403A'; 
-                  pulseColor = '#A6403A';
+                  color = '#CA8A04'; 
+                  pulseColor = '#CA8A04';
                 }
 
                 return (

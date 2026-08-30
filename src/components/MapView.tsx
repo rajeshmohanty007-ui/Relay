@@ -27,9 +27,9 @@ const EDGE_STATUS_STYLE: Record<Edge['status'], { stroke: string; dashArray?: st
 };
 
 const CONVOY_STATUS_COLOR: Partial<Record<Convoy['status'], string>> = {
-  enroute: '#3b82f6',
-  rerouted: '#3b82f6',
-  recalled: '#ef4444',
+  enroute: '#FACC15',
+  rerouted: '#EAB308',
+  recalled: '#CA8A04',
 };
 
 export default function MapView({ nodes, edges, convoys }: MapViewProps) {
