@@ -29,15 +29,15 @@ function getShelterStatusColor(node: Node): string {
 
 // Tactical style configuration matching NDMA alerts
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
-  clear: { stroke: '#4A4840', strokeWidth: 1.5 }, // Muted warm structural line
+  clear: { stroke: '#35332C', strokeWidth: 1.5 }, // Muted warm structural line
   degraded: { stroke: '#B8863B', strokeWidth: 2, dashArray: '4 4' }, // Amber warning dash
   blocked: { stroke: '#A6403A', strokeWidth: 3 }, // Rust Red placard alert
 };
 
-const CONVOY_COLOR: Record<Exclude<Convoy['status'], 'pending' | 'arrived'>, string> = {
-  enroute: '#4B7B4E',   // Active enroute green
-  rerouted: '#B8863B',  // Rerouted amber ochre
-  recalled: '#A6403A',  // Recalled rust red
+const ROAD_TYPE_COLOR = {
+  primary: '#E4E1D8',
+  secondary: '#8C897E',
+  tertiary: '#524F47',
 };
 
 export default function MapViewTopo({
@@ -119,10 +119,10 @@ export default function MapViewTopo({
       const damMidY = pTea ? (pDam.y + pTea.y) / 2 : pDam.y + 15;
 
       pMain = `M ${pDam.x + 40},${pDam.y - 30} ` +
-              `C ${pDam.x + 20},${pDam.y - 10} ${damMidX + 10},${damMidY - 10} ${damMidX},${damMidY} ` +
-              `C ${pWeir ? pWeir.x : damMidX - 40},${pWeir ? pWeir.y : damMidY + 40} ${pRiverbank ? pRiverbank.x + 20 : pRBN.x + 40},${pRiverbank ? pRiverbank.y - 10 : pRBN.y - 30} ${pRBN.x},${pRBN.y} ` +
-              `C ${pCentral.x + 30},${pRBN.y + 20} ${pCentral.x + 25},${pCentral.y} ${(pCentral.x + pDelta.x) / 2},${(pCentral.y + pDelta.y) / 2} ` +
-              `C ${pDelta.x + 10},${pDelta.y - 10} ${pDeltaSplit ? pDeltaSplit.x + 20 : pDelta.x + 20},${pDelta.y + 20} ${pMarsh ? pMarsh.x : pDelta.x},${pMarsh ? pMarsh.y + 30 : pDelta.y + 50}`;
+        `C ${pDam.x + 20},${pDam.y - 10} ${damMidX + 10},${damMidY - 10} ${damMidX},${damMidY} ` +
+        `C ${pWeir ? pWeir.x : damMidX - 40},${pWeir ? pWeir.y : damMidY + 40} ${pRiverbank ? pRiverbank.x + 20 : pRBN.x + 40},${pRiverbank ? pRiverbank.y - 10 : pRBN.y - 30} ${pRBN.x},${pRBN.y} ` +
+        `C ${pCentral.x + 30},${pRBN.y + 20} ${pCentral.x + 25},${pCentral.y} ${(pCentral.x + pDelta.x) / 2},${(pCentral.y + pDelta.y) / 2} ` +
+        `C ${pDelta.x + 10},${pDelta.y - 10} ${pDeltaSplit ? pDeltaSplit.x + 20 : pDelta.x + 20},${pDelta.y + 20} ${pMarsh ? pMarsh.x : pDelta.x},${pMarsh ? pMarsh.y + 30 : pDelta.y + 50}`;
 
       crossList.push({
         id: 'cross_dam',
@@ -147,10 +147,10 @@ export default function MapViewTopo({
       const pStart = pWeir || pCanalBridge;
 
       pCanal = `M ${pStart.x},${pStart.y} ` +
-               `C ${pStart.x - 20},${pStart.y + 10} ${pCanalBridge.x + 20},${pCanalBridge.y - 10} ${pCanalBridge.x},${pCanalBridge.y} ` +
-               `C ${pCanalSide ? pCanalSide.x : (pCanalBridge.x + pWestCulvert.x) / 2},${pCanalSide ? pCanalSide.y : pCanalBridge.y + 20} ${pWestCulvert.x + 20},${pWestCulvert.y - 15} ${pWestCulvert.x},${pWestCulvert.y} ` +
-               `C ${pWestCulvert.x - 20},${pWestCulvert.y + 10} ${causewayMidX + 15},${causewayMidY - 15} ${causewayMidX},${causewayMidY} ` +
-               `C ${causewayMidX - 25},${causewayMidY + 20} ${pMangrove ? pMangrove.x - 10 : causewayMidX - 40},${pMangrove ? pMangrove.y : causewayMidY + 50} ${pMangrove ? pMangrove.x - 20 : causewayMidX - 50},${pMangrove ? pMangrove.y + 40 : causewayMidY + 70}`;
+        `C ${pStart.x - 20},${pStart.y + 10} ${pCanalBridge.x + 20},${pCanalBridge.y - 10} ${pCanalBridge.x},${pCanalBridge.y} ` +
+        `C ${pCanalSide ? pCanalSide.x : (pCanalBridge.x + pWestCulvert.x) / 2},${pCanalSide ? pCanalSide.y : pCanalBridge.y + 20} ${pWestCulvert.x + 20},${pWestCulvert.y - 15} ${pWestCulvert.x},${pWestCulvert.y} ` +
+        `C ${pWestCulvert.x - 20},${pWestCulvert.y + 10} ${causewayMidX + 15},${causewayMidY - 15} ${causewayMidX},${causewayMidY} ` +
+        `C ${causewayMidX - 25},${causewayMidY + 20} ${pMangrove ? pMangrove.x - 10 : causewayMidX - 40},${pMangrove ? pMangrove.y : causewayMidY + 50} ${pMangrove ? pMangrove.x - 20 : causewayMidX - 50},${pMangrove ? pMangrove.y + 40 : causewayMidY + 70}`;
 
       crossList.push({
         id: 'cross_canal_bridge',
@@ -201,7 +201,7 @@ export default function MapViewTopo({
     <div className="relative h-full w-full select-none overflow-hidden">
       <svg
         viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        className="h-full w-full bg-[#0B0F14] border border-struct-line"
+        className="h-full w-full bg-[#1C1B17] border border-struct-line"
       >
         <defs>
           {/* River Water Flow Glow Filter */}
@@ -211,9 +211,9 @@ export default function MapViewTopo({
           </filter>
           {/* Hazard Pulse Animation */}
           <radialGradient id="hazardGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.6" />
-            <stop offset="60%" stopColor="#DC2626" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#991B1B" stopOpacity="0" />
+            <stop offset="0%" stopColor="#A6403A" stopOpacity="0.6" />
+            <stop offset="60%" stopColor="#8A3933" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#6C302B" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -636,23 +636,41 @@ export default function MapViewTopo({
                 const t = Math.min(Math.max(convoy.positionProgress, 0), 1);
                 const x = start.x + (end.x - start.x) * t;
                 const y = start.y + (end.y - start.y) * t;
-                const color = CONVOY_COLOR[convoy.status as keyof typeof CONVOY_COLOR] ?? '#2C4A3E';
+
+                let color = '#FAF9F6'; // Default
+                let pulseColor = '#FAF9F6';
+                if (convoy.status === 'enroute') {
+                  color = '#4B7B4E'; // Green: Normal operation
+                  pulseColor = '#4B7B4E';
+                }
+                if (convoy.status === 'rerouted') {
+                  color = '#B8863B'; // Amber: Diverted
+                  pulseColor = '#B8863B';
+                }
+                if (convoy.status === 'recalled') {
+                  color = '#A6403A'; // Rust Red: Aborted
+                  pulseColor = '#A6403A';
+                }
 
                 return (
-                  <g key={convoy.id} className="cursor-pointer">
-                    {/* Outer pulsing ping */}
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={8}
-                      fill="none"
-                      stroke={color}
-                      strokeWidth={1}
-                      opacity="0.6"
-                      className="animate-ping"
-                    />
-                    
-                    {/* Solid Core Convoy Marker */}
+                  <g 
+                    key={convoy.id} 
+                    className="transition-transform duration-700 ease-linear"
+                  >
+                    {/* Pulsing ring for active rerouted / enroute operations */}
+                    {(convoy.status === 'rerouted' || convoy.status === 'enroute') && (
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r={8}
+                        fill="none"
+                        stroke={pulseColor}
+                        strokeWidth={1}
+                        className="animate-ping opacity-60"
+                      />
+                    )}
+
+                    {/* Convoy beacon */}
                     <circle 
                       cx={x} 
                       cy={y} 
@@ -670,7 +688,7 @@ export default function MapViewTopo({
                       x={x}
                       y={y + 11}
                       textAnchor="middle"
-                      className="font-mono text-[7px] font-bold text-[#FAF9F6] bg-[#1C1B17]/90 px-0.5 rounded-sm"
+                      className="font-mono text-[7px] font-bold text-[#FAF9F6] bg-[#1C1B17]/90 px-1 py-0.2 rounded-full"
                       fill="currentColor"
                     >
                       {convoy.id}
@@ -684,27 +702,26 @@ export default function MapViewTopo({
 
       {/* Floating Tactical Inspection Panel when a sensor / crossing is clicked */}
       {activeSensor && (
-        <div className="absolute bottom-3 right-3 z-30 flex w-80 flex-col border border-[#35332C] bg-[#1C1B17]/95 backdrop-blur-md shadow-2xl p-3 animate-in fade-in zoom-in-95 duration-150 text-xs">
+        <div className="absolute bottom-4 right-4 z-30 flex w-84 flex-col rounded-2xl border border-[#35332C] bg-[#1C1B17]/95 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] p-3.5 animate-in fade-in zoom-in-95 duration-150 text-xs">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#35332C]/50 pb-2 mb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs">🌊</span>
+          <div className="flex items-center justify-between border-b border-[#35332C]/60 pb-2.5 mb-2.5">
+            <div className="flex items-center gap-2.5">
+              <span className="text-sm">🌊</span>
               <div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <span className="font-mono text-[9px] font-bold text-[#FAF9F6]">{activeSensor.code}</span>
                   <span
-                    className={`px-1.5 py-0.2 border text-[7px] font-mono font-bold uppercase ${
-                      activeSensor.status === 'critical'
+                    className={`px-2 py-0.5 rounded-full border text-[7px] font-mono font-bold uppercase ${activeSensor.status === 'critical'
                         ? 'bg-[#351C1A] text-[#A6403A] border-[#A6403A]/60'
                         : activeSensor.status === 'warning' || activeSensor.status === 'advisory'
-                        ? 'bg-[#352718] text-[#B8863B] border-[#B8863B]/60'
-                        : 'bg-[#203024] text-[#4B7B4E] border-[#4B7B4E]/60'
-                    }`}
+                          ? 'bg-[#352718] text-[#B8863B] border-[#B8863B]/60'
+                          : 'bg-[#203024] text-[#4B7B4E] border-[#4B7B4E]/60'
+                      }`}
                   >
                     {activeSensor.status}
                   </span>
                 </div>
-                <span className="font-display text-[10px] font-bold text-[#FAF9F6] block truncate max-w-[190px]">
+                <span className="font-display text-[10px] font-bold text-[#FAF9F6] block truncate max-w-[190px] mt-0.5">
                   {activeSensor.name}
                 </span>
               </div>
@@ -712,27 +729,26 @@ export default function MapViewTopo({
             <button
               type="button"
               onClick={() => setSelectedSensorId(null)}
-              className="font-mono text-[9px] text-[#E4E1D8]/70 hover:text-white border border-[#35332C] px-1.5 py-0.5"
+              className="font-mono text-[9px] text-[#E4E1D8]/70 hover:text-white border border-[#35332C] px-2 py-1 rounded-lg hover:bg-[#24221D] transition-all"
             >
               ✕
             </button>
           </div>
 
           {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 gap-1.5 font-mono text-[8px] mb-2">
-            <div className="border border-[#35332C] bg-[#24221D] p-1.5">
+          <div className="grid grid-cols-2 gap-2 font-mono text-[8px] mb-2.5">
+            <div className="border border-[#35332C] bg-[#24221D] p-2 rounded-xl">
               <span className="text-[#E4E1D8]/60 block text-[7px]">STAGE / CREST LIMIT</span>
               <span className="font-bold text-[11px] text-white">
                 {activeSensor.currentLevelM.toFixed(2)}m{' '}
                 <span className="text-[7px] text-[#E4E1D8]/60">/ {activeSensor.criticalLevelM.toFixed(1)}m</span>
               </span>
             </div>
-            <div className="border border-[#35332C] bg-[#24221D] p-1.5">
+            <div className="border border-[#35332C] bg-[#24221D] p-2 rounded-xl">
               <span className="text-[#E4E1D8]/60 block text-[7px]">RATE OF RISE</span>
               <span
-                className={`font-bold text-[10px] ${
-                  activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-[#E4E1D8]'
-                }`}
+                className={`font-bold text-[10px] ${activeSensor.rateOfRiseMPerHour > 0.3 ? 'text-status-warn' : 'text-[#E4E1D8]'
+                  }`}
               >
                 {activeSensor.rateOfRiseMPerHour > 0
                   ? `▲ +${activeSensor.rateOfRiseMPerHour.toFixed(2)}m/h`
@@ -742,7 +758,7 @@ export default function MapViewTopo({
           </div>
 
           {/* Submersion Status */}
-          <div className="border border-[#35332C] bg-[#24221D] p-1.5 font-mono text-[8px] mb-2">
+          <div className="border border-[#35332C] bg-[#24221D] p-2.5 rounded-xl font-mono text-[8px] mb-2">
             <div className="flex justify-between items-center">
               <span className="text-[#E4E1D8]/60">ROAD INUNDATION:</span>
               <span className={`font-bold ${activeSensor.roadSubmersionDepthM > 0 ? 'text-status-danger' : 'text-status-ok'}`}>
@@ -758,7 +774,7 @@ export default function MapViewTopo({
           </div>
 
           {/* Correlated Corridors */}
-          <div className="font-mono text-[7px] text-[#E4E1D8]/60">
+          <div className="font-mono text-[7px] text-[#E4E1D8]/60 px-1">
             <span className="text-[#FAF9F6] font-bold">CROSSING ROADS: </span>
             <span className="text-[#E4E1D8]">{activeSensor.correlatedEdgeIds?.join(', ') || 'Corridor'}</span>
           </div>
@@ -767,4 +783,3 @@ export default function MapViewTopo({
     </div>
   );
 }
-
