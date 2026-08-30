@@ -1,10 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useFirestoreCollection } from '../../src/hooks/useFirestoreCollection';
 import { useReplayBuffer } from '../../src/hooks/useReplayBuffer';
 import type { Node, Edge, Convoy, DemoLogEntry, DemoConfig } from '../../src/lib/types';
 import MapViewTopo, { ALL_MAP_LAYERS, type MapLayer } from '../../src/components/MapViewTopo';
+
+// Leaflet touches `window` on import, so the realistic map must never render on the server.
+const MapViewGeo = dynamic(() => import('../../src/components/MapViewGeo'), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#E4E1D8]/50">
+      LOADING REALISTIC MAP…
+    </div>
+  ),
+});
+
 import DispatchPanelPlacard from '../../src/components/DispatchPanelPlacard';
 import EventFeedDispatcher from '../../src/components/EventFeedDispatcher';
 import ReplayTimeline from '../../src/components/ReplayTimeline';
@@ -29,6 +41,7 @@ function formatTime(seconds: number): string {
 
 export default function DashboardPage() {
   const [mode, setMode] = useState<'LIVE' | 'REPLAY'>('LIVE');
+  const [mapStyle, setMapStyle] = useState<'TACTICAL' | 'REALISTIC'>('TACTICAL');
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [visibleLayers, setVisibleLayers] = useState<Set<MapLayer>>(ALL_MAP_LAYERS);
   const [isFlightLogOpen, setIsFlightLogOpen] = useState<boolean>(false);
@@ -147,6 +160,34 @@ export default function DashboardPage() {
             </span>
           </button>
 
+          {/* Map Style Switch */}
+          <div className="flex border border-[#35332C] bg-[#1C1B17] p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setMapStyle('TACTICAL')}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
+                mapStyle === 'TACTICAL'
+                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
+              }`}
+              title="Tactical styled vector map"
+            >
+              TACTICAL
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapStyle('REALISTIC')}
+              className={`px-3 py-1 rounded-lg text-[10px] font-display font-bold tracking-wider uppercase transition-all ${
+                mapStyle === 'REALISTIC'
+                  ? 'bg-[#2C4A3E] text-[#FAF9F6] font-black shadow-[0_0_8px_rgba(44,74,62,0.4)]'
+                  : 'text-[#E4E1D8]/60 hover:text-white'
+              }`}
+              title="Real-road snapped geography map (needs internet)"
+            >
+              REALISTIC
+            </button>
+          </div>
+
           {/* Mode Switch */}
           <div className="flex border border-[#35332C] bg-[#1C1B17] p-1 rounded-xl">
             <button
@@ -225,13 +266,23 @@ export default function DashboardPage() {
               </div>
             )}
             {mapReady ? (
-              <MapViewTopo
-                nodes={displayNodes}
-                edges={displayEdges}
-                convoys={displayConvoys}
-                sensors={sensors}
-                visibleLayers={visibleLayers}
-              />
+              mapStyle === 'TACTICAL' ? (
+                <MapViewTopo
+                  nodes={displayNodes}
+                  edges={displayEdges}
+                  convoys={displayConvoys}
+                  sensors={sensors}
+                  visibleLayers={visibleLayers}
+                />
+              ) : (
+                <MapViewGeo
+                  nodes={displayNodes}
+                  edges={displayEdges}
+                  convoys={displayConvoys}
+                  sensors={sensors}
+                  visibleLayers={visibleLayers}
+                />
+              )
             ) : (
               <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#E4E1D8]/50">
                 INITIALIZING TACTICAL GRAPH MAP...
