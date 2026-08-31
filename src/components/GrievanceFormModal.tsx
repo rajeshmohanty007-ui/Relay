@@ -1,7 +1,7 @@
-'use client';
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Edge, Node } from '../lib/types';
+import { db } from '../lib/firebaseClient';
+import { collection, doc, setDoc, updateDoc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
 
 export interface GrievanceReport {
   id: string;
@@ -19,6 +19,13 @@ export interface GrievanceReport {
   rescueStatus: 'pending' | 'dispatched' | 'resolved';
   dispatchedTeamName?: string;
   etaMin?: number;
+}
+
+export function isValidVehicleReg(reg: string): boolean {
+  if (!reg) return false;
+  // Standard Vehicle Registration pattern (e.g. KL-07-CD-4921, KL-42-E-3910, KL08AU5104, MH-12-PQ-1234, DL-01-A-9999)
+  const vehicleRegPattern = /^[A-Z]{2}[-\s]?[0-9]{1,2}[-\s]?[A-Z]{1,3}[-\s]?[0-9]{1,4}$/i;
+  return vehicleRegPattern.test(reg.trim());
 }
 
 export interface GrievanceFormModalProps {
@@ -105,6 +112,7 @@ export default function GrievanceFormModal({
   const [selectedEdgeId, setSelectedEdgeId] = useState<string>(edges[0]?.id || 'edge_jdam_vtea');
   const [reporterName, setReporterName] = useState('');
   const [vehicleNumber, setVehicleNumber] = useState('');
+  const [vehicleError, setVehicleError] = useState<string | null>(null);
   const [contactNumber, setContactNumber] = useState('');
   const [blockageType, setBlockageType] = useState<GrievanceReport['blockageType']>('mudslide');
   const [description, setDescription] = useState('');
@@ -113,6 +121,34 @@ export default function GrievanceFormModal({
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const nodesById = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes]);
+
+  
+  useEffect(() => {
+    try {
+      const grievancesRef = collection(db, 'grievances');
+      const q = query(grievancesRef, orderBy('reportedAtIso', 'desc'));
+      const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const fetched: GrievanceReport[] = snapshot.docs.map((doc) => doc.data() as GrievanceReport);
+            const map = new Map<string, GrievanceReport>();
+            fetched.forEach((item) => map.set(item.id, item));
+            INITIAL_REPORTS.forEach((item) => {
+              if (!map.has(item.id)) map.set(item.id, item);
+            });
+            setReports(Array.from(map.values()));
+          }
+        },
+        (error) => {
+          console.warn('[Firebase] Firestore grievances listener notice:', error);
+        }
+      );
+      return () => unsubscribe();
+    } catch (err) {
+      console.warn('[Firebase] Error setting up Firestore listener:', err);
+    }
+  }, []);
 
   
   const roadIncidentStats = useMemo(() => {
@@ -142,13 +178,32 @@ export default function GrievanceFormModal({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleVehicleNumberChange = (val: string) => {
+    const upper = val.toUpperCase();
+    setVehicleNumber(upper);
+    if (upper.trim().length > 0 && !isValidVehicleReg(upper)) {
+      setVehicleError('Invalid Vehicle Reg format. Expected format: XX-00-XX-0000 (e.g. KL-07-CD-4921)');
+    } else {
+      setVehicleError(null);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reporterName.trim() || !vehicleNumber.trim() || !contactNumber.trim()) {
+
+    const trimmedVehicle = vehicleNumber.trim().toUpperCase();
+
+    if (!reporterName.trim() || !trimmedVehicle || !contactNumber.trim()) {
       alert('Please fill in your name, unique vehicle registration number, and emergency contact number.');
       return;
     }
 
+    if (!isValidVehicleReg(trimmedVehicle)) {
+      setVehicleError('Invalid Vehicle Reg format. Expected format: XX-00-XX-0000 (e.g. KL-07-CD-4921)');
+      return;
+    }
+
+    setVehicleError(null);
     setIsSubmitting(true);
 
     const edge = edges.find((ed) => ed.id === selectedEdgeId);
@@ -157,13 +212,13 @@ export default function GrievanceFormModal({
     const roadName = edge ? `${fromName} ↔ ${toName}` : 'Designated Evacuation Corridor';
 
     const newReport: GrievanceReport = {
-      id: `grv_${Date.now().toString().slice(-4)}`,
+      id: `grv_${Date.now().toString().slice(-6)}`,
       roadEdgeId: selectedEdgeId,
       roadName,
       fromNodeName: fromName,
       toNodeName: toName,
       reporterName: reporterName.trim(),
-      vehicleNumber: vehicleNumber.trim().toUpperCase(),
+      vehicleNumber: trimmedVehicle,
       contactNumber: contactNumber.trim(),
       blockageType,
       description: description.trim() || 'Blocked road section preventing evacuation passage.',
@@ -172,25 +227,35 @@ export default function GrievanceFormModal({
       rescueStatus: 'pending',
     };
 
+    // Save to Firebase Firestore Database
+    try {
+      const docRef = doc(db, 'grievances', newReport.id);
+      await setDoc(docRef, {
+        ...newReport,
+        createdAt: serverTimestamp(),
+      });
+      console.log('[Firebase] Successfully saved grievance to Firestore:', newReport.id);
+    } catch (err) {
+      console.error('[Firebase] Failed to save grievance to Firestore:', err);
+    }
+
+    setReports((prev) => [newReport, ...prev.filter((r) => r.id !== newReport.id)]);
+    setIsSubmitting(false);
+    setSubmitSuccess(true);
+    
+    setReporterName('');
+    setVehicleNumber('');
+    setContactNumber('');
+    setDescription('');
+    setPhotoPreview(null);
     setTimeout(() => {
-      setReports((prev) => [newReport, ...prev]);
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      
-      setReporterName('');
-      setVehicleNumber('');
-      setContactNumber('');
-      setDescription('');
-      setPhotoPreview('');
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        setActiveTab('reports');
-      }, 1500);
-    }, 600);
+      setSubmitSuccess(false);
+      setActiveTab('reports');
+    }, 1500);
   };
 
   
-  const handleDispatchRescue = (edgeId: string, roadName: string) => {
+  const handleDispatchRescue = async (edgeId: string, roadName: string) => {
     const teams = [
       'NDRF Disaster Response Unit Alpha',
       'Kerala State Emergency Rescue Squad-02',
@@ -212,6 +277,20 @@ export default function GrievanceFormModal({
           : r,
       ),
     );
+
+    // Sync rescue dispatch status to Firebase Firestore
+    const matchingReports = reports.filter((r) => r.roadEdgeId === edgeId);
+    for (const report of matchingReports) {
+      try {
+        await updateDoc(doc(db, 'grievances', report.id), {
+          rescueStatus: 'dispatched',
+          dispatchedTeamName: chosenTeam,
+          etaMin: eta,
+        });
+      } catch (err) {
+        console.warn(`[Firebase] Could not update dispatch status in Firestore for doc ${report.id}:`, err);
+      }
+    }
 
     
     const targetReport = reports.find((r) => r.roadEdgeId === edgeId);
@@ -433,10 +512,23 @@ export default function GrievanceFormModal({
                     required
                     placeholder="e.g. KL-07-CD-4921"
                     value={vehicleNumber}
-                    onChange={(e) => setVehicleNumber(e.target.value)}
-                    className="border border-struct-line bg-base-cream px-3 py-1.5 rounded-xl text-xs font-mono text-signal-accent uppercase font-bold outline-none focus:border-signal-accent transition-all"
+                    onChange={(e) => handleVehicleNumberChange(e.target.value)}
+                    className={`border ${
+                      vehicleError
+                        ? 'border-status-danger text-status-danger ring-1 ring-status-danger'
+                        : 'border-struct-line text-signal-accent focus:border-signal-accent'
+                    } bg-base-cream px-3 py-1.5 rounded-xl text-xs font-mono uppercase font-bold outline-none transition-all`}
                   />
-                  <span className="text-[8px] font-mono text-base-dark/60">Auto-escalates priority on multiple reports</span>
+                  {vehicleError ? (
+                    <p className="text-[10px] font-mono text-status-danger mt-1 flex items-center gap-1 font-semibold animate-in fade-in">
+                      <svg className="w-3.5 h-3.5 shrink-0 text-status-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {vehicleError}
+                    </p>
+                  ) : (
+                    <span className="text-[8px] font-mono text-base-dark/60">Auto-escalates priority on multiple reports</span>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1">
