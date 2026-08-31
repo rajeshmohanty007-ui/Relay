@@ -103,6 +103,61 @@ function convoyDivIcon(color: string): L.DivIcon {
     });
 }
 
+const HYDRO_HIGHLIGHT_NODE_IDS = new Set([
+    'junc_dam_road',
+    'junc_river_bridge_n',
+    'junc_canal_bridge',
+    'village_causeway_haven',
+    'junc_west_culvert',
+    'shelter_delta_stadium',
+]);
+
+const STRESSED_NET_NODE_IDS = new Set([
+    'shelter_east_hospital',
+    'shelter_west_hall',
+    'village_riverbank',
+    'village_mangrove_edge',
+    'village_estuary_point',
+    'village_canal_side',
+    'village_weir_quarters',
+    'village_marshland_bend',
+    'village_causeway_haven',
+    'junc_river_bridge_n',
+    'junc_west_culvert',
+    'junc_canal_bridge',
+    'junc_coastal_link',
+]);
+
+function hydroRippleDivIcon(): L.DivIcon {
+    return L.divIcon({
+        className: 'hydro-ripple-pin',
+        html: `
+          <div class="relative flex items-center justify-center select-none pointer-events-none" style="transform: translate(-50%, -50%); width: 44px; height: 44px;">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-[#3B82F6]/50 animate-ping"></span>
+            <span class="absolute inline-flex h-3/4 w-3/4 rounded-full bg-[#60A5FA]/30 animate-pulse"></span>
+            <span class="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#2563EB] shadow-[0_0_12px_#3B82F6]"></span>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+    });
+}
+
+function netStressedRippleDivIcon(): L.DivIcon {
+    return L.divIcon({
+        className: 'net-stressed-ripple-pin',
+        html: `
+          <div class="relative flex items-center justify-center select-none pointer-events-none" style="transform: translate(-50%, -50%); width: 44px; height: 44px;">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444]/55 animate-ping"></span>
+            <span class="absolute inline-flex h-3/4 w-3/4 rounded-full bg-[#F87171]/35 animate-pulse"></span>
+            <span class="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#DC2626] shadow-[0_0_12px_#EF4444]"></span>
+          </div>
+        `,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
+    });
+}
+
 function routePinDivIcon(label: 'A' | 'B'): L.DivIcon {
     return L.divIcon({
         className: 'route-highlight-pin',
@@ -300,6 +355,22 @@ export default function MapViewGeo({
                         </Marker>
                     ));
                 })()}
+
+                {/* Hydro Sensor Node Blue Ripple Effects */}
+                {visibleLayers?.has('sensors') &&
+                    nodes
+                        .filter((n) => HYDRO_HIGHLIGHT_NODE_IDS.has(n.id))
+                        .map((node) => (
+                            <Marker key={`hydro_geo_hl_${node.id}`} position={[node.lat, node.lng]} icon={hydroRippleDivIcon()} zIndexOffset={900} />
+                        ))}
+
+                {/* Stressed Net Data Node Red Ripple Effects */}
+                {visibleLayers?.has('netdata') &&
+                    nodes
+                        .filter((n) => STRESSED_NET_NODE_IDS.has(n.id))
+                        .map((node) => (
+                            <Marker key={`net_geo_hl_${node.id}`} position={[node.lat, node.lng]} icon={netStressedRippleDivIcon()} zIndexOffset={900} />
+                        ))}
 
                 {(!visibleLayers || visibleLayers.has('convoys')) &&
                     convoys

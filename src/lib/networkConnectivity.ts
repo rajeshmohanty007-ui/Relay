@@ -25,6 +25,7 @@ export interface NetworkNode {
   lat: number;
   lng: number;
   elevationM: number;
+  baseLatencyMs?: number;
   primaryChannel: PrimaryChannelType;
   fallbackChannel: PrimaryChannelType;
   activeChannel: PrimaryChannelType;
@@ -82,56 +83,7 @@ export interface NetworkScenario {
   powerStress: boolean;
 }
 
-export const NETWORK_SCENARIOS: Record<NetworkScenarioId, NetworkScenario> = {
-  monsoon_power_outage: {
-    id: 'monsoon_power_outage',
-    name: 'Widespread Grid Substation Flood Outage',
-    description: 'Electric grid failure across floodplain. Lowland towers running on 4-hour battery reserves.',
-    latencyFactor: 2.2,
-    packetLossBonusPct: 18,
-    powerStress: true,
-  },
-  fiber_bridge_sever: {
-    id: 'fiber_bridge_sever',
-    name: 'Periyar North Bridge Fiber Sever',
-    description: 'River flood washed away main optical trunk cable. Routing through high-latency microwave backup.',
-    latencyFactor: 3.5,
-    packetLossBonusPct: 24,
-    powerStress: false,
-  },
-  emergency_sat_mesh_deployed: {
-    id: 'emergency_sat_mesh_deployed',
-    name: 'Tactical Satellite & VHF Mesh Deployment',
-    description: 'Disaster response teams installed satellite terminals at all 4 relief shelters and depots.',
-    latencyFactor: 0.9,
-    packetLossBonusPct: -8,
-    powerStress: false,
-  },
-  heavy_storm_attenuation: {
-    id: 'heavy_storm_attenuation',
-    name: 'Severe Rain Fade & Atmospheric Attenuation',
-    description: 'Intense 70mm/hr rain curtains attenuating microwave links and satellite Ku-band signals.',
-    latencyFactor: 1.8,
-    packetLossBonusPct: 14,
-    powerStress: false,
-  },
-  telecom_cow_restoration: {
-    id: 'telecom_cow_restoration',
-    name: 'Cell-on-Wheels (COW) & Genset Recovery',
-    description: 'Mobile telecom vehicles deployed with diesel generators restoring primary connectivity.',
-    latencyFactor: 0.75,
-    packetLossBonusPct: -12,
-    powerStress: false,
-  },
-  nominal_baseline: {
-    id: 'nominal_baseline',
-    name: 'Nominal Clear Weather Baseline',
-    description: 'All 30 telecommunication hubs operating on 100% utility power and gigabit fiber backhauls.',
-    latencyFactor: 0.5,
-    packetLossBonusPct: -20,
-    powerStress: false,
-  },
-};
+
 
 export const INITIAL_NETWORK_NODES: NetworkNode[] = [
   {
@@ -856,25 +808,72 @@ export const INITIAL_NETWORK_NODES: NetworkNode[] = [
   },
 ];
 
-
-
+export const NETWORK_SCENARIOS: Record<NetworkScenarioId, NetworkScenario> = {
+  monsoon_power_outage: {
+    id: 'monsoon_power_outage',
+    name: 'Widespread Grid Substation Flood Outage',
+    description: 'Electric grid failure across floodplain. Lowland towers running on 4-hour battery reserves.',
+    latencyFactor: 1.3,
+    packetLossBonusPct: 12,
+    powerStress: true,
+  },
+  fiber_bridge_sever: {
+    id: 'fiber_bridge_sever',
+    name: 'Periyar North Bridge Fiber Sever',
+    description: 'River flood washed away main optical trunk cable. Routing through high-latency microwave backup.',
+    latencyFactor: 1.8,
+    packetLossBonusPct: 18,
+    powerStress: false,
+  },
+  emergency_sat_mesh_deployed: {
+    id: 'emergency_sat_mesh_deployed',
+    name: 'Tactical Satellite & VHF Mesh Deployment',
+    description: 'Disaster response teams installed satellite terminals at all 4 relief shelters and depots.',
+    latencyFactor: 0.95,
+    packetLossBonusPct: -4,
+    powerStress: false,
+  },
+  heavy_storm_attenuation: {
+    id: 'heavy_storm_attenuation',
+    name: 'Severe Rain Fade & Atmospheric Attenuation',
+    description: 'Intense 70mm/hr rain curtains attenuating microwave links and satellite Ku-band signals.',
+    latencyFactor: 1.5,
+    packetLossBonusPct: 10,
+    powerStress: false,
+  },
+  telecom_cow_restoration: {
+    id: 'telecom_cow_restoration',
+    name: 'Cell-on-Wheels (COW) & Genset Recovery',
+    description: 'Mobile telecom vehicles deployed with diesel generators restoring primary connectivity.',
+    latencyFactor: 0.85,
+    packetLossBonusPct: -8,
+    powerStress: false,
+  },
+  nominal_baseline: {
+    id: 'nominal_baseline',
+    name: 'Nominal Clear Weather Baseline',
+    description: 'All 30 telecommunication hubs operating on 100% utility power and gigabit fiber backhauls.',
+    latencyFactor: 0.75,
+    packetLossBonusPct: -15,
+    powerStress: false,
+  },
+};
 
 export function generateInitialNetworkHistory(node: NetworkNode): NetworkPingPoint[] {
   const points: NetworkPingPoint[] = [];
-  const baseLatency = node.latencyMs;
+  const baseLatency = node.baseLatencyMs ?? node.latencyMs;
   const count = 12;
 
   for (let i = 0; i < count; i++) {
-    const fraction = i / (count - 1);
-    const noise = Math.sin(i * 0.9) * 4;
-    const latency = Math.max(12, Number((baseLatency * (0.85 + fraction * 0.3) + noise).toFixed(0)));
-    const packetLoss = Math.max(0, Number((node.packetLossPct * (0.7 + fraction * 0.6) + (Math.random() - 0.5) * 0.5).toFixed(1)));
-    const bw = Math.max(0.5, Number((node.bandwidthMbps * (1.1 - fraction * 0.2)).toFixed(0)));
+    const noise = Math.sin(i * 0.8) * 3 + (Math.random() - 0.5) * 2;
+    const latency = Math.max(12, Math.round(baseLatency + noise));
+    const packetLoss = Math.max(0, Number((node.packetLossPct + (Math.random() - 0.5) * 0.4).toFixed(1)));
+    const bw = Math.max(0.5, Math.round(node.bandwidthMbps + (Math.random() - 0.5) * 8));
 
     let status: NetworkStatus = 'optimal';
-    if (packetLoss > 40 || latency > 300) status = 'blackout';
-    else if (packetLoss > 15 || latency > 120) status = 'critical_drop';
-    else if (packetLoss > 3 || latency > 60) status = 'degraded';
+    if (packetLoss > 40 || latency > 350) status = 'blackout';
+    else if (packetLoss > 12 || latency > 120) status = 'critical_drop';
+    else if (packetLoss > 3 || latency > 55) status = 'degraded';
 
     points.push({
       timestampSec: (i - count + 1) * 300,
@@ -891,12 +890,10 @@ export function generateInitialNetworkHistory(node: NetworkNode): NetworkPingPoi
 export function initializeNetworkNodes(): NetworkNode[] {
   return INITIAL_NETWORK_NODES.map((n) => ({
     ...n,
+    baseLatencyMs: n.baseLatencyMs ?? n.latencyMs,
     history: generateInitialNetworkHistory(n),
   }));
 }
-
-
-
 
 export function stepNetworkSimulation(
   nodes: NetworkNode[],
@@ -906,15 +903,12 @@ export function stepNetworkSimulation(
   const scenario = NETWORK_SCENARIOS[scenarioId] ?? NETWORK_SCENARIOS.monsoon_power_outage;
 
   return nodes.map((node) => {
-    
-    let targetLatency = node.latencyMs;
-    let targetLoss = node.packetLossPct;
-    let targetBw = node.bandwidthMbps;
+    const baseLatency = node.baseLatencyMs ?? node.latencyMs;
     let powerSource = node.powerSource;
     let batteryHours = node.batteryHoursRemaining;
     let activeChannel = node.activeChannel;
 
-    
+    // Power / Battery drain
     if (powerSource === 'Battery Backup') {
       batteryHours = Math.max(0, Number((batteryHours - (stepSeconds / 3600) * (scenario.powerStress ? 2.5 : 1.0)).toFixed(2)));
       if (batteryHours === 0) {
@@ -922,43 +916,55 @@ export function stepNetworkSimulation(
       }
     }
 
-    
+    let targetLatency: number;
+    let targetLoss: number;
+    let targetBw: number = node.bandwidthMbps;
+
     if (powerSource === 'Power Failed') {
-      targetLoss = Math.min(100, Math.max(75, targetLoss + 5));
-      targetLatency = Math.min(800, targetLatency + 25);
-      targetBw = Math.max(0.1, targetBw * 0.6);
+      targetLoss = Math.min(100, Math.max(75, node.packetLossPct + 2.5));
+      targetLatency = Math.min(750, Math.max(450, node.latencyMs + 15));
+      targetBw = Math.max(0.1, targetBw * 0.8);
       activeChannel = node.fallbackChannel;
     } else if (scenarioId === 'fiber_bridge_sever' && (node.id === 'junc_river_bridge_n' || node.id === 'village_riverbank')) {
-      targetLatency = 240;
-      targetLoss = 28;
+      targetLatency = Math.round(210 + (Math.random() - 0.5) * 16);
+      targetLoss = Number((24 + (Math.random() - 0.5) * 4).toFixed(1));
       targetBw = 12;
       activeChannel = 'Microwave Line-of-Sight Relay';
     } else if (scenarioId === 'emergency_sat_mesh_deployed' && node.type === 'shelter') {
-      targetLatency = 28;
+      targetLatency = Math.round(28 + (Math.random() - 0.5) * 4);
       targetLoss = 0.2;
       targetBw = 220;
       activeChannel = 'Satellite Uplink (ISRO GSAT / Starlink)';
       powerSource = 'Diesel Genset';
       batteryHours = 48;
     } else if (scenarioId === 'telecom_cow_restoration' && (node.status === 'blackout' || node.status === 'critical_drop')) {
-      targetLatency = 35;
+      targetLatency = Math.round(32 + (Math.random() - 0.5) * 6);
       targetLoss = 0.5;
       targetBw = 120;
       powerSource = 'Diesel Genset';
       batteryHours = 24;
       activeChannel = '5G/LTE Cellular Base Station';
     } else {
-      
-      const noise = (Math.random() - 0.48) * 4;
-      targetLatency = Math.max(14, Number((node.latencyMs * 0.9 + (node.latencyMs * scenario.latencyFactor * 0.1) + noise).toFixed(0)));
-      targetLoss = Math.max(0, Math.min(100, Number((node.packetLossPct * 0.85 + scenario.packetLossBonusPct * 0.15 + (Math.random() - 0.5) * 0.8).toFixed(1))));
+      // REALISTIC ANCHORED PING & JITTER (NON-COMPOUNDING)
+      const expectedPing = baseLatency * (scenario.latencyFactor ?? 1.0);
+      const jitter = (Math.random() - 0.5) * 6; // Realistic ±3ms jitter
+      const microSpike = Math.random() < 0.06 ? (Math.random() * 10 + 4) : 0; // Occasional brief queue bump
+      const pingTarget = expectedPing + jitter + microSpike;
+
+      // Exponential moving average towards expected ping (anchored baseline, never infinite compounding!)
+      targetLatency = Math.round(node.latencyMs * 0.65 + pingTarget * 0.35);
+      targetLatency = Math.max(12, Math.min(800, targetLatency));
+
+      // Realistic packet loss flutter around scenario baseline
+      const baseLossTarget = Math.max(0, (scenario.packetLossBonusPct > 0 ? scenario.packetLossBonusPct * 0.25 : 0));
+      const lossJitter = (Math.random() - 0.5) * 0.6;
+      targetLoss = Math.max(0, Math.min(100, Number((node.packetLossPct * 0.7 + (baseLossTarget + lossJitter) * 0.3).toFixed(1))));
     }
 
-    
     let status: NetworkStatus = 'optimal';
-    if (targetLoss > 40 || targetLatency > 300 || powerSource === 'Power Failed') {
+    if (targetLoss > 40 || targetLatency > 350 || powerSource === 'Power Failed') {
       status = 'blackout';
-    } else if (targetLoss > 15 || targetLatency > 120) {
+    } else if (targetLoss > 12 || targetLatency > 120) {
       status = 'critical_drop';
     } else if (targetLoss > 3 || targetLatency > 55) {
       status = 'degraded';
@@ -976,6 +982,7 @@ export function stepNetworkSimulation(
 
     return {
       ...node,
+      baseLatencyMs: baseLatency,
       status,
       latencyMs: targetLatency,
       packetLossPct: targetLoss,

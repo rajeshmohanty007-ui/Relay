@@ -3,9 +3,9 @@ import type { Node, Edge, Convoy } from '../lib/types';
 import { projectNodes, type ProjectedNode } from '../lib/projection';
 import type { WaterSensor } from '../lib/waterSensors';
 
-export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors' | 'labels';
+export type MapLayer = 'grid' | 'contours' | 'edges' | 'nodes' | 'convoys' | 'sensors' | 'labels' | 'netdata';
 
-export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors', 'labels']);
+export const ALL_MAP_LAYERS: Set<MapLayer> = new Set(['grid', 'contours', 'edges', 'nodes', 'convoys', 'sensors', 'labels', 'netdata']);
 
 export interface MapViewProps {
   nodes: Node[];
@@ -31,6 +31,31 @@ function getShelterStatusColor(node: Node): string {
   return '#206E6B'; 
 }
 
+
+const HYDRO_HIGHLIGHT_NODE_IDS = new Set([
+  'junc_dam_road',
+  'junc_river_bridge_n',
+  'junc_canal_bridge',
+  'village_causeway_haven',
+  'junc_west_culvert',
+  'shelter_delta_stadium',
+]);
+
+const STRESSED_NET_NODE_IDS = new Set([
+  'shelter_east_hospital',
+  'shelter_west_hall',
+  'village_riverbank',
+  'village_mangrove_edge',
+  'village_estuary_point',
+  'village_canal_side',
+  'village_weir_quarters',
+  'village_marshland_bend',
+  'village_causeway_haven',
+  'junc_river_bridge_n',
+  'junc_west_culvert',
+  'junc_canal_bridge',
+  'junc_coastal_link',
+]);
 
 const EDGE_STYLE: Record<Edge['status'], { stroke: string; strokeWidth: number; dashArray?: string }> = {
   clear: { stroke: '#059669', strokeWidth: 2 },
@@ -551,7 +576,61 @@ export default function MapViewTopo({
           </g>
         )}
 
-        {}
+        {/* Hydro Sensor Node Blue Ripple Effects */}
+        {visibleLayers.has('sensors') && (
+          <g>
+            {nodes.map((node) => {
+              if (!HYDRO_HIGHLIGHT_NODE_IDS.has(node.id)) return null;
+              const pos = positionsById.get(node.id);
+              if (!pos) return null;
+              return (
+                <g key={`hydro_hl_${node.id}`} className="pointer-events-none">
+                  {/* Outer expanding Blue ripple wave 1 */}
+                  <circle cx={pos.x} cy={pos.y} r={12} fill="none" stroke="#2563EB" strokeWidth={2} opacity="0.6">
+                    <animate attributeName="r" values="6;32" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.85;0" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  {/* Outer expanding Blue ripple wave 2 (staggered delay) */}
+                  <circle cx={pos.x} cy={pos.y} r={12} fill="none" stroke="#60A5FA" strokeWidth={1.5} opacity="0.6">
+                    <animate attributeName="r" values="6;32" begin="1s" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.85;0" begin="1s" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  {/* Inner glowing Blue node core */}
+                  <circle cx={pos.x} cy={pos.y} r={7} fill="#2563EB" stroke="#93C5FD" strokeWidth={2} className="filter drop-shadow-[0_0_8px_#3B82F6]" />
+                </g>
+              );
+            })}
+          </g>
+        )}
+
+        {/* Stressed Telecommunications Net Data Red Ripple Effects */}
+        {visibleLayers.has('netdata') && (
+          <g>
+            {nodes.map((node) => {
+              if (!STRESSED_NET_NODE_IDS.has(node.id)) return null;
+              const pos = positionsById.get(node.id);
+              if (!pos) return null;
+              return (
+                <g key={`net_hl_${node.id}`} className="pointer-events-none">
+                  {/* Outer expanding Red ripple wave 1 */}
+                  <circle cx={pos.x} cy={pos.y} r={12} fill="none" stroke="#DC2626" strokeWidth={2} opacity="0.6">
+                    <animate attributeName="r" values="6;32" dur="1.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.9;0" dur="1.8s" repeatCount="indefinite" />
+                  </circle>
+                  {/* Outer expanding Red ripple wave 2 (staggered delay) */}
+                  <circle cx={pos.x} cy={pos.y} r={12} fill="none" stroke="#F87171" strokeWidth={1.5} opacity="0.6">
+                    <animate attributeName="r" values="6;32" begin="0.9s" dur="1.8s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.9;0" begin="0.9s" dur="1.8s" repeatCount="indefinite" />
+                  </circle>
+                  {/* Inner glowing Red node core */}
+                  <circle cx={pos.x} cy={pos.y} r={7} fill="#DC2626" stroke="#FCA5A5" strokeWidth={2} className="filter drop-shadow-[0_0_8px_#EF4444]" />
+                </g>
+              );
+            })}
+          </g>
+        )}
+
+        {/* Nodes Layer */}
         {visibleLayers.has('nodes') && (
           <g>
             {nodes.map((node) => {
